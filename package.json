@@ -1,0 +1,30 @@
+{
+  "name": "bomberman",
+  "version": "0.0.0",
+  "description": "bomberman in-browser",
+  "main": "./server/index.js",
+  "dependencies": {
+    "body-parser": "^1.6.6",
+    "morgan": "^1.2.3",
+    "express": "^4.8.6",
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tylergoodman/bomberman.git"
+  },
+  "keywords": [
+    "bomberman",
+    "game"
+  ],
+  "author": "",
+  "license": "none",
+  "bugs": {
+    "url": "https://github.com/tylergoodman/bomberman/issues"
+  },
+  "homepage": "https://github.com/tylergoodman/bomberman"
+}

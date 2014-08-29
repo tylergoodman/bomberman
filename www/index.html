@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>Index</title>
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css">
+		<style type="text/css">
+			body {
+				background-color: #000;
+				color: #fff;
+				position: fixed;
+				width: 100%;
+				height: 100%;
+			}
+			.page-wrap {
+				display: table;
+				margin-left: auto;
+				margin-right: auto;
+				position: relative;
+				top: 50%;
+				transform: translateY(-50%);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="page-wrap pure-form">
+			<fieldset>
+				<button id="create" class="pure-button">Create Game</button>
+			</fieldset>
+			<fieldset>
+				<input id="join-id" type="text" placeholder="Game ID">
+				<button id="join" class="pure-button">Join Game</button>
+			</fieldset>
+		</div>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			$('#create').click(function () {
+				console.log('create');
+			});
+			$('#join').click(function () {
+				var id = $('#join-id').val();
+				console.log('join ' + id);
+				$.post('./join', { asdf: 1234 })
+					.done(function (data) {
+						console.log('received data from server: ', data);
+					});
+			});
+		</script>
+	</body>
+</html>
