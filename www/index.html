@@ -2,8 +2,11 @@
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-		<title>Index</title>
+		<title>Bomberman</title>
+		<!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css"> -->
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css">
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/grids-responsive-min.css">
 		<style type="text/css">
 			body {
 				background-color: #000;
@@ -11,41 +14,239 @@
 				position: fixed;
 				width: 100%;
 				height: 100%;
+				font-size: 0;
+				font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+			}
+			span, button, .text-content {
+				/*line-height: 1.42857 !important;*/
+				font-size: 12px !important;
 			}
 			.page-wrap {
-				display: table;
+				height: 100%;
+				/*display: table;
 				margin-left: auto;
 				margin-right: auto;
 				position: relative;
 				top: 50%;
-				transform: translateY(-50%);
+				transform: translateY(-50%);*/
 			}
+			#menu {
+				height: 35%;
+			}
+			#lobby, #chat {
+				height: 100%;
+			}
+			@media screen and (min-width: 48em) {
+				#menu {
+					height: 100%;
+				}
+				#lobby, #chat {
+					height: 50%;
+				}
+			}
+			#lobby {
+				position: relative;
+				background: blue;
+			}
+			#lobby-controls {
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+			}
+			#lobby-controls button {
+				width: calc(50% - 8px);
+				margin: 4px;
+			}
+
+			#chat {
+				background: purple;
+			}
+
+			#game {
+				background: green;
+				height: 100%;
+			}
+
+
 		</style>
 	</head>
 
 	<body>
-		<div class="page-wrap pure-form">
-			<fieldset>
-				<button id="create" class="pure-button">Create Game</button>
-			</fieldset>
-			<fieldset>
-				<input id="join-id" type="text" placeholder="Game ID">
-				<button id="join" class="pure-button">Join Game</button>
-			</fieldset>
+		<div class="page-wrap pure-g">
+
+			<div id="menu" class="pure-u-1 pure-u-md-2-5 pure-u-lg-1-5">
+				<div id="lobby" class="pure-u-1-2 pure-u-md-1">
+					<div id="players"></div>
+					<div id="lobby-controls">
+						<button id="lobby-join" class="pure-button"><i class="fa fa-sign-in"></i>&nbsp&nbsp<span>Join Lobby</span></button>
+						<button id="lobby-toggle" class="pure-button"><i class="fa fa-toggle-off"></i>&nbsp&nbsp<span>Open Lobby</span></button>
+					</div>
+				</div>
+				<div class="pure-u-1-2 pure-u-md-1 text-content" id="chat">chat</div>
+			</div>
+			<div class="pure-u-1 pure-u-md-3-5 pure-u-lg-4-5 text-content" id="game">
+				
+			</div>
+
+			<!-- <div class="pure-g">
+				<form class="pure-form pure-form-stacked">
+					<fieldset>
+						<button id="create" class="pure-button">Open Lobby</button>
+					</fieldset>
+					<fieldset>
+						<input id="join-id" type="text" placeholder="Game ID">
+						<button id="join" class="pure-button">Join Lobby</button>
+					</fieldset>
+					<fieldset>
+						<button id="start" class="pure-button">Start Game</button>
+					</fieldset>
+				</form>
+			</div> -->
+
+
 		</div>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.9/peer.min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/simplemodal/1.4.4/jquery.simplemodal.min.js"></script>
+
+		<script type="text/template" id="Person-template">
+			<div class="person text-content">
+				<div>
+					<label>ID: <input class="id" type="text" readonly value="<%= id %>"></label>
+				</div>
+				<div>
+					<label>NAME: <input class="name" type="text" placeholder="set name" value="<%= name %>"></label>
+				</div>
+			</div>
+		</script>
+
 		<script type="text/javascript">
-			$('#create').click(function () {
-				console.log('create');
-			});
-			$('#join').click(function () {
-				var id = $('#join-id').val();
-				console.log('join ' + id);
-				$.post('./join', { asdf: 1234 })
-					.done(function (data) {
-						console.log('received data from server: ', data);
-					});
-			});
+			(function () {
+				var Bomberman = {};
+
+				var Person = Bomberman.Person = Backbone.Model.extend({
+					defaults: {
+						name: null,
+						id: null,
+						peer: null,
+					},
+				});
+				var PersonView = Bomberman.PersonView = Backbone.View.extend({
+					template: _.template($('#Person-template').html()),
+					editable: false,
+
+					initialize: function () {
+						this.render();
+
+						this.name = this.$('.name');
+						this.id = this.$('.id');
+					},
+
+					events: {
+						'keypress .name': function (e) {
+							if (e.keyCode === 13)
+								this.model.set('name', this.name.val());
+						},
+					},
+
+					render: function () {
+						console.log(this.model);
+						this.$el.html(this.template(this.model.attributes));
+						return this;
+					},
+
+					update: function () {
+						this.name.val(this.model.get('name'));
+						this.id.val(this.model.get('id'));
+					},
+				});
+
+				var Logger = Bomberman.Logger = {
+					$el: $('#game'),
+					log: function (message) {
+						console.log(message);
+						this.$el.append(message + '<br>');
+					},
+				}
+
+
+				var Lobby = Bomberman.Lobby = new (Backbone.View.extend({
+					el: '#lobby',
+
+					host: null,
+					open: false,
+					peers: [],
+					max_peers: 4,
+
+					initialize: function () {
+						this.toggle = this.$('#lobby-toggle');
+						this.join = this.$('#lobby-join');
+						this.players = this.$('#players');
+
+						var mypeer = new Peer({
+							host: window.location.hostname,
+							path: '/tracker',
+							port: 9000,
+							debug: 3,
+							logFunction: function () {
+								var copy = Array.prototype.slice.call(arguments).join(' ');
+								Logger.log(copy);
+							},
+						});
+
+						mypeer.on('open', $.proxy(function (id) {
+							var me = this.me = new Person({
+								peer: mypeer,
+								id: id,
+							});
+
+							var myview = new PersonView({
+								model: me,
+							});
+							this.players.append(myview.el);
+						}, this));
+
+					},
+
+					events: {
+						'click #lobby-toggle': function () {
+							if (this.open) {
+								this.toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+								this.toggle.find('span').text('Open Lobby');
+								this.open = false;
+								this.host = null;
+								this.join.prop('disabled', false);
+								Logger.log('Set lobby closed');
+							}
+							else {
+								this.toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+								this.toggle.find('span').text('Close Lobby');
+								this.open = true;
+								this.host = this.me;
+								this.join.prop('disabled', true);
+								Logger.log('Set lobby open');
+							}
+						},
+					},
+
+					addPlayer: function (player) {
+
+					}
+				}));
+
+
+
+
+				$('window').on('unload', function () {
+					// if (app.me.peer && !app.me.peer.destroyed)
+					// 	app.me.peer.destroy();
+				});
+
+
+				window.Bomberman = Bomberman;
+			})()
 		</script>
 	</body>
 </html>
