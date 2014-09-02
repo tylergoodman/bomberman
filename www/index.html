@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css">
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/grids-responsive-min.css">
 		<style type="text/css">
+			/*main page*/
 			body {
 				background-color: #000;
 				color: #fff;
@@ -23,10 +24,7 @@
 			}
 			.page-wrap {
 				height: 100%;
-				/*display: table;
-				margin-left: auto;
-				margin-right: auto;
-				position: relative;
+				/*position: relative;
 				top: 50%;
 				transform: translateY(-50%);*/
 			}
@@ -44,6 +42,9 @@
 					height: 50%;
 				}
 			}
+
+
+			/*lobby*/
 			#lobby {
 				position: relative;
 				background: blue;
@@ -57,14 +58,56 @@
 				width: calc(50% - 8px);
 				margin: 4px;
 			}
+			/*people in lobby*/
+			.person {
+				border: solid 1px red;
+				padding: 5px;
+				margin: 5px;
+				margin-top: 10px;
+			}
+			.person .person-name {
+				position: absolute;
+				top: 3px;
+				left: 10px;
+				background: blue;
+				padding-left: 3px;
+				padding-right: 3px;
+			}
+			.person .person-row {
+				display: flex;
+				padding-top: 2px;
+			}
+			.person .person-row .person-row-key {
+				flex-grow: 1;
+			}
+			.person .person-row .person-row-value {
+				flex-grow: 1;
+			}
 
+			/*chat*/
 			#chat {
 				background: purple;
 			}
 
+			/*game*/
 			#game {
 				background: green;
 				height: 100%;
+			}
+
+
+
+			/*modals stuff*/
+			[id|='modal'] {
+				display: none;
+			}
+			[id|='modal'].active {
+				display: block;
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translateY(-50%) translateX(-50%);
+				z-index: 5;
 			}
 
 
@@ -74,34 +117,25 @@
 	<body>
 		<div class="page-wrap pure-g">
 
-			<div id="menu" class="pure-u-1 pure-u-md-2-5 pure-u-lg-1-5">
+			<div id="menu" class="pure-u-1 pure-u-md-1-3 pure-u-lg-1-5">
 				<div id="lobby" class="pure-u-1-2 pure-u-md-1">
 					<div id="players"></div>
 					<div id="lobby-controls">
 						<button id="lobby-join" class="pure-button"><i class="fa fa-sign-in"></i>&nbsp&nbsp<span>Join Lobby</span></button>
 						<button id="lobby-toggle" class="pure-button"><i class="fa fa-toggle-off"></i>&nbsp&nbsp<span>Open Lobby</span></button>
 					</div>
+					<div id="modal-join" class="text-content">
+						<input type="text" placeholder="Peer's ID" autocomplete="off">
+						<button class="pure-button">Join</button>
+					</div>
 				</div>
-				<div class="pure-u-1-2 pure-u-md-1 text-content" id="chat">chat</div>
+				<div class="pure-u-1-2 pure-u-md-1 text-content" id="chat">
+					chat
+				</div>
 			</div>
-			<div class="pure-u-1 pure-u-md-3-5 pure-u-lg-4-5 text-content" id="game">
+			<div class="pure-u-1 pure-u-md-2-3 pure-u-lg-4-5 text-content" id="game">
 				
 			</div>
-
-			<!-- <div class="pure-g">
-				<form class="pure-form pure-form-stacked">
-					<fieldset>
-						<button id="create" class="pure-button">Open Lobby</button>
-					</fieldset>
-					<fieldset>
-						<input id="join-id" type="text" placeholder="Game ID">
-						<button id="join" class="pure-button">Join Lobby</button>
-					</fieldset>
-					<fieldset>
-						<button id="start" class="pure-button">Start Game</button>
-					</fieldset>
-				</form>
-			</div> -->
 
 
 		</div>
@@ -109,132 +143,325 @@
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.9/peer.min.js"></script>
-		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/simplemodal/1.4.4/jquery.simplemodal.min.js"></script>
 
-		<script type="text/template" id="Person-template">
+		<script type="text/template" id="template-Person">
 			<div class="person text-content">
-				<div>
-					<label>ID: <input class="id" type="text" readonly value="<%= id %>"></label>
+				<span class="person-name"><%= name %></span>
+				<div class="person-row">
+					<span class="person-row person-row-key">ID: </span><input class="person-row person-row-value id" type="text" readonly value="<%= id %>">
 				</div>
-				<div>
-					<label>NAME: <input class="name" type="text" placeholder="set name" value="<%= name %>"></label>
+				<div class="person-row">
+					<span class="person-row person-row-key">NAME: </span><input class="person-row person-row-value name" type="text" maxlength="50" value="<%= name %>">
 				</div>
 			</div>
 		</script>
 
 		<script type="text/javascript">
 			(function () {
+				// 'use strict';
+
 				var Bomberman = {};
 
 				var Person = Bomberman.Person = Backbone.Model.extend({
 					defaults: {
 						name: null,
 						id: null,
-						peer: null,
+						editable: false,
 					},
 				});
 				var PersonView = Bomberman.PersonView = Backbone.View.extend({
-					template: _.template($('#Person-template').html()),
-					editable: false,
+					template: _.template($('#template-Person').html()),
 
 					initialize: function () {
+						this.listenTo(this.model, 'change', this.update);
+
 						this.render();
 
+						this.header = this.$('.person-name');
 						this.name = this.$('.name');
 						this.id = this.$('.id');
 					},
 
 					events: {
-						'keypress .name': function (e) {
-							if (e.keyCode === 13)
+						'keyup .name': function (e) {
+							// if (e.keyCode === 13)
 								this.model.set('name', this.name.val());
 						},
 					},
 
 					render: function () {
-						console.log(this.model);
-						this.$el.html(this.template(this.model.attributes));
+						this.$el = $(this.template(this.model.attributes));
+						this.el = this.$el.get(0);
 						return this;
 					},
 
 					update: function () {
-						this.name.val(this.model.get('name'));
+						this.header.text(this.model.get('name') || this.model.get('id'));
+						// this.name.val(this.model.get('name'));
 						this.id.val(this.model.get('id'));
 					},
 				});
 
 				var Logger = Bomberman.Logger = {
 					$el: $('#game'),
-					log: function (message) {
-						console.log(message);
-						this.$el.append(message + '<br>');
+					_log: function (type, args) {
+						console[type].apply(console, args);
+					},
+					_format: function (args) {
+						return Array.prototype.join.call(args);
+					},
+					log: function () {
+						this._log('log', arguments);
+						this.$el.append(this._format(arguments) + '<br>');
+					},
+					warn: function () {
+						this._log('warn', arguments);
+						this.$el.append(this._format(arguments) + '<br>');
 					},
 				}
 
 
+
 				var Lobby = Bomberman.Lobby = new (Backbone.View.extend({
 					el: '#lobby',
-
-					host: null,
-					open: false,
-					peers: [],
-					max_peers: 4,
 
 					initialize: function () {
 						this.toggle = this.$('#lobby-toggle');
 						this.join = this.$('#lobby-join');
 						this.players = this.$('#players');
 
-						var mypeer = new Peer({
-							host: window.location.hostname,
-							path: '/tracker',
-							port: 9000,
-							debug: 3,
-							logFunction: function () {
-								var copy = Array.prototype.slice.call(arguments).join(' ');
-								Logger.log(copy);
-							},
-						});
-
-						mypeer.on('open', $.proxy(function (id) {
-							var me = this.me = new Person({
-								peer: mypeer,
-								id: id,
-							});
-
-							var myview = new PersonView({
-								model: me,
-							});
-							this.players.append(myview.el);
-						}, this));
-
 					},
 
 					events: {
 						'click #lobby-toggle': function () {
-							if (this.open) {
+							if (Network.open) {
 								this.toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
 								this.toggle.find('span').text('Open Lobby');
-								this.open = false;
-								this.host = null;
 								this.join.prop('disabled', false);
+								Network.client.open = false;
 								Logger.log('Set lobby closed');
 							}
 							else {
 								this.toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
 								this.toggle.find('span').text('Close Lobby');
-								this.open = true;
-								this.host = this.me;
 								this.join.prop('disabled', true);
+								Network.client.open = true;
 								Logger.log('Set lobby open');
 							}
+						},
+						'click #lobby-join': function () {
+							var modal = this.$('#modal-join');
+							modal.addClass('active');
+							$('<div/>', {
+								id: 'modal-overlay',
+								css: {
+									display: 'block',
+									position: 'fixed',
+									width: '100%',
+									height: '100%',
+									top: '0',
+									background: 'black',
+									opacity: '0.5',
+								},
+								click: function () {
+									modal.removeClass('active');
+									$(this).remove();
+								},
+							}).appendTo('body');
+						},
+						'click #modal-join button': function () {
+							var id = this.$('#modal-join input').val();
+							if (id) {
+								$('#modal-overlay').trigger('click');
+								Network.connectTo(id);
+							}
+						},
+						'keyup #modal-join input': function (e) {
+							if (e.keyCode === 13)
+								this.$('#modal-join button').trigger('click');
 						},
 					},
 
 					addPlayer: function (player) {
-
-					}
+						var myview = new PersonView({
+							model: player,
+						});
+						this.players.append(myview.el);
+					},
 				}));
+
+
+				var Me = Bomberman.Me = {
+					peer: new Peer({
+						host: window.location.hostname,
+						path: '/tracker',
+						port: 9000,
+						debug: 2,
+						logFunction: function () {
+							Logger.log(Array.prototype.slice.call(arguments).join(' '));
+						},
+					}),
+
+					amHost: function () {
+						return Network.host === 'self';
+					},
+					amClient: function () {
+						return Network.host !== 'self';
+					},
+				}
+
+				Me.peer.on('open', function (id) {
+					var me = new Person({
+						name: 'ME',
+						id: id,
+						editable: true,
+					});
+
+					Lobby.addPlayer(me);
+				});
+				Me.peer.on('connection', function (connection) {
+					Network.handleConnection(connection);
+				});
+				Me.peer.on('close', function () {
+					Logger.log('Own peer closed, refresh necessary');
+				});
+				Me.peer.on('error', function (err) {
+					Logger.warn('Own peer errored', err)
+				});
+
+				var Network = Bomberman.Network = {
+					// for when you're connected to a host...
+					// and you're the client..............
+					host: {
+						connected: false,
+						connections: {
+							game: null,
+							chat: null,
+						},
+					},
+					// for when you're the host and others are the client
+					client: {
+						open: false,
+						peers: {},
+						max_peers: 4,
+					},
+
+					Peer: (function () {
+						var peer = function (id) {
+							this.id = id;
+							this.connections = {};
+						}
+						return peer;
+					})(),
+
+
+					send: function (data, type, connection, callback) {
+						var event_num = Math.random() * 13 * 10;
+						connection.send({
+							data: data,
+							num: event_num,
+							type: type,
+						})
+						if (callback)
+							this.once(String(event_num), callback);
+					},
+
+					handleData: function (data) {
+					},
+
+					handleConnection: function (connection) {
+						Logger.log('Received connection request from ' + connection.peer);
+						var self = this;
+
+						connection.on('open', function () {
+							console.log(this);
+							Logger.log(this.label + ' connection from ' + this.peer + ' established');
+
+							if (!self.client.open) {
+								Logger.log('Closing ' + this.label + ' connection to ' + this.peer + ', lobby is closed');
+								self.send('My lobby is closed', 'error', this, $.proxy(function () {
+									// this.close();
+								}, this));
+							}
+							else if (self.client.peers.length === self.client.max_peers) {
+								Logger.log('Closing ' + this.label + ' connection to ' + this.peer + ', lobby is full');
+								self.send('My lobby is full', 'error', this, $.proxy(function () {
+									this.close();
+								}, this));
+							}
+							else {
+								self.send('Request successful!', this);
+								self.addPeer(this);
+							}
+						});
+
+						connection.on('data', function (data) {
+							Logger.log('Received some ' + this.label + ' data from ' + this.peer, data);
+						});
+
+						connection.on('close', function () {
+							Logger.log(this.label + ' connection to ' + this.peer + ' closed');
+						});
+
+						connection.on('error', function (err) {
+							Logger.warn(this.label + ' connection errored', err);
+						});
+
+					},
+
+					connectTo: function (id) {
+						Logger.log('Requesting connection to ' + id);
+
+						// chat connection
+						var chat_connection = Me.peer.connect(id, {
+							label: 'chat',
+						});
+						chat_connection.on('open', function () {
+							Logger.log(this.label + ' connection from ' + this.peer + ' established');
+						});
+						chat_connection.on('data', function (data) {
+							Logger.log('Received some ' + this.label + ' data from ' + this.peer, data);
+						});
+						chat_connection.on('close', function () {
+							Logger.log(this.label + ' connection to ' + this.peer + ' closed');
+						});
+						chat_connection.on('error', function (err) {
+							Logger.warn(this.label + ' connection errored', err);
+						});
+
+						// game connection
+						var game_connection = Me.peer.connect(id, {
+							label: 'game',
+						});
+						game_connection.on('open', function () {
+							Logger.log(this.label + ' connection from ' + this.peer + ' established');
+						});
+						game_connection.on('data', function (data) {
+							Logger.log('Received some ' + this.label + ' data from ' + this.peer, data);
+						});
+						game_connection.on('close', function () {
+							Logger.log(this.label + ' connection to ' + this.peer + ' closed');
+						});
+						game_connection.on('error', function (err) {
+							Logger.warn(this.label + ' connection errored', err);
+						});
+					},
+
+					setHost: function (connection) {
+						this.host = connection;
+						this.connected = true;
+					},
+
+					addPeer: function (connection) {
+						if (!this.client.peers[connection.peer]) {
+							// var peer = 
+						}
+					},
+					addConnection: function (playerId, connection) {
+						this.peers[playerId].push(connection);
+					},
+				}
+				_.extend(Network, Backbone.Events);
 
 
 
