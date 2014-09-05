@@ -8,6 +8,13 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 <script language="JavaScript" type="text/JavaScript">
 
 /******************************************************************************
+							Constants
+******************************************************************************/
+var MOVESPEED = 20;
+/******************************************************************************
+						End of Constants
+
+/******************************************************************************
 						Initialization / Declarations
 ******************************************************************************/
 var canvas = document.getElementById("myCanvas");
@@ -125,29 +132,38 @@ function ClearCanvas()
 function move(direction)
 {	
 
-	// finds current position and updates it
-	var position = getPosition(bomberman);
-	/*
-	if(direction == "right")
-	{
-		document.getElementById("scream").style.position = "absolute";
-		document.getElementById("scream").style.left = position.x + 10 + 'px';
-	}
-	else if(direction == "down")
-	{
-		document.getElementById("scream").style.top = position.y + 10 + 'px';
-	}
-	*/
-	bomberman.x = bomberman.x + 1;
-	bomberman.y = bomberman.y + 1;
-	console.log(bomberman.getRow());
+	// find bomberman's row/col
+	var row = bomberman.getRow();
+	var col = bomberman.getCol();
 
-	draw(bomberman.Image, bomberman.x * 10 +'px', bomberman.y * 10 + 'px');
+	if(direction == "RIGHT")
+	{
+		col += 1;
+	}
+	else if(direction == "LEFT")
+	{
+		col -= 1;
+	}
+	else if(direction == "UP")
+	{
+		row -= 1;
+	}
+	else if(direction == "DOWN")
+	{
+		row += 1;
+	}
 
-	/* works
+
+	// Set bomberman's gameobject row/col to new value
+	bomberman.setCol(col);
+	bomberman.setRow(row);
+
+	// Clear the board
 	ClearCanvas();
-	draw(bomberman.Image, 100,100);
-	*/
+
+	// draw bomberman's new image location
+	draw(bomberman.Image, bomberman.getCol() * MOVESPEED, 
+		bomberman.getRow() * MOVESPEED);
 }
 
 // function returns an object that contains an element's x and y position
@@ -194,13 +210,21 @@ function showKey(e) {
 // Processes a key press event
 function ProcessKey(key)
 {
-	if(key == "D")
+	if (key == "A")
 	{
-		move("right");
+		move("LEFT");
+	}
+	else if(key == "D")
+	{
+		move("RIGHT");
+	}
+	else if(key == "W")
+	{
+		move("UP");
 	}
 	else if(key == "S")
 	{
-		move("down");
+		move("DOWN");
 	}
 }
 
