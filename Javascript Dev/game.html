@@ -31,38 +31,38 @@ function GameObject (col, row, imageSource, id, imageWidth, imageHeight) {
 	this.Image.setAttribute("width", imageWidth);
 	this.Image.setAttribute("height", imageHeight);
 	//document.body.appendChild(this.Image);
-
-// Tou don't exactly need get/sets since all the properties set on "this." in GameObject are public and can be
-// manipulated by anything at any time.
-// They're alright to have if you need to do other work while getting/setting or if you want to be able to change the name or
-// functionality of the variable more easily later on.
-
-// PosX Get/Set
-GameObject.prototype.getCol = function () {
-	return this.Col;
 }
+	// Tou don't exactly need get/sets since all the properties set on "this." in GameObject are public and can be
+	// manipulated by anything at any time.
+	// They're alright to have if you need to do other work while getting/setting or if you want to be able to change the name or
+	// functionality of the variable more easily later on.
 
-GameObject.prototype.setCol = function (value) {
-	this.Col = value;
-}
+	// PosX Get/Set
+	GameObject.prototype.getCol = function () {
+		return this.Col;
+	}
 
-// PosY Get/Set
-GameObject.prototype.getRow = function () {
-	return this.Row;
-}
+	GameObject.prototype.setCol = function (value) {
+		this.Col = value;
+	}
 
-GameObject.prototype.setRow = function (value) {
-	this.Row = value;
-}
-}
+	// PosY Get/Set
+	GameObject.prototype.getRow = function () {
+		return this.Row;
+	}
+
+	GameObject.prototype.setRow = function (value) {
+		this.Row = value;
+	}
 
 
 
 function Player (name, col, row) {
 
-	//GameObject.call(this, col, row, "bomberman.jpg", "bomberman", '40px', '30px');
-	this.base = GameObject;
-	this.base(col, row, "bomberman.jpg", "bomberman", '40px', '30px');
+	GameObject.call(this, col, row, "bomberman.jpg", "bomberman", '40px', '30px');
+	//this.base = GameObject;
+	//this.base(col, row, "bomberman.jpg", "bomberman", '40px', '30px');
+
 	// Set up Object's properties
 	this.Name = name;
 	this.BombCount = 5;
@@ -88,6 +88,8 @@ function Player (name, col, row) {
 
 }
 
+Player.prototype = Object.create(GameObject.prototype);
+Player.prototype.constructor = Player;
 
 
 /******************************************************************************
@@ -138,7 +140,7 @@ function move(direction)
 	*/
 	bomberman.x = bomberman.x + 1;
 	bomberman.y = bomberman.y + 1;
-	console.log(bomberman.base);
+	console.log(bomberman.getRow());
 
 	draw(bomberman.Image, bomberman.x * 10 +'px', bomberman.y * 10 + 'px');
 
@@ -216,7 +218,7 @@ window.onload = function() {
 ******************************************************************************/
 
 // Create an image object and sets it as bomberman
-var bomberman = new Player("Player 1", 0, 0);
+var bomberman = new Player("Player 1", 1, 1);
 
 	// clears canvas
 	ClearCanvas();
