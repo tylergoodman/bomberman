@@ -5,29 +5,127 @@
 <canvas id="myCanvas" width="800" height="600" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas>
 
-<script>
+<script language="JavaScript" type="text/JavaScript">
 
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
-var imageObj = new Image();
-imageObj.src = "bomberman.jpg";
-imageObj.setAttribute("id", "scream");
-imageObj.setAttribute("width", '40px');
-imageObj.setAttribute("height", '30px');
-document.body.appendChild(imageObj);
+/******************************************************************************
+						Initialization / Declarations
+******************************************************************************/
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
 
-imageObj.onload = function ()
+/******************************************************************************
+					End of Initialization / Declarations
+******************************************************************************/
+
+/******************************************************************************
+					Classes / Object Definitions
+******************************************************************************/
+
+function GameObject (col, row, imageSource, id, imageWidth, imageHeight) {
+	// Member variables
+	this.Col = col; // x - position
+	this.Row = row; // y - position
+	this.Image =  new Image();
+	this.Image.src = imageSource;
+	this.Image.setAttribute("id", id);
+	this.Image.setAttribute("width", imageWidth);
+	this.Image.setAttribute("height", imageHeight);
+	//document.body.appendChild(this.Image);
+
+// Tou don't exactly need get/sets since all the properties set on "this." in GameObject are public and can be
+// manipulated by anything at any time.
+// They're alright to have if you need to do other work while getting/setting or if you want to be able to change the name or
+// functionality of the variable more easily later on.
+
+// PosX Get/Set
+GameObject.prototype.getCol = function () {
+	return this.Col;
+}
+
+GameObject.prototype.setCol = function (value) {
+	this.Col = value;
+}
+
+// PosY Get/Set
+GameObject.prototype.getRow = function () {
+	return this.Row;
+}
+
+GameObject.prototype.setRow = function (value) {
+	this.Row = value;
+}
+}
+
+
+
+function Player (name, col, row) {
+
+	//GameObject.call(this, col, row, "bomberman.jpg", "bomberman", '40px', '30px');
+	this.base = GameObject;
+	this.base(col, row, "bomberman.jpg", "bomberman", '40px', '30px');
+	// Set up Object's properties
+	this.Name = name;
+	this.BombCount = 5;
+
+
+	// This works too but in a different way that would probably be better explained in person.
+	// javascript gets a little complex in terms of scope
+	// the functions below are public functions that act on public variables
+
+	// Player's Name Get
+	this.getName = function () {
+		return this.Name;
+	}
+
+	// BombCount Get/Set
+	this.getBombCount = function () {
+		return this.BombCount;
+	}
+
+	this.setBombCount = function (value) {
+		this.BombCount = value;
+	}
+
+}
+
+
+
+/******************************************************************************
+				End of Classes / Object Definitions
+******************************************************************************/
+
+/******************************************************************************
+							Drawing
+******************************************************************************/
+
+// Draws bomberman
+function draw(object, x,y) {
+
+    ctx.drawImage(object,x,y);
+}
+
+// function to clear canvas for redrawing
+function ClearCanvas()
 {
-	draw();
+	var canvas = document.getElementById("myCanvas");
+	var ctx = canvas.getContext("2d");
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function draw() {
-    ctx.drawImage(imageObj,10,10);
-}
+/******************************************************************************
+						End of Drawing
+******************************************************************************/
+
+/******************************************************************************
+							Game Functions
+******************************************************************************/
 
 function move(direction)
-{
-	var position = getPosition(imageObj);
+{	
+
+	// finds current position and updates it
+	var position = getPosition(bomberman);
+	/*
 	if(direction == "right")
 	{
 		document.getElementById("scream").style.position = "absolute";
@@ -37,8 +135,24 @@ function move(direction)
 	{
 		document.getElementById("scream").style.top = position.y + 10 + 'px';
 	}
+	*/
+	bomberman.x = bomberman.x + 1;
+	bomberman.y = bomberman.y + 1;
+	console.log(bomberman.base);
+
+	draw(bomberman.Image, bomberman.x * 10 +'px', bomberman.y * 10 + 'px');
+
+	/* works
+	ClearCanvas();
+	draw(bomberman.Image, 100,100);
+	*/
 }
 
+// function returns an object that contains an element's x and y position
+// Ex: var temp = getPosition("element");
+//	   var width = temp.x;
+//	   var height = temp.y;
+//
 function getPosition(element) {
     var xPosition = 0;
     var yPosition = 0;
@@ -51,9 +165,17 @@ function getPosition(element) {
     return { x: xPosition, y: yPosition };
 }
 
-</script>
+/******************************************************************************
+						End of Game Functions
+******************************************************************************/
 
-<script language="JavaScript" type="text/JavaScript">
+/******************************************************************************
+
+/******************************************************************************
+							Events/Event Handlers
+******************************************************************************/
+
+// Event when a key is hit: converts the key to a string
 function showKey(e) {
 	var key;
 	if (window.event) {
@@ -66,6 +188,8 @@ function showKey(e) {
 	key = String.fromCharCode(key);
 	ProcessKey(key);
 }
+
+// Processes a key press event
 function ProcessKey(key)
 {
 	if(key == "D")
@@ -77,10 +201,39 @@ function ProcessKey(key)
 		move("down");
 	}
 }
+
+// Sets up the keyboard event listener
 window.onload = function() {
 	document.onkeydown = showKey;
 }
+
+/******************************************************************************
+					End of Events/Event Handlers
+******************************************************************************/
+
+/******************************************************************************
+								Main
+******************************************************************************/
+
+// Create an image object and sets it as bomberman
+var bomberman = new Player("Player 1", 0, 0);
+
+	// clears canvas
+	ClearCanvas();
+
+
+bomberman.Image.onload = function ()
+{
+	draw(bomberman.Image, 10,10);
+}
+
+
+/******************************************************************************
+							End of Main
+******************************************************************************/
+
 </script>
+
 
 </body>
 </html>
