@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="800" height="600" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var imageObj = new Image();
+imageObj.src = "bomberman.jpg";
+imageObj.setAttribute("id", "scream");
+imageObj.setAttribute("width", '40px');
+imageObj.setAttribute("height", '30px');
+document.body.appendChild(imageObj);
+
+imageObj.onload = function ()
+{
+	draw();
+}
+
+function draw() {
+    ctx.drawImage(imageObj,10,10);
+}
+
+function move(direction)
+{
+	var position = getPosition(imageObj);
+	if(direction == "right")
+	{
+		document.getElementById("scream").style.position = "absolute";
+		document.getElementById("scream").style.left = position.x + 10 + 'px';
+	}
+	else if(direction == "down")
+	{
+		document.getElementById("scream").style.top = position.y + 10 + 'px';
+	}
+}
+
+function getPosition(element) {
+    var xPosition = 0;
+    var yPosition = 0;
+  
+    while(element) {
+        xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+        yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+        element = element.offsetParent;
+    }
+    return { x: xPosition, y: yPosition };
+}
+
+</script>
+
+<script language="JavaScript" type="text/JavaScript">
+function showKey(e) {
+	var key;
+	if (window.event) {
+		key = window.event.keyCode;
+	} 
+	else {
+		key = e.keyCode;
+	}
+
+	key = String.fromCharCode(key);
+	ProcessKey(key);
+}
+function ProcessKey(key)
+{
+	if(key == "D")
+	{
+		move("right");
+	}
+	else if(key == "S")
+	{
+		move("down");
+	}
+}
+window.onload = function() {
+	document.onkeydown = showKey;
+}
+</script>
+
+</body>
+</html>
