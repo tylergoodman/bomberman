@@ -58,22 +58,6 @@ function move(direction)
 	{
 		row += 1;
 	}
-
-	// Update the board
-	//var wall = new Wall(true, 1, 1);
-
-	//gameBoard.update(wall, null, null);
-
-	// Set bomberman's gameobject row/col to new value
-	//gameBoard.Players[0].setCol(col);
-	//gameBoard.Players[0].setRow(row);
-
-	// Clear the board
-	//gameView.ClearCanvas();
-
-	// draw bomberman's new image location
-	//gameView.draw(gameBoard.Players[0].Image, gameBoard.Players[0].getCol() * MOVESPEED, 
-	//	gameBoard.Players[0].getRow() * MOVESPEED);
 	
 	if(col < 9 && col >=0 && row < 9 && row >= 0)
 	{
@@ -90,6 +74,7 @@ function move(direction)
 //	   var width = temp.x;
 //	   var height = temp.y;
 //
+//	DONT NEED BUT KEEPING JUST IN CASE
 function getPosition(element) {
     var xPosition = 0;
     var yPosition = 0;
@@ -142,6 +127,10 @@ function ProcessKey(key)
 	else if(key == "S")
 	{
 		move("DOWN");
+	}
+	else if(key == " ")
+	{
+		gameBoard.dropBomb("Player 1");
 	}
 }
 
