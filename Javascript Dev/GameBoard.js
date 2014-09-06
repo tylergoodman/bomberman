@@ -34,15 +34,25 @@
 							Private  Methods
 ******************************************************************************/
 		// Set object at [row][col]
-		function Add (object, row, col)
+		function Add (object, isBomb, row, col)
 		{
-			Board[row][col] = object;
+			if(isBomb)
+			{
+				BombBoard[row][col] = object;
+			}
+			else if (isBomb == false)
+			{
+				Board[row][col] = object;
+			}
 		}
 
 		// Remove object at [row][col]
-		function Remove (row, col)
+		function Remove (isBomb, row, col)
 		{
-			Board[row][col] = undefined;
+			if(isBomb)
+				BombBoard[row][col] = undefined;
+			else if(isBomb == false)
+				Board[row][col] = undefined;
 		}
 
 		// Return object at [row][col]
@@ -62,7 +72,7 @@
 					var unbreakWall = new Wall(false, j, i);
 
 					// Add the wall to board
-					Add(unbreakWall, j, i);
+					Add(unbreakWall, false, j, i);
 
 				}
 			}
@@ -85,10 +95,10 @@
 			if(object instanceof Player)
 			{
 				// Set the player to the new location
-				Add(object, row, col);
+				Add(object, false, row, col);
 
 				// Remove the player at the object's previous location
-				Remove(object.getRow(), object.getCol());
+				Remove(false, object.getRow(), object.getCol());
 
 				//Update the player data
 				object.setRow(row);
@@ -102,7 +112,7 @@
 			else if(object instanceof Bomb)
 			{
 				// This method should only be able to add bombs and NOT REMOVE them
-				Add(object, row, col);
+				Add(object, true, row, col);
 
 				// Add bomb to bombrack
 				BombRack.push(object);
@@ -128,7 +138,7 @@
 			{
 				if(BombRack[i].isExploding())
 				{
-					Remove(BombRack[i].getCol(), BombRack[i].getRow());
+					Remove(true, BombRack[i].getCol(), BombRack[i].getRow());
 					BombRack.splice(i,1);
 					bombExploded = true;
 				}
@@ -172,7 +182,7 @@
 					var bomb = new Bomb(player.getRow(), player.getCol());
 
 					// Add the bomb to the rack
-					Add(bomb, bomb.getCol(), bomb.getRow());
+					Add(bomb, true, bomb.getCol(), bomb.getRow());
 
 					// Add bomb to bombrack
 					BombRack.push(bomb);
@@ -190,10 +200,16 @@
 			this.bombCheckInterval = setInterval(this.CheckBombs, 500);
 		}
 
-				// Hopefully returns a copy of the board
+		// Hopefully returns a copy of the board
 		this.ReturnBoard = function()
 		{
 			return Board;
+		}
+
+		// Hopefully returns a copy of bomb board
+		this.ReturnBombBoard = function()
+		{
+			return BombBoard;
 		}
 
 	}

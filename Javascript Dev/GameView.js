@@ -35,6 +35,23 @@
 			if(object instanceof GameBoard)
 			{
 				this.ClearCanvas();
+
+				// Get the Bomb data
+				var bombBoard = object.ReturnBombBoard();
+
+				for(var i = 0; i < 9; i++)
+				{
+					for(var j = 0; j < 9; j++)
+					{
+						if(bombBoard[i][j] != undefined)
+						{
+							this.draw(bombBoard[i][j].Image, j * MOVESPEED,
+								i * MOVESPEED)
+						}
+					}
+				}
+
+				// Get the GameObject data
 				var board = object.ReturnBoard();
 
 				for(var i = 0; i < 9; i++)
