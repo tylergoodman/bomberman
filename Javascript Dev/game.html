@@ -7,6 +7,7 @@
 	<script src="Player.js" type="text/javascript" ></script>
 	<script src="GameView.js" type="text/javascript" ></script>
 	<script src="GameBoard.js" type="text/javascript" ></script>
+	<script src="Wall.js" type="text/javascript" ></script>
 </head>
 
 <script language="JavaScript" type="text/JavaScript">
@@ -56,6 +57,9 @@ function move(direction)
 	{
 		row += 1;
 	}
+
+	// Update the board
+	gameBoard.update(true, null, null, null);
 
 	// Set bomberman's gameobject row/col to new value
 	gameBoard.Players[0].setCol(col);

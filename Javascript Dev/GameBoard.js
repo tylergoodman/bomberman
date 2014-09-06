@@ -39,6 +39,22 @@
 			return Board[row][col];
 		}
 
+		/*
+			Updates the board
+
+			object : the object or if adding, the string name for the new object
+			row: row for object's new location
+			col: col for object's new location
+
+		*/
+		this.update = function(object, row, col)
+		{
+			if(typeof(object) === 'Wall')
+			{
+				console.log("worked");
+			}
+		}
+
 	}
 /******************************************************************************
 						End of Constructor
