@@ -16,9 +16,8 @@
 ******************************************************************************/
 
 		// Draws any Object at a location
-		this.draw = function(object, x, y) {
-
-		    this.ctx.drawImage(object,x,y);
+		this.draw = function (object, x, y) {
+		    this.ctx.drawImage(object, x, y);
 		}
 
 		// Clears canvas for redrawing
@@ -31,9 +30,25 @@
 
 
 		// Refreshes the view
-		this.Refresh = function()
+		this.Refresh = function(object)
 		{
-			this.ClearCanvas();
+			if(object instanceof GameBoard)
+			{
+				this.ClearCanvas();
+				var board = object.ReturnBoard();
+
+				for(var i = 0; i < 9; i++)
+				{
+					for(var j = 0; j < 9; j++)
+					{
+						if(board[i][j] != undefined)
+						{
+							this.draw(board[i][j].Image, j * MOVESPEED,
+								i * MOVESPEED)
+						}
+					}
+				}
+			}
 		}
 
 /******************************************************************************

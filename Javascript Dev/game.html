@@ -59,18 +59,23 @@ function move(direction)
 	}
 
 	// Update the board
-	gameBoard.update(true, null, null, null);
+	//var wall = new Wall(true, 1, 1);
+
+	//gameBoard.update(wall, null, null);
 
 	// Set bomberman's gameobject row/col to new value
-	gameBoard.Players[0].setCol(col);
-	gameBoard.Players[0].setRow(row);
+	//gameBoard.Players[0].setCol(col);
+	//gameBoard.Players[0].setRow(row);
 
 	// Clear the board
-	gameView.ClearCanvas();
+	//gameView.ClearCanvas();
 
 	// draw bomberman's new image location
-	gameView.draw(gameBoard.Players[0].Image, gameBoard.Players[0].getCol() * MOVESPEED, 
-		gameBoard.Players[0].getRow() * MOVESPEED);
+	//gameView.draw(gameBoard.Players[0].Image, gameBoard.Players[0].getCol() * MOVESPEED, 
+	//	gameBoard.Players[0].getRow() * MOVESPEED);
+	
+	gameBoard.update(gameBoard.Players[0], row, col);
+	gameView.Refresh(gameBoard);
 }
 
 // function returns an object that contains an element's x and y position
@@ -156,7 +161,7 @@ var gameView = new GameView();
 //var bomberman = new Player("Player 1", 1, 1);
 
 // clears canvas
-gameView.ClearCanvas();
+//gameView.ClearCanvas();
 
 /******************************************************************************
 						Set Up Initial Image Loading
@@ -164,7 +169,8 @@ gameView.ClearCanvas();
 
 gameBoard.Players[0].Image.onload = function ()
 {
-	gameView.draw(gameBoard.Players[0].Image, 10,10);
+	//gameView.draw(gameBoard.Players[0].Image, 10,10);
+	gameView.Refresh(gameBoard);
 }
 /******************************************************************************
 						End Initial Image Loading

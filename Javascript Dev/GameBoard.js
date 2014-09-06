@@ -22,21 +22,27 @@
 							 Methods
 ******************************************************************************/
 		// Set object at [row][col]
-		this.Add = function(object, row, col)
+		function Add (object, row, col)
 		{
 			Board[row][col] = object;
 		}
 
 		// Remove object at [row][col]
-		this.Remove = function(row, col)
+		function Remove (row, col)
 		{
-			Board[row][col] = null;
+			Board[row][col] = undefined;
 		}
 
 		// Return object at [row][col]
-		this.getObjectAt = function(row, col)
+		function GetObjectAt(row, col)
 		{
 			return Board[row][col];
+		}
+
+		// Hopefully returns a copy of the board
+		this.ReturnBoard = function()
+		{
+			return Board;
 		}
 
 		/*
@@ -49,9 +55,22 @@
 		*/
 		this.update = function(object, row, col)
 		{
-			if(typeof(object) === 'Wall')
+			if(object instanceof Player)
 			{
-				console.log("worked");
+				// Set the object to the new location
+				Add(object, row, col);
+
+				// Remove the object at the object's previous location
+				Remove(object.getRow(), object.getCol());
+
+				//Update the object data
+				object.setRow(row);
+				object.setCol(col);
+
+			}
+			else if(object instanceof Wall)
+			{
+				console.log(object.getCol());
 			}
 		}
 
