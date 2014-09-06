@@ -6,7 +6,7 @@
 		this.canvas = document.createElement("canvas");
 		this.canvas.setAttribute("id", "myCanvas");
 		this.canvas.setAttribute("width", 800);
-		this.canvas.setAttribute("height", 600);
+		this.canvas.setAttribute("height", 800);
 		this.canvas.style.border = "1px solid #d3d3d3";
 		this.ctx = this.canvas.getContext("2d");
 		document.body.appendChild(this.canvas);

@@ -15,8 +15,9 @@
 		// Array to keep track of players
 		this.Players = [];
 
-		this.Players[0] = new Player("Player 1", 1, 1);
-		Board[1][1] = this.Players[0];
+		this.Players[0] = new Player("Player 1", 0, 0);
+		Board[0][0] = this.Players[0];
+		AddUnbreakableWalls();
 
 /******************************************************************************
 							 Methods
@@ -71,6 +72,23 @@
 			else if(object instanceof Wall)
 			{
 				console.log(object.getCol());
+			}
+		}
+
+		// Adds bricks to the right location
+		function AddUnbreakableWalls()
+		{
+			for(var i = 1; i < 9; i += 2)
+			{
+				for(var j = 1; j < 9; j+=2)
+				{
+					// Create the wall
+					var unbreakWall = new Wall(false, j, i);
+
+					// Add the wall to board
+					Add(unbreakWall, j, i);
+
+				}
 			}
 		}
 

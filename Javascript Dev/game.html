@@ -15,7 +15,7 @@
 /******************************************************************************
 							Constants
 ******************************************************************************/
-var MOVESPEED = 20;
+var MOVESPEED = 88;
 /******************************************************************************
 						End of Constants
 ******************************************************************************/
@@ -74,8 +74,11 @@ function move(direction)
 	//gameView.draw(gameBoard.Players[0].Image, gameBoard.Players[0].getCol() * MOVESPEED, 
 	//	gameBoard.Players[0].getRow() * MOVESPEED);
 	
-	gameBoard.update(gameBoard.Players[0], row, col);
-	gameView.Refresh(gameBoard);
+	if(col < 9 && col >=0 && row < 9 && row >= 0)
+	{
+		gameBoard.update(gameBoard.Players[0], row, col);
+		gameView.Refresh(gameBoard);
+	}
 }
 
 // function returns an object that contains an element's x and y position
