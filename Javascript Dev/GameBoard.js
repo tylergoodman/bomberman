@@ -7,6 +7,7 @@
 		// Setting up Multidimensional Array
 		// Multidimensional arrays are constructed with undef objects
 		var Board = new Array(9);
+		var BombRack = [];
 		for(var i = 0; i < 9; i++)
 		{
 			Board[i] = new Array(9);
@@ -18,9 +19,15 @@
 		this.Players[0] = new Player("Player 1", 0, 0);
 		Board[0][0] = this.Players[0];
 		AddUnbreakableWalls();
+		var Bomb1 =  new Bomb(0,1);
+		Board[0][1] = Bomb1
+		var Bomb2 = new Bomb(0,2);
+		Board[0][2] = Bomb2;
+		BombRack.push(Bomb1);
+		BombRack.push(Bomb2);
 
 /******************************************************************************
-							 Methods
+							Private  Methods
 ******************************************************************************/
 		// Set object at [row][col]
 		function Add (object, row, col)
@@ -40,6 +47,27 @@
 			return Board[row][col];
 		}
 
+		// Adds bricks to the right location
+		function AddUnbreakableWalls()
+		{
+			for(var i = 1; i < 9; i += 2)
+			{
+				for(var j = 1; j < 9; j+=2)
+				{
+					// Create the wall
+					var unbreakWall = new Wall(false, j, i);
+
+					// Add the wall to board
+					Add(unbreakWall, j, i);
+
+				}
+			}
+		}
+
+/******************************************************************************
+							Public  Methods
+******************************************************************************/
+
 		// Hopefully returns a copy of the board
 		this.ReturnBoard = function()
 		{
@@ -58,13 +86,13 @@
 		{
 			if(object instanceof Player)
 			{
-				// Set the object to the new location
+				// Set the player to the new location
 				Add(object, row, col);
 
-				// Remove the object at the object's previous location
+				// Remove the player at the object's previous location
 				Remove(object.getRow(), object.getCol());
 
-				//Update the object data
+				//Update the player data
 				object.setRow(row);
 				object.setCol(col);
 
@@ -72,6 +100,14 @@
 			else if(object instanceof Wall)
 			{
 				console.log(object.getCol());
+			}
+			else if(object instanceof Bomb)
+			{
+				// Bombs should only be added to the board with this method
+				Add(object, row, col);
+
+				// Add bomb to bombrack
+				BombRack.push(object);
 			}
 		}
 
@@ -84,22 +120,36 @@
 				return true;
 		}
 
-		// Adds bricks to the right location
-		function AddUnbreakableWalls()
+
+		// Function to check if bombs are ready to explode
+		this.CheckBombs = function()
 		{
-			for(var i = 1; i < 9; i += 2)
+			// flag to check if something changed
+			var bombExploded = false;
+			for(var i = 0; i < BombRack.length; i++)
 			{
-				for(var j = 1; j < 9; j+=2)
+				if(BombRack[i].isExploding())
 				{
-					// Create the wall
-					var unbreakWall = new Wall(false, j, i);
-
-					// Add the wall to board
-					Add(unbreakWall, j, i);
-
+					Remove(BombRack[i].getCol(), BombRack[i].getRow());
+					BombRack.splice(i,1);
+					bombExploded = true;
+					console.log("Haha");
 				}
 			}
+
+			// Update View
+			if(bombExploded)
+			{
+				gameView.Refresh(gameBoard);
+				bombExploded = false;
+			}
 		}
+
+		this.RunEvents = function()
+		{
+			this.bombCheckInterval = setInterval(this.CheckBombs, 500);
+		}
+
 
 	}
 /******************************************************************************
