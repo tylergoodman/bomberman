@@ -29,6 +29,13 @@
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
 
+
+		// Refreshes the view
+		this.Refresh = function()
+		{
+			this.ClearCanvas();
+		}
+
 /******************************************************************************
 						End of Drawing
 ******************************************************************************/
