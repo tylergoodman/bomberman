@@ -5,9 +5,8 @@
 <head>
 	<script src="GameObject.js" type="text/javascript" ></script>
 	<script src="Player.js" type="text/javascript" ></script>
+	<script src="GameView.js" type="text/javascript" ></script>
 </head>
-<canvas id="myCanvas" width="800" height="600" style="border:1px solid #d3d3d3;">
-Your browser does not support the HTML5 canvas tag.</canvas>
 
 <script language="JavaScript" type="text/JavaScript">
 
@@ -22,33 +21,8 @@ var MOVESPEED = 20;
 /******************************************************************************
 						Initialization / Declarations
 ******************************************************************************/
-var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
-
 /******************************************************************************
 					End of Initialization / Declarations
-******************************************************************************/
-
-/******************************************************************************
-							Drawing
-******************************************************************************/
-
-// Draws bomberman
-function draw(object, x,y) {
-
-    ctx.drawImage(object,x,y);
-}
-
-// function to clear canvas for redrawing
-function ClearCanvas()
-{
-	var canvas = document.getElementById("myCanvas");
-	var ctx = canvas.getContext("2d");
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-/******************************************************************************
-						End of Drawing
 ******************************************************************************/
 
 /******************************************************************************
@@ -84,10 +58,10 @@ function move(direction)
 	bomberman.setRow(row);
 
 	// Clear the board
-	ClearCanvas();
+	gameView.ClearCanvas();
 
 	// draw bomberman's new image location
-	draw(bomberman.Image, bomberman.getCol() * MOVESPEED, 
+	gameView.draw(bomberman.Image, bomberman.getCol() * MOVESPEED, 
 		bomberman.getRow() * MOVESPEED);
 }
 
@@ -163,18 +137,26 @@ window.onload = function() {
 /******************************************************************************
 								Main
 ******************************************************************************/
+// Create View
+var gameView = new GameView();
 
 // Create an image object and sets it as bomberman
 var bomberman = new Player("Player 1", 1, 1);
 
-	// clears canvas
-	ClearCanvas();
+// clears canvas
+gameView.ClearCanvas();
 
+/******************************************************************************
+						Set Up Initial Image Loading
+******************************************************************************/
 
 bomberman.Image.onload = function ()
 {
-	draw(bomberman.Image, 10,10);
+	gameView.draw(bomberman.Image, 10,10);
 }
+/******************************************************************************
+						End Initial Image Loading
+******************************************************************************/
 
 
 /******************************************************************************
