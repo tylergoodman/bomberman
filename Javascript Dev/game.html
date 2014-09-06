@@ -76,8 +76,11 @@ function move(direction)
 	
 	if(col < 9 && col >=0 && row < 9 && row >= 0)
 	{
-		gameBoard.update(gameBoard.Players[0], row, col);
-		gameView.Refresh(gameBoard);
+		if(gameBoard.ValidMove(row, col))
+		{
+			gameBoard.Update(gameBoard.Players[0], row, col);
+			gameView.Refresh(gameBoard);
+		}
 	}
 }
 

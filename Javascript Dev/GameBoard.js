@@ -54,7 +54,7 @@
 			col: col for object's new location
 
 		*/
-		this.update = function(object, row, col)
+		this.Update = function(object, row, col)
 		{
 			if(object instanceof Player)
 			{
@@ -73,6 +73,15 @@
 			{
 				console.log(object.getCol());
 			}
+		}
+
+		// Checks if the row/col is a valid move
+		this.ValidMove = function(row, col)
+		{
+			if(Board[row][col] instanceof Wall)
+				return false;
+			else
+				return true;
 		}
 
 		// Adds bricks to the right location
