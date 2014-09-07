@@ -60,26 +60,24 @@
 			{
 				for(var j = 0; j < 9; j++)
 				{
+					// Create the wall
+					var breakWall = new Wall(true, i, j);
+
+					// Add the wall to board
+					WallLayer.Add(breakWall, i, j);
+
 					if(i % 2 == 1)
 					{
-						// Create the wall
-						var breakWall = new Wall(true, i, j);
-
-						// Add the wall to board
-						WallLayer.Add(breakWall, i, j);
-
 						// extra increment to skip 1 block
+						// on every other row
 						j++;
 					}
-					else
-					{
-						// Create the wall
-						var breakWall = new Wall(true, i, j);
-
-						// Add the wall to board
-						WallLayer.Add(breakWall, i, j);
-					}
-
+				}
+				//first row
+				if(i < 9 && i > 1)
+				{
+					var breakWall = new Wall(true, 0, i+1);
+					WallLayer.Add(breakWall, 0, i+1);
 				}
 			}
 		}
