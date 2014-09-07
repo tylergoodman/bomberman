@@ -4,12 +4,12 @@
 
 <head>
 	<script src="GameObject.js" type="text/javascript" ></script>
-	<script src="Layer.js" type="text/javascript" ></script>
+	<script src="Bomb.js" type="text/javascript" ></script>
 	<script src="Player.js" type="text/javascript" ></script>
 	<script src="GameView.js" type="text/javascript" ></script>
 	<script src="GameBoard.js" type="text/javascript" ></script>
 	<script src="Wall.js" type="text/javascript" ></script>
-	<script src="Bomb.js" type="text/javascript" ></script>
+	<script src="Layer.js" type="text/javascript" ></script>
 </head>
 
 <script language="JavaScript" type="text/JavaScript">
@@ -45,25 +45,27 @@ function move(direction)
 
 	if(direction == "RIGHT")
 	{
-		col += 1;
+		row += 1;
 	}
 	else if(direction == "LEFT")
 	{
-		col -= 1;
+		row -= 1;
 	}
 	else if(direction == "UP")
 	{
-		row -= 1;
+		col -= 1;
 	}
 	else if(direction == "DOWN")
 	{
-		row += 1;
+		col += 1;
 	}
 	
 	if(col < 9 && col >=0 && row < 9 && row >= 0)
 	{
 		if(gameBoard.ValidMove(row, col))
 		{
+			console.log(row);
+			console.log(col);
 			gameBoard.Update(gameBoard.Players[0], row, col);
 			gameView.Refresh(gameBoard);
 		}

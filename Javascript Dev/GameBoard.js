@@ -4,45 +4,33 @@
 ******************************************************************************/
 	function GameBoard()
 	{	
-		// Setting up Multidimensional Array
-		// Multidimensional arrays are constructed with undef objects
-		var Board = new Array(9);
+		// Array to keep all the layers
+		var Layers = [];
+
+		// Create individual layers and add them to array
+		var PlayerLayer = new Layer("Player", 9, Player);
+		Layers.push(PlayerLayer);
 		var BombLayer = new Layer("Bomb", 9, Bomb);
+		Layers.push(BombLayer);
+		var WallLayer = new Layer("Wall", 9, Wall);
+		Layers.push(WallLayer);
+
+		// Array to keep track of all bombs
 		var BombRack = [];
 
-		// Creates multidimensional array for gameobjects (not bombs)
-		for(var i = 0; i < 9; i++)
-		{
-			Board[i] = new Array(9);
-		}
 
 		// Array to keep track of players
 		this.Players = [];
 
 		this.Players[0] = new Player("Player 1", 0, 0);
-		Board[0][0] = this.Players[0];
+		
+		PlayerLayer.Add(this.Players[0]);
+
 		AddUnbreakableWalls();
 
 /******************************************************************************
 							Private  Methods
 ******************************************************************************/
-		// Set object at [row][col]
-		function Add (object, row, col)
-		{
-			Board[row][col] = object;
-		}
-
-		// Remove object at [row][col]
-		function Remove (row, col)
-		{
-			Board[row][col] = undefined;
-		}
-
-		// Return object at [row][col]
-		function GetObjectAt(row, col)
-		{
-			return Board[row][col];
-		}
 
 		// Adds bricks to the right location
 		function AddUnbreakableWalls()
@@ -52,10 +40,10 @@
 				for(var j = 1; j < 9; j+=2)
 				{
 					// Create the wall
-					var unbreakWall = new Wall(false, j, i);
+					var unbreakWall = new Wall(false, i, j);
 
 					// Add the wall to board
-					Add(unbreakWall, j, i);
+					WallLayer.Add(unbreakWall, i, j);
 
 				}
 			}
@@ -77,15 +65,15 @@
 		{
 			if(object instanceof Player)
 			{
-				// Set the player to the new location
-				Add(object, row, col);
-
 				// Remove the player at the object's previous location
-				Remove(object.getRow(), object.getCol());
+				PlayerLayer.Remove(object);
 
 				//Update the player data
 				object.setRow(row);
 				object.setCol(col);
+
+				// Set the player to the new location
+				PlayerLayer.Add(object);
 
 			}
 			else if(object instanceof Wall)
@@ -95,7 +83,7 @@
 			else if(object instanceof Bomb)
 			{
 				// This method should only be able to add bombs and NOT REMOVE them
-				BombLayer.Add(object, row, col);
+				BombLayer.Add(object);
 
 				// Add bomb to bombrack
 				BombRack.push(object);
@@ -105,7 +93,7 @@
 		// Checks if the row/col is a valid move
 		this.ValidMove = function(row, col)
 		{
-			if(Board[row][col] instanceof Wall)
+			if(WallLayer.getObjectAt(row,col) instanceof Wall)
 				return false;
 			else
 				return true;
@@ -121,7 +109,8 @@
 			{
 				if(BombRack[i].isExploding())
 				{
-					BombLayer.Remove(BombRack[i].getCol(), BombRack[i].getRow());
+					console.log("removed");
+					BombLayer.Remove(BombRack[i]);
 					BombRack.splice(i,1);
 					bombExploded = true;
 				}
@@ -162,10 +151,10 @@
 					player.setBombCount(playerBombs - 1);
 
 					// Create the Bomb at player's location
-					var bomb = new Bomb(player.getRow(), player.getCol());
+					var bomb = new Bomb(player.getCol(), player.getRow());
 
 					// Add the bomb to the rack
-					BombLayer.Add(bomb, bomb.getCol(), bomb.getRow());
+					BombLayer.Add(bomb);
 
 					// Add bomb to bombrack
 					BombRack.push(bomb);
@@ -183,16 +172,17 @@
 			this.bombCheckInterval = setInterval(this.CheckBombs, 500);
 		}
 
-		// Hopefully returns a copy of the board
-		this.ReturnBoard = function()
-		{
-			return Board;
-		}
-
 		// Hopefully returns a copy of bomb board
-		this.ReturnBombBoard = function()
+		this.ReturnBoard = function(type)
 		{
-			return BombLayer.returnBoard();
+			for(var i = 0; i < Layers.length; i++)
+			{
+				//console.log(Layers[i].getType());
+				//console.log(type);
+
+				if(Layers[i].getType() == type)
+					return Layers[i].returnBoard();
+			}
 		}
 
 	}

@@ -39,14 +39,14 @@ function Layer (name, size, type) {
 		return Name;
 	}
 
-	// Return the Layer's Size
+	// Return the Layer's board Size
 	this.getSize = function()
 	{
 		return Size;
 	}
 
 	// Returns the type of this class
-	this.Type = function()
+	this.getType = function()
 	{
 		return Type;
 	}
@@ -64,15 +64,17 @@ function Layer (name, size, type) {
 	}
 
 	// Set object at [row][col]
-	this.Add = function (object, row, col)
+	this.Add = function (object)
 	{
-		Board[row][col] = object;
+		if(object instanceof Type)
+			Board[object.getCol()][object.getRow()] = object;
 	}
 
 	// Remove object at [row][col]
-	this.Remove = function(row, col)
+	this.Remove = function(object)
 	{
-		Board[row][col] = undefined;
+		if(object instanceof Type)
+			Board[object.getCol()][object.getRow()] = undefined;
 	}
 
 /******************************************************************************
