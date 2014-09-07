@@ -30,12 +30,13 @@
 		PlayerLayer.Add(this.Players[0]);
 
 		AddUnbreakableWalls();
+		AddBreakableWalls();
 
 /******************************************************************************
 							Private  Methods
 ******************************************************************************/
 
-		// Adds bricks to the right location
+		// Adds unbreakable walls to the right location
 		function AddUnbreakableWalls()
 		{
 			for(var i = 1; i < 9; i += 2)
@@ -47,6 +48,37 @@
 
 					// Add the wall to board
 					WallLayer.Add(unbreakWall, i, j);
+
+				}
+			}
+		}
+
+		// Adds breakable walls to the right location
+		function AddBreakableWalls()
+		{
+			for(var i = 1; i < 9; i++)
+			{
+				for(var j = 0; j < 9; j++)
+				{
+					if(i % 2 == 1)
+					{
+						// Create the wall
+						var breakWall = new Wall(true, i, j);
+
+						// Add the wall to board
+						WallLayer.Add(breakWall, i, j);
+
+						// extra increment to skip 1 block
+						j++;
+					}
+					else
+					{
+						// Create the wall
+						var breakWall = new Wall(true, i, j);
+
+						// Add the wall to board
+						WallLayer.Add(breakWall, i, j);
+					}
 
 				}
 			}
@@ -94,7 +126,9 @@
 		}
 
 		// Checks if the row/col is a valid move
-		this.ValidMove = function(row, col)
+		// Rows are | | | | | | ->
+		// Cols are _ _ _ _ _ _  *down*
+		this.ValidMove = function(col, row)
 		{
 			if(WallLayer.getObjectAt(row,col) instanceof Wall)
 				return false;
@@ -192,6 +226,32 @@
 			{
 				if(Layers[i].getType() == type)
 					return Layers[i];
+			}
+		}
+
+		// remove walls where the bomb exploded
+		this.BombExploded = function(row, col)
+		{
+			for(var i = -1; i <= 1; i += 2)
+			{
+				var wallOne = WallLayer.getObjectAt(col+i, row);
+				var wallTwo = WallLayer.getObjectAt(col, row+i);
+				if(wallOne instanceof Wall)
+				{
+					if(wallOne.getCanBreak() == true)
+					{
+						WallLayer.Remove(wallOne);
+					}	
+					GameView.Refresh(this);
+				}
+				if(wallTwo instanceof Wall)
+				{
+					if(wallTwo.getCanBreak() == true)
+					{
+						WallLayer.Remove(wallTwo);
+					}	
+					GameView.Refresh(this);
+				}
 			}
 		}
 

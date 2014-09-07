@@ -11,7 +11,7 @@ function Player (name, col, row) {
 
 	// Set up Object's properties
 	this.Name = name;
-	this.BombCount = 5;
+	this.BombCount = 20;
 
 
 	// This works too but in a different way that would probably be better explained in person.

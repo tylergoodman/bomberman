@@ -3,43 +3,27 @@
 						Constructor
 ******************************************************************************/
 
-function Bomb (row, col) {
-	var self = this;
-	GameObject.call(this, col, row, "Bomb.jpg", "bomb", '50px', '50px');
+function Wall (breakable, col, row) {
+	if(breakable)
+	{
+		GameObject.call(this, col, row, "wall.jpg", "wall", '50px', '50px');
+	}
+	else
+	{
+		GameObject.call(this, col, row, "wall.jpg", "wall", '50px', '50px');
+	}
 
-	// fuse time
-	var fuse = 3;
+	// Set up Object's properties 
+	this.CanBreak = breakable || false;
 
 /******************************************************************************
 							 Methods
 ******************************************************************************/
 
-	// Returns if Bomb should explode
-	this.isExploding = function()
-	{
-		if(fuse == 0)
-		{
-			clearInterval(bombCheckInterval);
-			// Change image
-			self.setImage("Explosion.jpg");
-
-			// Tell GameBoard to destroy surrounding walls
-			gameBoard.BombExploded(self.getRow(), self.getCol());
-
-			// Create event to remove bomb
-			setTimeout(function() {		
-				gameBoard.ReturnLayer(Bomb).Remove(self);
-				gameView.Refresh(gameBoard);}, 500);
-
-			// update the bomb's explosion image
-			gameView.Refresh(gameBoard);
-		}
-		else 
-			fuse--;
+	// Wall's CanBreak Get
+	this.getCanBreak = function () {
+	return this.CanBreak;
 	}
-
-	// Bombs will explode on their own
-	var bombCheckInterval = setInterval(this.isExploding, 500);
 
 }
 /******************************************************************************
@@ -50,8 +34,8 @@ function Bomb (row, col) {
 							 Inheritance
 ******************************************************************************/
 
-	Bomb.prototype = Object.create(GameObject.prototype);
-	Bomb.prototype.constructor = Bomb;
+	Wall.prototype = Object.create(GameObject.prototype);
+	Wall.prototype.constructor = Wall;
 
 /******************************************************************************
 							End of Inheritance

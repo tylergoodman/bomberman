@@ -4,8 +4,14 @@
 ******************************************************************************/
 
 function Wall (breakable, col, row) {
-
-	GameObject.call(this, col, row, "wall.jpg", "wall", '50px', '50px');
+	if(breakable)
+	{
+		GameObject.call(this, col, row, "breakablewall.jpg", "wall", '50px', '50px');
+	}
+	else
+	{
+		GameObject.call(this, col, row, "unbreakablewall.jpg", "wall", '50px', '50px');
+	}
 
 	// Set up Object's properties 
 	this.CanBreak = breakable || false;

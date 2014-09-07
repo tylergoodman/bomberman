@@ -54,7 +54,10 @@ function Layer (name, size, type) {
 	// Return object at [row][col]
 	this.getObjectAt = function(row, col)
 	{
-		return Board[row][col];
+		if(col < 9 && col >=0 && row < 9 && row >= 0)
+		{
+			return Board[row][col];
+		}
 	}
 
 	// Hopefully returns a copy of the board

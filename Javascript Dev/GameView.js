@@ -88,6 +88,16 @@
 			}
 		}
 
+		var images = [];
+
+		this.preloadImages = function()
+		{
+			for (var i = 0; i < this.preloadImages.arguments.length; i++) {
+				images[i] = new Image()
+				images[i].src = this.preloadImages.arguments[i]
+			}
+		}
+
 /******************************************************************************
 						End of Drawing
 ******************************************************************************/

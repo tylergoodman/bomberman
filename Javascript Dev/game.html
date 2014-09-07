@@ -28,6 +28,7 @@ var MOVESPEED = 88;
 
 var event = false;
 
+
 /******************************************************************************
 					End of Initialization / Declarations
 ******************************************************************************/
@@ -147,9 +148,13 @@ window.onload = function() {
 /******************************************************************************
 								Main
 ******************************************************************************/
+// Preload all images
 
 // Create View
 var gameView = new GameView();
+
+gameView.preloadImages("bomberman.jpg", "breakablewall.jpg",
+	"unbreakablewall.jpg" ,"Bomb.jpg", "Explosion.jpg");
 
 // Create GameBoard
 var gameBoard = new GameBoard(gameView);
@@ -169,6 +174,7 @@ gameBoard.Players[0].Image.onload = function ()
 	//gameView.draw(gameBoard.Players[0].Image, 10,10);
 	gameView.Refresh(gameBoard);
 }
+
 /******************************************************************************
 						End Initial Image Loading
 ******************************************************************************/
