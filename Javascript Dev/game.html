@@ -39,34 +39,36 @@ var event = false;
 
 function move(direction)
 {	
+	if(currentPlayer instanceof Player && gameBoard.IsAlive(currentPlayer))
+	{
+		// find bomberman's row/col
+		var row = gameBoard.Players[0].getRow();
+		var col = gameBoard.Players[0].getCol();
 
-	// find bomberman's row/col
-	var row = gameBoard.Players[0].getRow();
-	var col = gameBoard.Players[0].getCol();
-
-	if(direction == "RIGHT")
-	{
-		row += 1;
-	}
-	else if(direction == "LEFT")
-	{
-		row -= 1;
-	}
-	else if(direction == "UP")
-	{
-		col -= 1;
-	}
-	else if(direction == "DOWN")
-	{
-		col += 1;
-	}
-	
-	if(col < 9 && col >=0 && row < 9 && row >= 0)
-	{
-		if(gameBoard.ValidMove(row, col))
+		if(direction == "RIGHT")
 		{
-			gameBoard.Update(gameBoard.Players[0], row, col);
-			gameView.Refresh(gameBoard);
+			row += 1;
+		}
+		else if(direction == "LEFT")
+		{
+			row -= 1;
+		}
+		else if(direction == "UP")
+		{
+			col -= 1;
+		}
+		else if(direction == "DOWN")
+		{
+			col += 1;
+		}
+		
+		if(col < 9 && col >=0 && row < 9 && row >= 0)
+		{
+			if(gameBoard.ValidMove(row, col))
+			{
+				gameBoard.Update(gameBoard.Players[0], row, col);
+				gameView.Refresh(gameBoard);
+			}
 		}
 	}
 }
@@ -159,11 +161,7 @@ gameView.preloadImages("bomberman.jpg", "breakablewall.jpg",
 // Create GameBoard
 var gameBoard = new GameBoard(gameView);
 
-// Create an image object and sets it as bomberman
-//var bomberman = new Player("Player 1", 1, 1);
-
-// clears canvas
-//gameView.ClearCanvas();
+var currentPlayer = gameBoard.Add(new Player("Player 1", 0, 0));
 
 /******************************************************************************
 						Set Up Initial Image Loading
@@ -171,7 +169,6 @@ var gameBoard = new GameBoard(gameView);
 
 gameBoard.Players[0].Image.onload = function ()
 {
-	//gameView.draw(gameBoard.Players[0].Image, 10,10);
 	gameView.Refresh(gameBoard);
 }
 

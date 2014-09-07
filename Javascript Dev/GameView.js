@@ -45,6 +45,7 @@
 				// Get the Bomb data
 				var bombBoard = object.ReturnBoard(Bomb);
 
+
 				for(var i = 0; i < 9; i++)
 				{
 					for(var j = 0; j < 9; j++)
@@ -93,8 +94,8 @@
 		this.preloadImages = function()
 		{
 			for (var i = 0; i < this.preloadImages.arguments.length; i++) {
-				images[i] = new Image()
-				images[i].src = this.preloadImages.arguments[i]
+				images[i] = new Image();
+				images[i].src = this.preloadImages.arguments[i];
 			}
 		}
 

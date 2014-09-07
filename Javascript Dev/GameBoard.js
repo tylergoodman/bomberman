@@ -18,16 +18,8 @@
 		var WallLayer = new Layer("Wall", 9, Wall);
 		Layers.push(WallLayer);
 
-		// Array to keep track of all bombs
-		//var BombRack = [];
-
-
 		// Array to keep track of players
 		this.Players = [];
-
-		this.Players[0] = new Player("Player 1", 0, 0);
-		
-		PlayerLayer.Add(this.Players[0]);
 
 		AddUnbreakableWalls();
 		AddBreakableWalls();
@@ -85,6 +77,22 @@
 /******************************************************************************
 							Public  Methods
 ******************************************************************************/
+		
+		// Adds a player
+		this.Add = function(object)
+		{
+			if(object instanceof Player)
+			{
+				// Add the player to the Players array
+				this.Players.push(object);
+
+				// Add the player to the player layer
+				PlayerLayer.Add(object);
+
+				// Return the player so it can be assigned
+				return object;
+			}
+		}
 
 		/*
 			Updates the board
@@ -111,15 +119,11 @@
 			}
 			else if(object instanceof Wall)
 			{
-				console.log(object.getCol());
+				// Update walls
 			}
 			else if(object instanceof Bomb)
 			{
-				// This method should only be able to add bombs and NOT REMOVE them
-				BombLayer.Add(object);
-
-				// Add bomb to bombrack
-				//BombRack.push(object);
+				// bombs are added using this.dropBomb()
 			}
 		}
 
@@ -133,30 +137,6 @@
 			else
 				return true;
 		}
-
-		/*
-		// Function to check if bombs are ready to explode
-		this.CheckBombs = function()
-		{
-			// flag to check if something changed
-			var bombExploded = false;
-			for(var i = 0; i < BombRack.length; i++)
-			{
-				if(BombRack[i].isExploding())
-				{
-					BombLayer.Remove(BombRack[i]);
-					BombRack.splice(i,1);
-					bombExploded = true;
-				}
-			}
-
-			// Update View
-			if(bombExploded)
-			{
-				GameView.Refresh(gameBoard);
-			}
-		}
-		*/
 
 		// checks if the user can drop a bomb and drops it if possible
 		this.dropBomb = function(playerID)
@@ -190,9 +170,6 @@
 
 					// Add the bomb to the rack
 					BombLayer.Add(bomb);
-
-					// Add bomb to bombrack
-					//BombRack.push(bomb);
 
 					// Refresh View
 					GameView.Refresh(this);
@@ -254,18 +231,58 @@
 					}	
 					GameView.Refresh(this);
 				}
-
 				if(playerLocOne instanceof Player)
-					PlayerLayer.Remove(playerLocOne);
+				{
+					this.PlayerDied(playerLocOne);
+				}
 
 				if(playerLocTwo instanceof Player)
-					PlayerLayer.Remove(playerLocTwo);
+				{
+					this.PlayerDied(playerLocTwo);
+				}
 			}
 
 			// Special case when player is on the bomb
 			var player = PlayerLayer.getObjectAt(col, row);
 			if(player instanceof Player)
-				PlayerLayer.Remove(player);
+			{
+				this.PlayerDied(player);
+			}
+		}
+
+		// Removes the appropriate player from player array
+		this.PlayerDied = function(object)
+		{
+			if(object instanceof Player)
+			{
+				for(var i = 0; i < this.Players.length; i++)
+				{
+					if(object.getName() === this.Players[i].getName())
+					{
+						this.Players.splice(i,1);
+						PlayerLayer.Remove(object);
+					}
+				}
+			}
+		}
+
+		// Checks if a player is still alive
+		// Returns true if player is still in Players array
+		this.IsAlive = function(object)
+		{
+			if(object instanceof Player)
+			{
+				for(var i = 0; i < this.Players.length; i++)
+				{
+					if(object.getName() === this.Players[i].getName())
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+			console.log("Invalid check");
 		}
 
 	}
