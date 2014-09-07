@@ -7,20 +7,13 @@
 		// Setting up Multidimensional Array
 		// Multidimensional arrays are constructed with undef objects
 		var Board = new Array(9);
-		var BombBoard = new Array(9);
+		var BombLayer = new Layer("Bomb", 9, Bomb);
 		var BombRack = [];
 
 		// Creates multidimensional array for gameobjects (not bombs)
 		for(var i = 0; i < 9; i++)
 		{
 			Board[i] = new Array(9);
-		}
-
-		// Create a separate board for bombs because they can be in same 
-		// location as players
-		for(var i = 0; i < 9; i++)
-		{
-			BombBoard[i] = new Array(9);
 		}
 
 		// Array to keep track of players
@@ -34,25 +27,15 @@
 							Private  Methods
 ******************************************************************************/
 		// Set object at [row][col]
-		function Add (object, isBomb, row, col)
+		function Add (object, row, col)
 		{
-			if(isBomb)
-			{
-				BombBoard[row][col] = object;
-			}
-			else if (isBomb == false)
-			{
-				Board[row][col] = object;
-			}
+			Board[row][col] = object;
 		}
 
 		// Remove object at [row][col]
-		function Remove (isBomb, row, col)
+		function Remove (row, col)
 		{
-			if(isBomb)
-				BombBoard[row][col] = undefined;
-			else if(isBomb == false)
-				Board[row][col] = undefined;
+			Board[row][col] = undefined;
 		}
 
 		// Return object at [row][col]
@@ -72,7 +55,7 @@
 					var unbreakWall = new Wall(false, j, i);
 
 					// Add the wall to board
-					Add(unbreakWall, false, j, i);
+					Add(unbreakWall, j, i);
 
 				}
 			}
@@ -95,10 +78,10 @@
 			if(object instanceof Player)
 			{
 				// Set the player to the new location
-				Add(object, false, row, col);
+				Add(object, row, col);
 
 				// Remove the player at the object's previous location
-				Remove(false, object.getRow(), object.getCol());
+				Remove(object.getRow(), object.getCol());
 
 				//Update the player data
 				object.setRow(row);
@@ -112,7 +95,7 @@
 			else if(object instanceof Bomb)
 			{
 				// This method should only be able to add bombs and NOT REMOVE them
-				Add(object, true, row, col);
+				BombLayer.Add(object, row, col);
 
 				// Add bomb to bombrack
 				BombRack.push(object);
@@ -138,7 +121,7 @@
 			{
 				if(BombRack[i].isExploding())
 				{
-					Remove(true, BombRack[i].getCol(), BombRack[i].getRow());
+					BombLayer.Remove(BombRack[i].getCol(), BombRack[i].getRow());
 					BombRack.splice(i,1);
 					bombExploded = true;
 				}
@@ -182,7 +165,7 @@
 					var bomb = new Bomb(player.getRow(), player.getCol());
 
 					// Add the bomb to the rack
-					Add(bomb, true, bomb.getCol(), bomb.getRow());
+					BombLayer.Add(bomb, bomb.getCol(), bomb.getRow());
 
 					// Add bomb to bombrack
 					BombRack.push(bomb);
@@ -209,7 +192,7 @@
 		// Hopefully returns a copy of bomb board
 		this.ReturnBombBoard = function()
 		{
-			return BombBoard;
+			return BombLayer.returnBoard();
 		}
 
 	}
