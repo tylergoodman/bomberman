@@ -2,8 +2,11 @@
 /******************************************************************************
 						Constructor
 ******************************************************************************/
-	function GameBoard()
+	function GameBoard(gameView)
 	{	
+		// Add the layer to the board
+		var GameView = gameView;
+
 		// Array to keep all the layers
 		var Layers = [];
 
@@ -16,7 +19,7 @@
 		Layers.push(WallLayer);
 
 		// Array to keep track of all bombs
-		var BombRack = [];
+		//var BombRack = [];
 
 
 		// Array to keep track of players
@@ -86,7 +89,7 @@
 				BombLayer.Add(object);
 
 				// Add bomb to bombrack
-				BombRack.push(object);
+				//BombRack.push(object);
 			}
 		}
 
@@ -99,7 +102,7 @@
 				return true;
 		}
 
-
+		/*
 		// Function to check if bombs are ready to explode
 		this.CheckBombs = function()
 		{
@@ -109,7 +112,6 @@
 			{
 				if(BombRack[i].isExploding())
 				{
-					console.log("removed");
 					BombLayer.Remove(BombRack[i]);
 					BombRack.splice(i,1);
 					bombExploded = true;
@@ -119,9 +121,10 @@
 			// Update View
 			if(bombExploded)
 			{
-				gameView.Refresh(gameBoard);
+				GameView.Refresh(gameBoard);
 			}
 		}
+		*/
 
 		// checks if the user can drop a bomb and drops it if possible
 		this.dropBomb = function(playerID)
@@ -151,16 +154,16 @@
 					player.setBombCount(playerBombs - 1);
 
 					// Create the Bomb at player's location
-					var bomb = new Bomb(player.getCol(), player.getRow());
+					var bomb = new Bomb(player.getRow(), player.getCol());
 
 					// Add the bomb to the rack
 					BombLayer.Add(bomb);
 
 					// Add bomb to bombrack
-					BombRack.push(bomb);
+					//BombRack.push(bomb);
 
 					// Refresh View
-					gameView.Refresh(this);
+					GameView.Refresh(this);
 				}
 			}
 		}
@@ -177,11 +180,18 @@
 		{
 			for(var i = 0; i < Layers.length; i++)
 			{
-				//console.log(Layers[i].getType());
-				//console.log(type);
-
 				if(Layers[i].getType() == type)
 					return Layers[i].returnBoard();
+			}
+		}
+
+		// Returns the layer of that object type
+		this.ReturnLayer = function(type)
+		{
+			for(var i = 0; i < Layers.length; i++)
+			{
+				if(Layers[i].getType() == type)
+					return Layers[i];
 			}
 		}
 

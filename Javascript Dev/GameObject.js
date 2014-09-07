@@ -7,6 +7,9 @@
 		// Member variables
 		this.Col = col; // x - position
 		this.Row = row; // y - position
+		this.Id = id;
+		this.ImageWidth = imageWidth;
+		this.ImageHeight = imageHeight;
 		this.Image =  new Image();
 		this.Image.src = imageSource;
 		this.Image.setAttribute("id", id);
@@ -39,6 +42,15 @@
 
 	GameObject.prototype.setRow = function (value) {
 		this.Row = value;
+	}
+
+	GameObject.prototype.setImage = function(imageSource)
+	{
+		this.Image = new Image();
+		this.Image.src = imageSource;
+		this.Image.setAttribute("id", this.Id);
+		this.Image.setAttribute("width", this.ImageWidth);
+		this.Image.setAttribute("height", this.ImageHeight);
 	}
 
 /******************************************************************************

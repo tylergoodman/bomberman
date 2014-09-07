@@ -64,8 +64,6 @@ function move(direction)
 	{
 		if(gameBoard.ValidMove(row, col))
 		{
-			console.log(row);
-			console.log(col);
 			gameBoard.Update(gameBoard.Players[0], row, col);
 			gameView.Refresh(gameBoard);
 		}
@@ -150,11 +148,11 @@ window.onload = function() {
 								Main
 ******************************************************************************/
 
-// Create GameBoard
-var gameBoard = new GameBoard();
-
 // Create View
 var gameView = new GameView();
+
+// Create GameBoard
+var gameBoard = new GameBoard(gameView);
 
 // Create an image object and sets it as bomberman
 //var bomberman = new Player("Player 1", 1, 1);
@@ -180,7 +178,7 @@ gameBoard.Players[0].Image.onload = function ()
 ******************************************************************************/
 
 // Run all the GameBoard Time Events
-gameBoard.RunEvents();
+//gameBoard.RunEvents();
 
 </script>
 
