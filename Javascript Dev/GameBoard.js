@@ -234,6 +234,10 @@
 			{
 				var wallOne = WallLayer.getObjectAt(col+i, row);
 				var wallTwo = WallLayer.getObjectAt(col, row+i);
+
+				var playerLocOne = PlayerLayer.getObjectAt(col+i, row);
+				var playerLocTwo = PlayerLayer.getObjectAt(col,row+i);
+
 				if(wallOne instanceof Wall)
 				{
 					if(wallOne.getCanBreak() == true)
@@ -250,7 +254,18 @@
 					}	
 					GameView.Refresh(this);
 				}
+
+				if(playerLocOne instanceof Player)
+					PlayerLayer.Remove(playerLocOne);
+
+				if(playerLocTwo instanceof Player)
+					PlayerLayer.Remove(playerLocTwo);
 			}
+
+			// Special case when player is on the bomb
+			var player = PlayerLayer.getObjectAt(col, row);
+			if(player instanceof Player)
+				PlayerLayer.Remove(player);
 		}
 
 	}
