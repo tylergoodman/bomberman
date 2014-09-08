@@ -45,6 +45,8 @@
 				// Get the Bomb data
 				var bombBoard = object.ReturnBoard(Bomb);
 
+				// Get the Explosion data
+				var explosionBoard = object.ReturnBoard(Explosion);
 
 				for(var i = 0; i < 9; i++)
 				{
@@ -53,6 +55,12 @@
 						if(bombBoard[i][j] != undefined)
 						{
 							this.draw(bombBoard[i][j].Image, j * MOVESPEED,
+								i * MOVESPEED);
+						}
+
+						if(explosionBoard[i][j] != undefined)
+						{
+							this.draw(explosionBoard[i][j].Image, j * MOVESPEED,
 								i * MOVESPEED);
 						}
 

@@ -17,6 +17,8 @@
 		Layers.push(BombLayer);
 		var WallLayer = new Layer("Wall", 9, Wall);
 		Layers.push(WallLayer);
+		var ExplosionLayer = new Layer("Explosion", 9, Explosion);
+		Layers.push(ExplosionLayer);
 
 		// Array to keep track of players
 		this.Players = [];
@@ -221,7 +223,6 @@
 					{
 						WallLayer.Remove(wallOne);
 					}	
-					GameView.Refresh(this);
 				}
 				if(wallTwo instanceof Wall)
 				{
@@ -229,8 +230,8 @@
 					{
 						WallLayer.Remove(wallTwo);
 					}	
-					GameView.Refresh(this);
 				}
+
 				if(playerLocOne instanceof Player)
 				{
 					this.PlayerDied(playerLocOne);
@@ -242,12 +243,18 @@
 				}
 			}
 
+			// Adds explosions
+			this.Explosion(row,col);
+
 			// Special case when player is on the bomb
 			var player = PlayerLayer.getObjectAt(col, row);
 			if(player instanceof Player)
 			{
 				this.PlayerDied(player);
 			}
+
+			// Update the view
+			GameView.Refresh(this);
 		}
 
 		// Removes the appropriate player from player array
@@ -283,6 +290,43 @@
 				return false;
 			}
 			console.log("Invalid check");
+		}
+
+		// Adds explosion images
+		this.Explosion = function(col, row)
+		{
+
+			// Array to store explosion - fire area
+			var explosions = [];
+
+			for(var i = -1; i <= 1; i += 2)
+			{
+				var explodeOne = ExplosionLayer.getObjectAt(col+i, row);
+				var explodeTwo = ExplosionLayer.getObjectAt(col, row+i);
+
+
+				if(explodeOne == undefined && col+i >= 0 && col+i < 9)
+				{
+					var explosion = new Explosion(col+i, row);
+					ExplosionLayer.Add(explosion);
+					explosions.push(explosion);
+				}
+				if(explodeTwo == undefined && row+i >= 0 && row+i < 9)
+				{
+					var explosion = new Explosion(col, row+i);
+					ExplosionLayer.Add(explosion);
+					explosions.push(explosion);
+				}
+			}
+			
+			// Create event to remove explosion image after half a second
+			setTimeout(function() {		
+				for(var i = 0; i < explosions.length; i++)
+				{
+					gameBoard.ReturnLayer(Explosion).Remove(explosions[i]);
+				}
+				gameView.Refresh(this);}, 500);
+
 		}
 
 	}
