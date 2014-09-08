@@ -36,8 +36,15 @@
 			{
 				this.ClearCanvas();
 
+				// Get the Player data
+				var playerBoard = object.ReturnBoard(Player);
+
+				// Get the Wall data
+				var wallBoard = object.ReturnBoard(Wall);
+
 				// Get the Bomb data
-				var bombBoard = object.ReturnBombBoard();
+				var bombBoard = object.ReturnBoard(Bomb);
+
 
 				for(var i = 0; i < 9; i++)
 				{
@@ -46,11 +53,24 @@
 						if(bombBoard[i][j] != undefined)
 						{
 							this.draw(bombBoard[i][j].Image, j * MOVESPEED,
-								i * MOVESPEED)
+								i * MOVESPEED);
+						}
+
+						if(wallBoard[i][j] != undefined)
+						{
+							this.draw(wallBoard[i][j].Image, j * MOVESPEED,
+								i * MOVESPEED);
+						}
+
+						if(playerBoard[i][j] != undefined)
+						{
+							this.draw(playerBoard[i][j].Image, j * MOVESPEED,
+								i * MOVESPEED);
 						}
 					}
 				}
 
+				/*
 				// Get the GameObject data
 				var board = object.ReturnBoard();
 
@@ -65,6 +85,17 @@
 						}
 					}
 				}
+				*/
+			}
+		}
+
+		var images = [];
+
+		this.preloadImages = function()
+		{
+			for (var i = 0; i < this.preloadImages.arguments.length; i++) {
+				images[i] = new Image();
+				images[i].src = this.preloadImages.arguments[i];
 			}
 		}
 

@@ -4,11 +4,12 @@
 
 <head>
 	<script src="GameObject.js" type="text/javascript" ></script>
+	<script src="Bomb.js" type="text/javascript" ></script>
 	<script src="Player.js" type="text/javascript" ></script>
 	<script src="GameView.js" type="text/javascript" ></script>
 	<script src="GameBoard.js" type="text/javascript" ></script>
 	<script src="Wall.js" type="text/javascript" ></script>
-	<script src="Bomb.js" type="text/javascript" ></script>
+	<script src="Layer.js" type="text/javascript" ></script>
 </head>
 
 <script language="JavaScript" type="text/JavaScript">
@@ -24,7 +25,6 @@ var MOVESPEED = 88;
 /******************************************************************************
 						Initialization / Declarations
 ******************************************************************************/
-
 /******************************************************************************
 					End of Initialization / Declarations
 ******************************************************************************/
@@ -35,34 +35,36 @@ var MOVESPEED = 88;
 
 function move(direction)
 {	
+	if(currentPlayer instanceof Player && gameBoard.IsAlive(currentPlayer))
+	{
+		// find bomberman's row/col
+		var row = gameBoard.Players[0].getRow();
+		var col = gameBoard.Players[0].getCol();
 
-	// find bomberman's row/col
-	var row = gameBoard.Players[0].getRow();
-	var col = gameBoard.Players[0].getCol();
-
-	if(direction == "RIGHT")
-	{
-		col += 1;
-	}
-	else if(direction == "LEFT")
-	{
-		col -= 1;
-	}
-	else if(direction == "UP")
-	{
-		row -= 1;
-	}
-	else if(direction == "DOWN")
-	{
-		row += 1;
-	}
-	
-	if(col < 9 && col >=0 && row < 9 && row >= 0)
-	{
-		if(gameBoard.ValidMove(row, col))
+		if(direction == "RIGHT")
 		{
-			gameBoard.Update(gameBoard.Players[0], row, col);
-			gameView.Refresh(gameBoard);
+			row += 1;
+		}
+		else if(direction == "LEFT")
+		{
+			row -= 1;
+		}
+		else if(direction == "UP")
+		{
+			col -= 1;
+		}
+		else if(direction == "DOWN")
+		{
+			col += 1;
+		}
+		
+		if(col < 9 && col >=0 && row < 9 && row >= 0)
+		{
+			if(gameBoard.ValidMove(row, col))
+			{
+				gameBoard.Update(gameBoard.Players[0], row, col);
+				gameView.Refresh(gameBoard);
+			}
 		}
 	}
 }
@@ -144,18 +146,18 @@ window.onload = function() {
 /******************************************************************************
 								Main
 ******************************************************************************/
-
-// Create GameBoard
-var gameBoard = new GameBoard();
+// Preload all images
 
 // Create View
 var gameView = new GameView();
 
-// Create an image object and sets it as bomberman
-//var bomberman = new Player("Player 1", 1, 1);
+gameView.preloadImages("bomberman.jpg", "breakablewall.jpg",
+	"unbreakablewall.jpg" ,"Bomb.jpg", "Explosion.jpg");
 
-// clears canvas
-//gameView.ClearCanvas();
+// Create GameBoard
+var gameBoard = new GameBoard(gameView);
+
+var currentPlayer = gameBoard.Add(new Player("Player 1", 0, 0));
 
 /******************************************************************************
 						Set Up Initial Image Loading
@@ -163,9 +165,9 @@ var gameView = new GameView();
 
 gameBoard.Players[0].Image.onload = function ()
 {
-	//gameView.draw(gameBoard.Players[0].Image, 10,10);
 	gameView.Refresh(gameBoard);
 }
+
 /******************************************************************************
 						End Initial Image Loading
 ******************************************************************************/
@@ -175,7 +177,7 @@ gameBoard.Players[0].Image.onload = function ()
 ******************************************************************************/
 
 // Run all the GameBoard Time Events
-gameBoard.RunEvents();
+//gameBoard.RunEvents();
 
 </script>
 

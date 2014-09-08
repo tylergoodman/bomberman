@@ -2,66 +2,33 @@
 /******************************************************************************
 						Constructor
 ******************************************************************************/
-	function GameBoard()
+	function GameBoard(gameView)
 	{	
-		// Setting up Multidimensional Array
-		// Multidimensional arrays are constructed with undef objects
-		var Board = new Array(9);
-		var BombBoard = new Array(9);
-		var BombRack = [];
+		// Add the layer to the board
+		var GameView = gameView;
 
-		// Creates multidimensional array for gameobjects (not bombs)
-		for(var i = 0; i < 9; i++)
-		{
-			Board[i] = new Array(9);
-		}
+		// Array to keep all the layers
+		var Layers = [];
 
-		// Create a separate board for bombs because they can be in same 
-		// location as players
-		for(var i = 0; i < 9; i++)
-		{
-			BombBoard[i] = new Array(9);
-		}
+		// Create individual layers and add them to array
+		var PlayerLayer = new Layer("Player", 9, Player);
+		Layers.push(PlayerLayer);
+		var BombLayer = new Layer("Bomb", 9, Bomb);
+		Layers.push(BombLayer);
+		var WallLayer = new Layer("Wall", 9, Wall);
+		Layers.push(WallLayer);
 
 		// Array to keep track of players
 		this.Players = [];
 
-		this.Players[0] = new Player("Player 1", 0, 0);
-		Board[0][0] = this.Players[0];
 		AddUnbreakableWalls();
+		AddBreakableWalls();
 
 /******************************************************************************
 							Private  Methods
 ******************************************************************************/
-		// Set object at [row][col]
-		function Add (object, isBomb, row, col)
-		{
-			if(isBomb)
-			{
-				BombBoard[row][col] = object;
-			}
-			else if (isBomb == false)
-			{
-				Board[row][col] = object;
-			}
-		}
 
-		// Remove object at [row][col]
-		function Remove (isBomb, row, col)
-		{
-			if(isBomb)
-				BombBoard[row][col] = undefined;
-			else if(isBomb == false)
-				Board[row][col] = undefined;
-		}
-
-		// Return object at [row][col]
-		function GetObjectAt(row, col)
-		{
-			return Board[row][col];
-		}
-
-		// Adds bricks to the right location
+		// Adds unbreakable walls to the right location
 		function AddUnbreakableWalls()
 		{
 			for(var i = 1; i < 9; i += 2)
@@ -69,11 +36,40 @@
 				for(var j = 1; j < 9; j+=2)
 				{
 					// Create the wall
-					var unbreakWall = new Wall(false, j, i);
+					var unbreakWall = new Wall(false, i, j);
 
 					// Add the wall to board
-					Add(unbreakWall, false, j, i);
+					WallLayer.Add(unbreakWall, i, j);
 
+				}
+			}
+		}
+
+		// Adds breakable walls to the right location
+		function AddBreakableWalls()
+		{
+			for(var i = 1; i < 9; i++)
+			{
+				for(var j = 0; j < 9; j++)
+				{
+					// Create the wall
+					var breakWall = new Wall(true, i, j);
+
+					// Add the wall to board
+					WallLayer.Add(breakWall, i, j);
+
+					if(i % 2 == 1)
+					{
+						// extra increment to skip 1 block
+						// on every other row
+						j++;
+					}
+				}
+				//first row
+				if(i < 9 && i > 1)
+				{
+					var breakWall = new Wall(true, 0, i+1);
+					WallLayer.Add(breakWall, 0, i+1);
 				}
 			}
 		}
@@ -81,6 +77,22 @@
 /******************************************************************************
 							Public  Methods
 ******************************************************************************/
+		
+		// Adds a player
+		this.Add = function(object)
+		{
+			if(object instanceof Player)
+			{
+				// Add the player to the Players array
+				this.Players.push(object);
+
+				// Add the player to the player layer
+				PlayerLayer.Add(object);
+
+				// Return the player so it can be assigned
+				return object;
+			}
+		}
 
 		/*
 			Updates the board
@@ -94,61 +106,36 @@
 		{
 			if(object instanceof Player)
 			{
-				// Set the player to the new location
-				Add(object, false, row, col);
-
 				// Remove the player at the object's previous location
-				Remove(false, object.getRow(), object.getCol());
+				PlayerLayer.Remove(object);
 
 				//Update the player data
 				object.setRow(row);
 				object.setCol(col);
 
+				// Set the player to the new location
+				PlayerLayer.Add(object);
+
 			}
 			else if(object instanceof Wall)
 			{
-				console.log(object.getCol());
+				// Update walls
 			}
 			else if(object instanceof Bomb)
 			{
-				// This method should only be able to add bombs and NOT REMOVE them
-				Add(object, true, row, col);
-
-				// Add bomb to bombrack
-				BombRack.push(object);
+				// bombs are added using this.dropBomb()
 			}
 		}
 
 		// Checks if the row/col is a valid move
-		this.ValidMove = function(row, col)
+		// Rows are | | | | | | ->
+		// Cols are _ _ _ _ _ _  *down*
+		this.ValidMove = function(col, row)
 		{
-			if(Board[row][col] instanceof Wall)
+			if(WallLayer.getObjectAt(row,col) instanceof Wall)
 				return false;
 			else
 				return true;
-		}
-
-
-		// Function to check if bombs are ready to explode
-		this.CheckBombs = function()
-		{
-			// flag to check if something changed
-			var bombExploded = false;
-			for(var i = 0; i < BombRack.length; i++)
-			{
-				if(BombRack[i].isExploding())
-				{
-					Remove(true, BombRack[i].getCol(), BombRack[i].getRow());
-					BombRack.splice(i,1);
-					bombExploded = true;
-				}
-			}
-
-			// Update View
-			if(bombExploded)
-			{
-				gameView.Refresh(gameBoard);
-			}
 		}
 
 		// checks if the user can drop a bomb and drops it if possible
@@ -182,13 +169,10 @@
 					var bomb = new Bomb(player.getRow(), player.getCol());
 
 					// Add the bomb to the rack
-					Add(bomb, true, bomb.getCol(), bomb.getRow());
-
-					// Add bomb to bombrack
-					BombRack.push(bomb);
+					BombLayer.Add(bomb);
 
 					// Refresh View
-					gameView.Refresh(this);
+					GameView.Refresh(this);
 				}
 			}
 		}
@@ -200,16 +184,105 @@
 			this.bombCheckInterval = setInterval(this.CheckBombs, 500);
 		}
 
-		// Hopefully returns a copy of the board
-		this.ReturnBoard = function()
+		// Hopefully returns a copy of bomb board
+		this.ReturnBoard = function(type)
 		{
-			return Board;
+			for(var i = 0; i < Layers.length; i++)
+			{
+				if(Layers[i].getType() == type)
+					return Layers[i].returnBoard();
+			}
 		}
 
-		// Hopefully returns a copy of bomb board
-		this.ReturnBombBoard = function()
+		// Returns the layer of that object type
+		this.ReturnLayer = function(type)
 		{
-			return BombBoard;
+			for(var i = 0; i < Layers.length; i++)
+			{
+				if(Layers[i].getType() == type)
+					return Layers[i];
+			}
+		}
+
+		// remove walls where the bomb exploded
+		this.BombExploded = function(row, col)
+		{
+			for(var i = -1; i <= 1; i += 2)
+			{
+				var wallOne = WallLayer.getObjectAt(col+i, row);
+				var wallTwo = WallLayer.getObjectAt(col, row+i);
+
+				var playerLocOne = PlayerLayer.getObjectAt(col+i, row);
+				var playerLocTwo = PlayerLayer.getObjectAt(col,row+i);
+
+				if(wallOne instanceof Wall)
+				{
+					if(wallOne.getCanBreak() == true)
+					{
+						WallLayer.Remove(wallOne);
+					}	
+					GameView.Refresh(this);
+				}
+				if(wallTwo instanceof Wall)
+				{
+					if(wallTwo.getCanBreak() == true)
+					{
+						WallLayer.Remove(wallTwo);
+					}	
+					GameView.Refresh(this);
+				}
+				if(playerLocOne instanceof Player)
+				{
+					this.PlayerDied(playerLocOne);
+				}
+
+				if(playerLocTwo instanceof Player)
+				{
+					this.PlayerDied(playerLocTwo);
+				}
+			}
+
+			// Special case when player is on the bomb
+			var player = PlayerLayer.getObjectAt(col, row);
+			if(player instanceof Player)
+			{
+				this.PlayerDied(player);
+			}
+		}
+
+		// Removes the appropriate player from player array
+		this.PlayerDied = function(object)
+		{
+			if(object instanceof Player)
+			{
+				for(var i = 0; i < this.Players.length; i++)
+				{
+					if(object.getName() === this.Players[i].getName())
+					{
+						this.Players.splice(i,1);
+						PlayerLayer.Remove(object);
+					}
+				}
+			}
+		}
+
+		// Checks if a player is still alive
+		// Returns true if player is still in Players array
+		this.IsAlive = function(object)
+		{
+			if(object instanceof Player)
+			{
+				for(var i = 0; i < this.Players.length; i++)
+				{
+					if(object.getName() === this.Players[i].getName())
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+			console.log("Invalid check");
 		}
 
 	}
