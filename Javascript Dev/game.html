@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<head>
+	<script src="GameObject.js" type="text/javascript" ></script>
+	<script src="Bomb.js" type="text/javascript" ></script>
+	<script src="Explosion.js" type="text/javascript" ></script>
+	<script src="Player.js" type="text/javascript" ></script>
+	<script src="GameView.js" type="text/javascript" ></script>
+	<script src="GameBoard.js" type="text/javascript" ></script>
+	<script src="Wall.js" type="text/javascript" ></script>
+	<script src="Layer.js" type="text/javascript" ></script>
+</head>
+
+<script language="JavaScript" type="text/JavaScript">
+
+/******************************************************************************
+							Constants
+******************************************************************************/
+var MOVESPEED = 88;
+/******************************************************************************
+						End of Constants
+******************************************************************************/
+
+/******************************************************************************
+						Initialization / Declarations
+******************************************************************************/
+/******************************************************************************
+					End of Initialization / Declarations
+******************************************************************************/
+
+/******************************************************************************
+							Game Functions
+******************************************************************************/
+
+function move(direction)
+{	
+	if(currentPlayer instanceof Player && gameBoard.IsAlive(currentPlayer))
+	{
+		// find bomberman's row/col
+		var row = gameBoard.Players[0].getRow();
+		var col = gameBoard.Players[0].getCol();
+
+		if(direction == "RIGHT")
+		{
+			row += 1;
+		}
+		else if(direction == "LEFT")
+		{
+			row -= 1;
+		}
+		else if(direction == "UP")
+		{
+			col -= 1;
+		}
+		else if(direction == "DOWN")
+		{
+			col += 1;
+		}
+		
+		if(col < 9 && col >=0 && row < 9 && row >= 0)
+		{
+			if(gameBoard.ValidMove(row, col))
+			{
+				gameBoard.Update(gameBoard.Players[0], row, col);
+				gameView.Refresh(gameBoard);
+			}
+		}
+	}
+}
+
+// function returns an object that contains an element's x and y position
+// Ex: var temp = getPosition("element");
+//	   var width = temp.x;
+//	   var height = temp.y;
+//
+//	DONT NEED BUT KEEPING JUST IN CASE
+function getPosition(element) {
+    var xPosition = 0;
+    var yPosition = 0;
+  
+    while(element) {
+        xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+        yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+        element = element.offsetParent;
+    }
+    return { x: xPosition, y: yPosition };
+}
+
+/******************************************************************************
+						End of Game Functions
+******************************************************************************/
+
+/******************************************************************************
+							Events/Event Handlers
+******************************************************************************/
+
+// Event when a key is hit: converts the key to a string
+function showKey(e) {
+	var key;
+	if (window.event) {
+		key = window.event.keyCode;
+	} 
+	else {
+		key = e.keyCode;
+	}
+
+	key = String.fromCharCode(key);
+	ProcessKey(key);
+}
+
+// Processes a key press event
+function ProcessKey(key)
+{
+	if (key == "A")
+	{
+		move("LEFT");
+	}
+	else if(key == "D")
+	{
+		move("RIGHT");
+	}
+	else if(key == "W")
+	{
+		move("UP");
+	}
+	else if(key == "S")
+	{
+		move("DOWN");
+	}
+	else if(key == " ")
+	{
+		gameBoard.dropBomb("Player 1");
+	}
+}
+
+// Sets up the keyboard event listener
+window.onload = function() {
+	document.onkeydown = showKey;
+}
+
+/******************************************************************************
+					End of Events/Event Handlers
+******************************************************************************/
+
+/******************************************************************************
+								Main
+******************************************************************************/
+// Preload all images
+
+// Create View
+var gameView = new GameView();
+
+gameView.preloadImages("bomberman.jpg", "breakablewall.jpg",
+	"unbreakablewall.jpg" ,"Bomb.jpg", "Explosion.jpg", "Fire.jpg");
+
+// Create GameBoard
+var gameBoard = new GameBoard(gameView);
+
+var currentPlayer = gameBoard.Add(new Player("Player 1", 0, 0));
+
+/******************************************************************************
+						Set Up Initial Image Loading
+******************************************************************************/
+
+gameBoard.Players[0].Image.onload = function ()
+{
+	gameView.Refresh(gameBoard);
+}
+
+/******************************************************************************
+						End Initial Image Loading
+******************************************************************************/
+
+/******************************************************************************
+							End of Main
+******************************************************************************/
+
+// Run all the GameBoard Time Events
+//gameBoard.RunEvents();
+
+</script>
+
+
+</body>
+</html>
