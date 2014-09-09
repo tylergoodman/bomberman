@@ -8,6 +8,7 @@ var http = require('http'),
 	peer = require('peer').PeerServer,
 	morgan = require('morgan'),
 	body_parser = require('body-parser'),
+	serve_index = require('serve-index'),
 	express = require('express'),
 	app = express();
 
@@ -18,7 +19,10 @@ app.use(body_parser.json());
 app.use(body_parser.urlencoded({ extended: true }));
 app.disable('x-powered-by');
 
+app.use(serve_index('../www/pixi'));
+
 // static files
+app.use(express.static(path.join(__dirname, '../www')));
 app.use(express.static(path.join(__dirname, '../www')));
 
 // do stuff
