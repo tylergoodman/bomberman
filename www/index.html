@@ -356,7 +356,7 @@
 
 
 					send: function (data, type, connection, callback) {
-						var event_num = Math.random() * 13 * 10;
+						var event_num = Math.random() * Math.pow(10, 13);
 						connection.send({
 							data: data,
 							num: event_num,
