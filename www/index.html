@@ -121,8 +121,8 @@
 				<div id="lobby" class="pure-u-1-2 pure-u-md-1">
 					<div id="players"></div>
 					<div id="lobby-controls">
-						<button id="lobby-join" class="pure-button"><i class="fa fa-sign-in"></i>&nbsp&nbsp<span>Join Lobby</span></button>
-						<button id="lobby-toggle" class="pure-button"><i class="fa fa-toggle-off"></i>&nbsp&nbsp<span>Open Lobby</span></button>
+						<button id="lobby-join" class="pure-button" autocomplete="off"><i class="fa fa-sign-in"></i>&nbsp&nbsp<span>Join Lobby</span></button>
+						<button id="lobby-toggle" class="pure-button" autocomplete="off"><i class="fa fa-toggle-off"></i>&nbsp&nbsp<span>Open Lobby</span></button>
 					</div>
 					<div id="modal-join" class="text-content">
 						<input type="text" placeholder="Peer's ID" autocomplete="off">
@@ -208,7 +208,7 @@
 						console[type].apply(console, args);
 					},
 					_format: function (args) {
-						return Array.prototype.join.call(args);
+						return Array.prototype.join.call(args, ', ');
 					},
 					log: function () {
 						this._log('log', arguments);
@@ -234,7 +234,7 @@
 
 					events: {
 						'click #lobby-toggle': function () {
-							if (Network.open) {
+							if (Network.client.open) {
 								this.toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
 								this.toggle.find('span').text('Open Lobby');
 								this.join.prop('disabled', false);
@@ -301,6 +301,7 @@
 							Logger.log(Array.prototype.slice.call(arguments).join(' '));
 						},
 					}),
+					name: 'ME',
 
 					amHost: function () {
 						return Network.host === 'self';
@@ -309,14 +310,18 @@
 						return Network.host !== 'self';
 					},
 				}
+				_.extend(Me, Backbone.Events);
 
 				Me.peer.on('open', function (id) {
 					var me = new Person({
-						name: 'ME',
+						name: Me.name,
 						id: id,
 						editable: true,
 					});
 
+					Me.listenTo(me, 'change:name', function () {
+						this.name = me.get('name');
+					});
 					Lobby.addPlayer(me);
 				});
 				Me.peer.on('connection', function (connection) {
@@ -336,7 +341,7 @@
 						connected: false,
 						connections: {
 							game: null,
-							chat: null,
+							system: null,
 						},
 					},
 					// for when you're the host and others are the client
@@ -345,121 +350,166 @@
 						peers: {},
 						max_peers: 4,
 					},
+				}
 
-					Peer: (function () {
-						var peer = function (id) {
-							this.id = id;
-							this.connections = {};
+				Network.Peer = (function () {
+					var peer = function (id) {
+						this.id = id;
+						this.connections = {};
+					}
+					return peer;
+				})();
+
+
+				Network.send = function (data, type, connection, callback) {
+					Logger.log('Sending some data to ' + connection.peer, data);
+					var event_num = Math.floor(Math.random() * Math.pow(10, 7));
+					connection.send({
+						data: data,
+						num: event_num,
+						type: type,
+					})
+					if (callback)
+						// try number event_num later to see if it works
+						this.once(String(event_num), callback);
+				}
+
+				Network.handleData = function (connection, data) {
+					Logger.log('Received some ' + connection.label + ' data from ' + connection.peer, data);
+
+					if (this.dataHandlers[connection.label])
+						this.dataHandlers[connection.label].handle(data);
+					else
+						throw new Error('No data handler for ' + connection.label + ' found');
+				}
+
+				Network.DataHandler = (function () {
+					var DataHandler = function (label, events) {
+						this.label = label
+						for (var i in events)
+							this.on(i, events[i]);
+					}
+					DataHandler.prototype.handle = function (data) {
+						Logger.log('data handler ' + this.label + ' received data ', data);
+						// left off here trying to get this to trigger
+						this.trigger(data.label, data.data);
+					}
+					_.extend(DataHandler.prototype, Backbone.Events);
+					return DataHandler;
+					// handles incoming data
+					// inherits backbone events
+					// use as base for derived handlers 'chat(or system later on)' and 'game'
+				})();
+				Network.dataHandlers = {
+					system: new Network.DataHandler('system', {
+						'msg': function (message) {
+							console.log('event delegated correctly!', message);
+							Logger.log(message);
 						}
-						return peer;
-					})(),
+					}),
+					game: new Network.DataHandler('game', {
 
+					}),
+				},
 
-					send: function (data, type, connection, callback) {
-						var event_num = Math.random() * Math.pow(10, 13);
-						connection.send({
-							data: data,
-							num: event_num,
-							type: type,
-						})
-						if (callback)
-							this.once(String(event_num), callback);
-					},
+				Network.handleConnection = function (connection) {
+					Logger.log('Received connection request from ' + connection.peer);
+					var self = this;
 
-					handleData: function (data) {
-					},
+					connection.on('open', function () {
+						Logger.log(this.label + ' connection from ' + this.peer + ' established');
 
-					handleConnection: function (connection) {
-						Logger.log('Received connection request from ' + connection.peer);
-						var self = this;
+						if (!self.client.open) {
+							Logger.log('Closing ' + this.label + ' connection to ' + this.peer + ', lobby is closed');
+							self.send('My lobby is closed', 'error', this, $.proxy(function () {
+								Logger.log('Closing lobby');
+								this.close();
+							}, this));
+						}
+						else if (self.client.peers.length === self.client.max_peers) {
+							Logger.log('Closing ' + this.label + ' connection to ' + this.peer + ', lobby is full');
+							self.send('My lobby is full', 'error', this, $.proxy(function () {
+								this.close();
+							}, this));
+						}
+						else {
+							Logger.log('Connection request successful');
+							self.send('Request successful!', 'msg', this);
+							self.addPeer(this);
+						}
+					});
 
+					connection.on('data', function (data) {
+						self.handleData(this, data);
+					});
+
+					connection.on('close', function () {
+						Logger.log(this.label + ' connection to ' + this.peer + ' closed');
+					});
+
+					connection.on('error', function (err) {
+						Logger.warn(this.label + ' connection errored', err);
+					});
+
+				}
+
+				Network.createConnection = function (id, label) {
+					Logger.log('Creating ' + label + ' connection to ' + id);
+					var self = this;
+					return new Promise(function (resolve, reject) {
+						var connection = Me.peer.connect(id, {
+							label: label,
+						});
 						connection.on('open', function () {
-							console.log(this);
-							Logger.log(this.label + ' connection from ' + this.peer + ' established');
-
-							if (!self.client.open) {
-								Logger.log('Closing ' + this.label + ' connection to ' + this.peer + ', lobby is closed');
-								self.send('My lobby is closed', 'error', this, $.proxy(function () {
-									// this.close();
-								}, this));
-							}
-							else if (self.client.peers.length === self.client.max_peers) {
-								Logger.log('Closing ' + this.label + ' connection to ' + this.peer + ', lobby is full');
-								self.send('My lobby is full', 'error', this, $.proxy(function () {
-									this.close();
-								}, this));
-							}
-							else {
-								self.send('Request successful!', this);
-								self.addPeer(this);
-							}
+							Logger.log(this.label + ' connection to ' + this.peer + ' established');
+							resolve(this);
 						});
-
+						if (!self.dataHandlers.hasOwnProperty(label))
+							throw new Error('Could not create a connection: no data handlers for ' + label + ' found');
 						connection.on('data', function (data) {
-							Logger.log('Received some ' + this.label + ' data from ' + this.peer, data);
+							self.handleData(this, data);
 						});
-
 						connection.on('close', function () {
 							Logger.log(this.label + ' connection to ' + this.peer + ' closed');
+							reject(this);
 						});
-
 						connection.on('error', function (err) {
 							Logger.warn(this.label + ' connection errored', err);
+							reject(this);
 						});
+					});
+				}
 
-					},
+				Network.connectTo = function (id) {
+					Logger.log('Requesting connection to ' + id);
+					var self = this;
 
-					connectTo: function (id) {
-						Logger.log('Requesting connection to ' + id);
+					// chat connection
+					Promise.all([this.createConnection(id, 'system'), this.createConnection(id, 'game')])
+						.then(function (results) {
+							// Logger.log(results);
+							self.host.connected = true;
+							results.forEach(function (connection) {
+								self.host.connections[connection.label] = connection;
+							});
+						})
+						.catch(function (error) {
+							Logger.warn(error);
+						});
+				}
 
-						// chat connection
-						var chat_connection = Me.peer.connect(id, {
-							label: 'chat',
-						});
-						chat_connection.on('open', function () {
-							Logger.log(this.label + ' connection from ' + this.peer + ' established');
-						});
-						chat_connection.on('data', function (data) {
-							Logger.log('Received some ' + this.label + ' data from ' + this.peer, data);
-						});
-						chat_connection.on('close', function () {
-							Logger.log(this.label + ' connection to ' + this.peer + ' closed');
-						});
-						chat_connection.on('error', function (err) {
-							Logger.warn(this.label + ' connection errored', err);
-						});
+				Network.addPeer = function (connection) {
+					if (!this.client.peers.hasOwnProperty(connection.peer))
+						this.client.peers[connection.peer] = {};
 
-						// game connection
-						var game_connection = Me.peer.connect(id, {
-							label: 'game',
-						});
-						game_connection.on('open', function () {
-							Logger.log(this.label + ' connection from ' + this.peer + ' established');
-						});
-						game_connection.on('data', function (data) {
-							Logger.log('Received some ' + this.label + ' data from ' + this.peer, data);
-						});
-						game_connection.on('close', function () {
-							Logger.log(this.label + ' connection to ' + this.peer + ' closed');
-						});
-						game_connection.on('error', function (err) {
-							Logger.warn(this.label + ' connection errored', err);
-						});
-					},
-
-					setHost: function (connection) {
-						this.host = connection;
-						this.connected = true;
-					},
-
-					addPeer: function (connection) {
-						if (!this.client.peers[connection.peer]) {
-							// var peer = 
-						}
-					},
-					addConnection: function (playerId, connection) {
-						this.peers[playerId].push(connection);
-					},
+					this.client.peers[connection.peer][connection.label] = connection;
+					this.send(null, 'name_req', connection, function (name) {
+						Lobby.addPlayer(new Person({
+							name: name,
+							id: connection.peer,
+							editable: false,
+						}));
+					});
 				}
 				_.extend(Network, Backbone.Events);
 
