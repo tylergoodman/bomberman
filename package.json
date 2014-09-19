@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "description": "bomberman in-browser",
   "main": "./server/index.js",
+  "bin": {
+    "bomberman": "./server/bin.js"
+  },
+  "scripts": {
+    "start": "node ./server/bin.js"
+  },
   "dependencies": {
     "body-parser": "^1.6.6",
     "express": "^4.8.6",
@@ -12,9 +18,6 @@
     "serve-index": "^1.2.1"
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/tylergoodman/bomberman.git"
