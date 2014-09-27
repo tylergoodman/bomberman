@@ -7,7 +7,7 @@ function Wall (world, breakable, col, row, posX, posY) {
 
 	if(breakable)
 	{
-		GameObject.call(this, world, col, row, posX, posY, 'breakablewall');
+		GameObject.call(this, world, col, row, posX, posY, 'breakableWall');
 	}
 	else
 	{

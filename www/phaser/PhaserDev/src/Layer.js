@@ -74,7 +74,7 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 	}
 
 	// Hopefully returns a copy of the board
-	this.returnBoard = function()
+	this.getBoard = function()
 	{
 		return Board
 	}

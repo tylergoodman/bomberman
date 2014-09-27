@@ -14,6 +14,7 @@ function Game ()
 	    world.load.image('bomberman', 'assets/bomberman.jpg')
 	    world.load.image('background', 'assets/background.png')
 	    world.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
+	    world.load.image('breakableWall', 'assets/breakableWall.png')
 
 	}
 
@@ -30,8 +31,13 @@ function Game ()
 		player = new Player(world, "Player 1", 0, 0, 0, 0)
 
 
+		// Add unbreakable walls
+		AddUnbreakableWalls()
+
 		// Add breakable walls
-		AddUnbreakableWalls();
+		AddBreakableWalls()
+
+		var temp = wallLayer.getBoard()
 	}
 
 	function update() {
@@ -135,28 +141,32 @@ function Game ()
 	// Adds breakable walls to the right location
 	function AddBreakableWalls()
 	{
-		for(var i = 1; i < 9; i++)
+		for(var i = 0; i < boardColSize; i++)
 		{
-			for(var j = 0; j < 9; j++)
+			// fill in rows 1-8
+			for(var j = 1; j < boardRowSize; j++)
 			{
-				// Create the wall
-				var breakWall = new Wall(true, i, j)
-
-				// Add the wall to board
-				wallLayer.Add(breakWall, i, j)
-
+				// if col is odd than skip every other row to ignore unbreakable walls
 				if(i % 2 == 1)
 				{
 					// extra increment to skip 1 block
 					// on every other row
 					j++
 				}
+
+				// Create the wall
+				var breakWall = new Wall(world, true, i, j, i*imageSize, j*imageSize)
+
+				// Add the wall to board
+				wallLayer.Add(breakWall, i, j)
 			}
-			//first row
-			if(i < 9 && i > 1)
+
+			// fills in first row with space
+			if(i < boardColSize && i > 2)
 			{
-				var breakWall = new Wall(true, 0, i+1)
-				wallLayer.Add(breakWall, 0, i+1)
+				var breakWall = new Wall(world, true, i, 0, i*imageSize, 0)
+
+				wallLayer.Add(breakWall, i, 0)
 			}
 		}
 	}

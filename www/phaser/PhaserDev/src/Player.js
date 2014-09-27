@@ -10,7 +10,7 @@ function Player (world, name, col, row, posX, posY) {
 	// Set up Object's properties
 	this.Name = name
 	this.BombCount = 20
-	this.GhostMode = true
+	this.GhostMode = false
 
 /******************************************************************************
 							 Methods
@@ -49,7 +49,7 @@ function Player (world, name, col, row, posX, posY) {
 		this.setCol(Math.floor(this.getPosX() / 70))
 		this.setRow(Math.floor(this.getPosY() / 70))
 	}
-	
+
 	Player.prototype.render = function()
 	{
 
