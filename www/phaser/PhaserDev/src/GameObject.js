@@ -5,11 +5,9 @@
 
 	function GameObject (world, col, row, posX, posY, image) {
 		// Member variables
-		this.Col = col; // x - position
-		this.Row = row; // y - position
-		this.X = posX;
-		this.Y = posY;
-		this.Sprite =  world.add.sprite(row * 50, col * 50, image);
+		this.Col = col  // x - position
+		this.Row = row // y - position
+		this.Sprite =  world.add.sprite(posX, posY, image)
 	}
 
 /******************************************************************************
@@ -22,45 +20,54 @@
 
 	// Col Get/Set
 	GameObject.prototype.getCol = function () {
-		return this.Col;
+		return this.Col
 	}
 
 	GameObject.prototype.setCol = function (value) {
-		this.Col = value;
+		this.Col = value
 	}
 
 	// Row Get/Set
 	GameObject.prototype.getRow = function () {
-		return this.Row;
+		return this.Row
 	}
 
 	GameObject.prototype.setRow = function (value) {
-		this.Row = value;
+		this.Row = value
 	}
 
 	// posX Get/Set
 	GameObject.prototype.getPosX = function () {
-		return this.X;
+		return this.Sprite.x
 	}
 
 	GameObject.prototype.setPosX = function (value) {
-		this.X = value;
+		this.Sprite.x = value
 	}
 
 	// posY Get/Set
 	GameObject.prototype.getPosY = function () {
-		return this.Y;
+		return this.Sprite.y
 	}
 
 	GameObject.prototype.setPosY = function (value) {
-		this.Y = value;
+		this.Sprite.y = value
 	}
 
 	GameObject.prototype.getSprite = function()
 	{
-		return this.Sprite;
+		return this.Sprite
 	}
 
+	GameObject.prototype.update = function()
+	{
+
+	}
+
+	GameObject.prototype.render = function()
+	{
+
+	}
 
 
 /******************************************************************************
