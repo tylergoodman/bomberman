@@ -56,7 +56,7 @@ function Game ()
 			player.setPosY(player.getPosY() + 10)
 		}
 
-		if(wallLayer.collisionWith(player))
+		if(wallLayer.collisionWith(player) && !player.GhostMode)
 		{
 			player.setPosX(curX)
 			player.setPosY(curY)
