@@ -93,6 +93,37 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 			Board[object.getCol()][object.getRow()] = undefined
 	}
 
+	// Checks if an object has collided with any object in this layer
+	this.collisionWith = function(object)
+	{
+		for(var i = 0; i < sizeOfCol; i++)
+		{
+			for(var j = 0; j  < sizeOfRow; j++)
+			{
+				if(Board[i][j] instanceof Type)
+				{
+					if(collision(object, Board[i][j]))
+						return true
+				}
+			}
+		}
+
+		return false;
+	}
+
+/******************************************************************************
+							Private  Methods
+******************************************************************************/
+
+	// Bounding Box Collision
+	function collision(objectA, objectB) 
+	{
+  		return (objectA.getPosX() < objectB.getPosX() + objectB.width() &&
+		   objectA.getPosX() + objectA.width() > objectB.getPosX() &&
+		   objectA.getPosY() < objectB.getPosY() + objectB.height() &&
+		   objectA.height() + objectA.getPosY() > objectB.getPosY())
+	}
+
 /******************************************************************************
 						End of Methods
 ******************************************************************************/

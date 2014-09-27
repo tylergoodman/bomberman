@@ -36,10 +36,12 @@ function Game ()
 
 	function update() {
 
+		var curX = player.getPosX()
+		var curY = player.getPosY()
 
 		if (world.input.keyboard.isDown(Phaser.Keyboard.A))
 		{
-			player.setPosX(player.getPosX(0) - 10)
+			player.setPosX(player.getPosX() - 10)
 		}
 		else if (world.input.keyboard.isDown(Phaser.Keyboard.D))
 		{
@@ -52,6 +54,12 @@ function Game ()
 		else if (world.input.keyboard.isDown(Phaser.Keyboard.S))
 		{
 			player.setPosY(player.getPosY() + 10)
+		}
+
+		if(wallLayer.collisionWith(player))
+		{
+			player.setPosX(curX)
+			player.setPosY(curY)
 		}
 
 		player.update()

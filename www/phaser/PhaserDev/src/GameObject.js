@@ -59,6 +59,16 @@
 		return this.Sprite
 	}
 
+	GameObject.prototype.width = function()
+	{
+		
+		return this.Sprite.width
+	}
+	GameObject.prototype.height = function()
+	{
+		return this.Sprite.height
+	}
+
 	GameObject.prototype.update = function()
 	{
 
