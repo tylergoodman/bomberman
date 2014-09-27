@@ -34,7 +34,15 @@ function Player (world, name, col, row, posX, posY) {
 ******************************************************************************/
 	Player.prototype.update = function()
 	{
-
+		// Keep player within world
+		if(this.getPosX() < 0)
+			this.setPosX(0)
+		if(this.getPosX() + this.Sprite.width > world.width)
+			this.setPosX(world.width - this.Sprite.width)
+		if(this.getPosY() < 0)
+			this.setPosY(0)
+		if(this.getPosY() + this.Sprite.height > world.height)
+			this.setPosY(world.height - this.Sprite.height)
 	}
 	Player.prototype.render = function()
 	{
