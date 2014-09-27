@@ -1,7 +1,7 @@
 
 function Game () 
 {
-	var world = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update })
+	var world = new Phaser.Game(1050, 630, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update })
 	var player = null;
 
 	// Preload images needed
@@ -9,6 +9,7 @@ function Game ()
 
 	    world.load.image('bomberman', 'assets/bomberman.jpg')
 	    world.load.image('background', 'assets/background.png')
+	    world.load.image('breakableWall', 'assets/breakableWall.jpg')
 
 	}
 
