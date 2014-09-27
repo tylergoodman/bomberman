@@ -7,11 +7,11 @@ function Wall (world, breakable, col, row, posX, posY) {
 
 	if(breakable)
 	{
-		GameObject.call(this, world, col, row, posX, posY, 'breakablewall.jpg');
+		GameObject.call(this, world, col, row, posX, posY, 'breakablewall');
 	}
 	else
 	{
-		GameObject.call(this, world, col, row, posX, posY, 'unbreakablewall.jpg');
+		GameObject.call(this, world, col, row, posX, posY, 'unbreakableWall');
 	}
 
 	// Set up Object's properties 
