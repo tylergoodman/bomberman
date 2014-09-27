@@ -9,6 +9,8 @@
 */
 function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 
+	var World = world
+
 	var Name = name
 
 	var ColSize = sizeOfCol
@@ -90,7 +92,10 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 	this.Remove = function(object)
 	{
 		if(object instanceof Type)
+		{
 			Board[object.getCol()][object.getRow()] = undefined
+			object.getSprite().destroy()
+		}
 	}
 
 	// Checks if an object has collided with any object in this layer

@@ -91,7 +91,23 @@ function Game ()
 	// Process Bomb dropped
 	function DropBomb(player)
 	{
+		// Create bomb
+		var bomb = new Bomb(world, player.getCol(), player.getRow(), 
+			player.getCol() * imageSize, player.getRow() * imageSize)
 
+		// Add bomb to layer
+		bombLayer.Add(bomb)
+
+		// Add the bomb event - last parm is the callback function's args
+		world.time.events.add(Phaser.Timer.SECOND * 1.5, BombExploded, this, bomb);
+
+		player.setBombCount(player.getBombCount() - 1)
+	}
+
+	// Bomb exploded Event
+	function BombExploded(bomb)
+	{
+		bombLayer.Remove(bomb)
 	}
 
 	// Adds unbreakable walls to the right location
@@ -113,7 +129,7 @@ function Game ()
 
 	// Adds breakable walls to the right location
 	function AddBreakableWalls()
-	{
+	{s
 		for(var i = 0; i < boardColSize; i++)
 		{
 			// fill in rows 1-8
