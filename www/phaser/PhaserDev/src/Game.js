@@ -7,6 +7,7 @@ function Game ()
 	var imageSize = 70
 	var player = null
 	var wallLayer = null
+	var bombLayer = null
 
 	// Preload images needed
 	function preload() {
@@ -15,6 +16,7 @@ function Game ()
 	    world.load.image('background', 'assets/background.png')
 	    world.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
 	    world.load.image('breakableWall', 'assets/breakableWall.png')
+	    world.load.image('bomb', 'assets/bomb.png')
 
 	}
 
@@ -25,7 +27,10 @@ function Game ()
    		background.add(world.add.sprite(0,0,'background'))
 
    		// Wall Layer
-   		wallLayer = new Layer(world, "Wall", 15, 9, Wall, 4)
+   		wallLayer = new Layer(world, "Wall", 15, 9, Wall, 3)
+
+   		// Bomb Layer
+   		bombLayer = new Layer(world, "Bomb", 15, 9, Bomb, 2)
 
 		// Player
 		player = new Player(world, "Player 1", 0, 0, 0, 0)
@@ -35,9 +40,7 @@ function Game ()
 		AddUnbreakableWalls()
 
 		// Add breakable walls
-		AddBreakableWalls()
-
-		var temp = wallLayer.getBoard()
+		//AddBreakableWalls()
 	}
 
 	function update() {
@@ -68,58 +71,28 @@ function Game ()
 			player.setPosY(curY)
 		}
 
+		// check if spacebar was pressed / second param is for debouncing
+		if(world.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
+		{
+			if(player.getBombCount() > 0)
+			{
+				DropBomb(player)
+			}
+		}
+
+		// update player
 		player.update()
-	}
-
-	/******************************************************************************
-								Events/Event Handlers
-	******************************************************************************/
-
-	// Event when a key is hit: converts the key to a string
-	function showKey(e) {
-		var key
-		if (window.event) {
-			key = window.event.keyCode
-		} 
-		else {
-			key = e.keyCode
-		}
-
-		key = String.fromCharCode(key)
-		ProcessKey(key)
-	}
-
-	// Processes a key press event
-	function ProcessKey(key)
-	{
-		if (key == "A")
-		{
-			player.update()
-		}
-		else if(key == "D")
-		{
-		}
-		else if(key == "W")
-		{
-
-		}
-		else if(key == "S")
-		{
-		}
-		else if(key == " ")
-		{
-
-		}
-	}
-
-	// Sets up the keyboard event listener
-	window.onload = function() {
-		document.onkeydown = showKey
 	}
 
 	/******************************************************************************
 								Private  Methods
 	******************************************************************************/
+
+	// Process Bomb dropped
+	function DropBomb(player)
+	{
+
+	}
 
 	// Adds unbreakable walls to the right location
 	function AddUnbreakableWalls()
