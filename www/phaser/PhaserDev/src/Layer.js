@@ -66,12 +66,12 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 		return Type
 	}
 
-	// Return object at [row][col]
-	this.getObjectAt = function(row, col)
+	// Return object at [col][row]
+	this.getObjectAt = function(col, row)
 	{
 		if(col < ColSize && col >=0 && row < RowSize && row >= 0)
 		{
-			return Board[row][col]
+			return Board[col][row]
 		}
 	}
 

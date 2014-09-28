@@ -3,7 +3,7 @@
 						Constructor
 ******************************************************************************/
 
-function Explosion (world, row, col, posX, posY) {
+function Explosion (world, col, row, posX, posY) {
 	GameObject.call(this, world, col, row, posX, posY, 'explosion');
 
 /******************************************************************************

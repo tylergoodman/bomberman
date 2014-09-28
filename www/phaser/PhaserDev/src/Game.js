@@ -40,6 +40,9 @@ function Game ()
    		// Bomb Layer
    		bombLayer = new Layer(world, "Bomb", 15, 9, Bomb, 2)
 
+   		// Explosion Layer
+   		explosionLayer = new Layer(world, "Explosion", 15, 9, Explosion, 1)
+
 		// Player
 		player = new Player(world, "Player 1", 0, 0, 0, 0)
 
@@ -76,10 +79,17 @@ function Game ()
 			player.setPosY(player.getPosY() + 10)
 		}
 
+		// return player to previous position if collides with wall
 		if(wallLayer.collisionWith(player) && !player.GhostMode)
 		{
 			player.setPosX(curX)
 			player.setPosY(curY)
+		}
+
+		// Player dies if  he/she collides with explosion
+		if(explosionLayer.collisionWith(player) && !player.GhostMode)
+		{
+			PlayerDied(player)
 		}
 
 		// check if spacebar was pressed / second param is for debouncing
@@ -114,8 +124,6 @@ function Game ()
 		world.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
 
 		player.setBombCount(player.getBombCount() - 1)
-
-		console.log(player)
 	}
 
 	// Bomb exploded Event
@@ -123,8 +131,8 @@ function Game ()
 	{
 		bombLayer.Remove(bomb)
 
-		var row = bomb.getRow()
 		var col = bomb.getCol()
+		var row = bomb.getRow()
 
 	    for(var i = -1; i <= 1; i += 2)
 		{
@@ -161,7 +169,7 @@ function Game ()
 		}
 
 		// Adds explosions
-		//this.Explosion(row,col);
+		AddExplosion(col, row);
 
 		// Special case when player is on the bomb
 		var player = playerLayer.getObjectAt(col, row)
@@ -173,7 +181,7 @@ function Game ()
 
 
 	// Adds explosion images
-	function Explosion(col, row)
+	function AddExplosion(col, row)
 	{
 
 		// Array to store explosion - fire area
@@ -181,32 +189,64 @@ function Game ()
 
 		for(var i = -1; i <= 1; i += 2)
 		{
-			var explodeOne = ExplosionLayer.getObjectAt(col+i, row);
-			var explodeTwo = ExplosionLayer.getObjectAt(col, row+i);
+			var explodeOne = explosionLayer.getObjectAt(col+i, row);
+			var explodeTwo = explosionLayer.getObjectAt(col, row+i);
+			var wallOne = wallLayer.getObjectAt(col+i, row);
+			var wallTwo = wallLayer.getObjectAt(col, row+i);
 
+			var wallOneCol = col+i
+			var wallOneRow = row
+			var wallTwoCol = col
+			var wallTwoRow = row+i
+			var board = wallLayer.getBoard()
 
-			if(explodeOne == undefined && col+i >= 0 && col+i < 9)
+			if(explodeOne == undefined && col+i >= 0 && col+i < boardColSize)
 			{
-				var explosion = new Explosion(col+i, row);
-				ExplosionLayer.Add(explosion);
-				explosions.push(explosion);
+				if(wallOne == undefined)
+				{
+					var explosion = new Explosion(world, col+i, row, (col+i) * imageSize, row*imageSize);
+					explosionLayer.Add(explosion);
+					explosions.push(explosion)
+				}
+				else
+				{
+					if(wallOne.getCanBreak())
+					{
+						var explosion = new Explosion(world, col+i, row, (col+i) * imageSize, row*imageSize);
+						explosionLayer.Add(explosion);
+						explosions.push(explosion)
+					}
+				}
 			}
-			if(explodeTwo == undefined && row+i >= 0 && row+i < 9)
+
+			if(explodeTwo == undefined && row+i >= 0 && row+i < boardRowSize)
 			{
-				var explosion = new Explosion(col, row+i);
-				ExplosionLayer.Add(explosion);
-				explosions.push(explosion);
+				if(wallTwo == undefined)
+				{
+					var explosion = new Explosion(world, col, row+i, col * imageSize, (row+i)*imageSize);
+					explosionLayer.Add(explosion);
+					explosions.push(explosion)
+				}
+				else
+				{
+					if(wallTwo.getCanBreak())
+					{
+						var explosion = new Explosion(world, col, row+i, col * imageSize, (row+i)*imageSize);
+						explosionLayer.Add(explosion);
+						explosions.push(explosion)
+					}
+				}
 			}
 		}
 		
-		// Create event to remove explosion image after half a second
-		setTimeout(function() {		
-			for(var i = 0; i < explosions.length; i++)
-			{
-				gameBoard.ReturnLayer(Explosion).Remove(explosions[i]);
-			}
-			gameView.Refresh(this);}, 500);
-
+		// remove explosions event
+		world.time.events.add(Phaser.Timer.SECOND * .5, 
+			function(explosions) {
+				for(var i = 0; i < explosions.length; i++) 
+				{
+					explosionLayer.Remove(explosions[i])}
+				}, 
+		this, explosions)
 	}
 
 	// Removes a dead player
