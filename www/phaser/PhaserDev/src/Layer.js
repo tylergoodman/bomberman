@@ -98,6 +98,39 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 		}
 	}
 
+	// Override Remove method to take in col and row
+	this.RemoveAt = function(col, row)
+	{
+		if(Board[col][row] instanceof Type)
+		{
+			this.Remove(Board[col][row])
+		}
+	}
+
+	// Create a new board with objects from an array
+	this.newBoard = function(array)
+	{
+		this.clearBoard()
+
+		for(var i = 0; i < array.length; i++)
+		{
+			if(array[i] instanceof Type)
+			{
+				this.Add(array[i])
+			}
+		}
+	}
+
+	// Clears the board
+	this.clearBoard = function()
+	{
+		Board = new Array(ColSize)
+		for(var i = 0; i < ColSize; i++)
+		{
+			Board[i] = new Array(RowSize)
+		}
+	}
+
 	// Checks if an object has collided with any object in this layer
 	this.collisionWith = function(object)
 	{

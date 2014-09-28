@@ -3,32 +3,13 @@
 						Constructor
 ******************************************************************************/
 
-function Bomb (world, row, col, posX, posY) {
-	GameObject.call(this, world, col, row, posX, posY, 'bomb');
+function Explosion (world, row, col, posX, posY) {
+	GameObject.call(this, world, col, row, posX, posY, 'explosion');
 
-	// fuse time
-	this.fuse = 1.5
 /******************************************************************************
 							 Methods
 ******************************************************************************/
-
-	// Returns if Bomb should explode
-	this.isExploding = function()
-	{
-		if(fuse == 0)
-		{
-
-		}
-		else 
-			fuse--;
-	}
-
-	this.getFuse = function()
-	{
-		return this.fuse
-	}
-
-}
+}	
 /******************************************************************************
 						End of Constructor
 ******************************************************************************/
@@ -37,8 +18,8 @@ function Bomb (world, row, col, posX, posY) {
 							 Inheritance
 ******************************************************************************/
 
-	Bomb.prototype = Object.create(GameObject.prototype);
-	Bomb.prototype.constructor = Bomb;
+	Explosion.prototype = Object.create(GameObject.prototype);
+	Explosion.prototype.constructor = Explosion;
 
 /******************************************************************************
 							End of Inheritance

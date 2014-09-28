@@ -45,6 +45,10 @@ function Player (world, name, col, row, posX, posY) {
 		if(this.getPosY() + this.Sprite.height > world.height)
 			this.setPosY(world.height - this.Sprite.height)
 
+		// players col/row before updated
+		var curCol = this.getCol()
+		var curRow = this.getRow()
+
 		// update player col / row
 		this.setCol(Math.floor(this.getPosX() / 70))
 		this.setRow(Math.floor(this.getPosY() / 70))

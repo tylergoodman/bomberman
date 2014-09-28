@@ -6,8 +6,12 @@ function Game ()
 	var boardRowSize = 9
 	var imageSize = 70
 	var player = null
+	var playerLayer = null
 	var wallLayer = null
 	var bombLayer = null
+
+	// Array to keep track of players
+	var Players = [];
 
 	// Preload images needed
 	function preload() {
@@ -17,6 +21,7 @@ function Game ()
 	    world.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
 	    world.load.image('breakableWall', 'assets/breakableWall.png')
 	    world.load.image('bomb', 'assets/bomb.png')
+	    world.load.image('explosion', 'assets/explosion.png')
 
 	}
 
@@ -25,6 +30,9 @@ function Game ()
 		var background = world.add.group();
    		background.z = 1;
    		background.add(world.add.sprite(0,0,'background'))
+
+   		// Player Layer
+   		playerLayer = new Layer(world, "Player", 15, 9, Player, 4)
 
    		// Wall Layer
    		wallLayer = new Layer(world, "Wall", 15, 9, Wall, 3)
@@ -35,6 +43,9 @@ function Game ()
 		// Player
 		player = new Player(world, "Player 1", 0, 0, 0, 0)
 
+		// Add player to world
+		Players.push(player)
+		playerLayer.Add(player)
 
 		// Add unbreakable walls
 		AddUnbreakableWalls()
@@ -82,6 +93,7 @@ function Game ()
 
 		// update player
 		player.update()
+		playerLayer.newBoard(Players)
 	}
 
 	/******************************************************************************
@@ -99,7 +111,7 @@ function Game ()
 		bombLayer.Add(bomb)
 
 		// Add the bomb event - last parm is the callback function's args
-		world.time.events.add(Phaser.Timer.SECOND * 1.5, BombExploded, this, bomb);
+		world.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb);
 
 		player.setBombCount(player.getBombCount() - 1)
 	}
@@ -108,6 +120,97 @@ function Game ()
 	function BombExploded(bomb)
 	{
 		bombLayer.Remove(bomb)
+
+		var row = bomb.getRow()
+		var col = bomb.getCol()
+
+	    for(var i = -1; i <= 1; i += 2)
+		{
+			var wallOne = wallLayer.getObjectAt(col+i, row)
+			var wallTwo = wallLayer.getObjectAt(col, row+i)
+
+			var playerLocOne = playerLayer.getObjectAt(col+i, row)
+			var playerLocTwo = playerLayer.getObjectAt(col,row+i)
+
+			if(wallOne instanceof Wall)
+			{
+				if(wallOne.getCanBreak() == true)
+				{
+					wallLayer.Remove(wallOne)
+				}	
+			}
+			if(wallTwo instanceof Wall)
+			{
+				if(wallTwo.getCanBreak() == true)
+				{
+					wallLayer.Remove(wallTwo)
+				}	
+			}
+
+			if(playerLocOne instanceof Player)
+			{
+				PlayerDied(playerLocOne)
+			}
+
+			if(playerLocTwo instanceof Player)
+			{
+				PlayerDied(playerLocTwo)
+			}
+		}
+
+		// Adds explosions
+		//this.Explosion(row,col);
+
+		// Special case when player is on the bomb
+		var player = playerLayer.getObjectAt(col, row)
+		if(player instanceof Player)
+		{
+			PlayerDied(player)
+		}
+	}
+
+
+	// Adds explosion images
+	function Explosion(col, row)
+	{
+
+		// Array to store explosion - fire area
+		var explosions = [];
+
+		for(var i = -1; i <= 1; i += 2)
+		{
+			var explodeOne = ExplosionLayer.getObjectAt(col+i, row);
+			var explodeTwo = ExplosionLayer.getObjectAt(col, row+i);
+
+
+			if(explodeOne == undefined && col+i >= 0 && col+i < 9)
+			{
+				var explosion = new Explosion(col+i, row);
+				ExplosionLayer.Add(explosion);
+				explosions.push(explosion);
+			}
+			if(explodeTwo == undefined && row+i >= 0 && row+i < 9)
+			{
+				var explosion = new Explosion(col, row+i);
+				ExplosionLayer.Add(explosion);
+				explosions.push(explosion);
+			}
+		}
+		
+		// Create event to remove explosion image after half a second
+		setTimeout(function() {		
+			for(var i = 0; i < explosions.length; i++)
+			{
+				gameBoard.ReturnLayer(Explosion).Remove(explosions[i]);
+			}
+			gameView.Refresh(this);}, 500);
+
+	}
+
+	// Removes a dead player
+	function PlayerDied(player)
+	{
+		playerLayer.Remove(player)
 	}
 
 	// Adds unbreakable walls to the right location
