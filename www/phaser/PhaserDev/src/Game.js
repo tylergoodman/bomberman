@@ -111,18 +111,25 @@ function Game ()
 		bombLayer.Add(bomb)
 
 		// Add the bomb event - last parm is the callback function's args
-		world.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb);
+		world.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb, Players)
 
 		player.setBombCount(player.getBombCount() - 1)
+
+		console.log(player)
 	}
 
 	// Bomb exploded Event
-	function BombExploded(bomb)
+	function BombExploded(bomb, Players)
 	{
 		bombLayer.Remove(bomb)
 
 		var row = bomb.getRow()
 		var col = bomb.getCol()
+
+		console.log("Bomb Col: " + bomb.getCol())
+		console.log("Bomb Row: " + bomb.getRow())
+		console.log("Player col: " + Players[0].getCol())
+		console.log("Player row: " + Players[0].getRow())
 
 	    for(var i = -1; i <= 1; i += 2)
 		{

@@ -156,10 +156,10 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 	// Bounding Box Collision
 	function collision(objectA, objectB) 
 	{
-  		return (objectA.getPosX() < objectB.getPosX() + objectB.width() &&
-		   objectA.getPosX() + objectA.width() > objectB.getPosX() &&
-		   objectA.getPosY() < objectB.getPosY() + objectB.height() &&
-		   objectA.height() + objectA.getPosY() > objectB.getPosY())
+  		return (objectA.getPosX() < objectB.getPosX() + objectB.getWidth() &&
+		   objectA.getPosX() + objectA.getWidth() > objectB.getPosX() &&
+		   objectA.getPosY() < objectB.getPosY() + objectB.getHeight() &&
+		   objectA.getHeight() + objectA.getPosY() > objectB.getPosY())
 	}
 
 /******************************************************************************

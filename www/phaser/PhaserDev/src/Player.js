@@ -50,8 +50,8 @@ function Player (world, name, col, row, posX, posY) {
 		var curRow = this.getRow()
 
 		// update player col / row
-		this.setCol(Math.floor(this.getPosX() / 70))
-		this.setRow(Math.floor(this.getPosY() / 70))
+		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / 70))
+		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / 70))
 	}
 
 	Player.prototype.render = function()

@@ -59,12 +59,12 @@
 		return this.Sprite
 	}
 
-	GameObject.prototype.width = function()
+	GameObject.prototype.getWidth = function()
 	{
-		
 		return this.Sprite.width
 	}
-	GameObject.prototype.height = function()
+
+	GameObject.prototype.getHeight = function()
 	{
 		return this.Sprite.height
 	}

@@ -3,7 +3,7 @@
 						Constructor
 ******************************************************************************/
 
-function Bomb (world, row, col, posX, posY) {
+function Bomb (world, col, row, posX, posY) {
 	GameObject.call(this, world, col, row, posX, posY, 'bomb');
 
 	// fuse time
