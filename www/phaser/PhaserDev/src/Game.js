@@ -54,7 +54,7 @@ function Game ()
 		AddUnbreakableWalls()
 
 		// Add breakable walls
-		//AddBreakableWalls()
+		AddBreakableWalls()
 	}
 
 	function update() {
@@ -194,12 +194,6 @@ function Game ()
 			var wallOne = wallLayer.getObjectAt(col+i, row);
 			var wallTwo = wallLayer.getObjectAt(col, row+i);
 
-			var wallOneCol = col+i
-			var wallOneRow = row
-			var wallTwoCol = col
-			var wallTwoRow = row+i
-			var board = wallLayer.getBoard()
-
 			if(explodeOne == undefined && col+i >= 0 && col+i < boardColSize)
 			{
 				if(wallOne == undefined)
@@ -244,6 +238,14 @@ function Game ()
 			function(explosions) {
 				for(var i = 0; i < explosions.length; i++) 
 				{
+					// remove breakable wall after explosion / explosions can only spawn on breakable walls / no wall
+					var wall = wallLayer.getObjectAt(explosions[i].getCol(), explosions[i].getRow())
+					if(wall != undefined)
+					{
+						wallLayer.remove(wall)
+					}
+
+					// remove explosion from explosion layer
 					explosionLayer.Remove(explosions[i])}
 				}, 
 		this, explosions)
@@ -281,7 +283,7 @@ function Game ()
 
 	// Adds breakable walls to the right location
 	function AddBreakableWalls()
-	{s
+	{
 		for(var i = 0; i < boardColSize; i++)
 		{
 			// fill in rows 1-8
