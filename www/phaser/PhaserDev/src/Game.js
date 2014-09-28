@@ -83,7 +83,7 @@ function Game ()
 		}
 
 		// check if spacebar was pressed / second param is for debouncing
-		if(world.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
+		if(world.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10) && Players[0] != null)
 		{
 			if(player.getBombCount() > 0)
 			{
@@ -111,7 +111,7 @@ function Game ()
 		bombLayer.Add(bomb)
 
 		// Add the bomb event - last parm is the callback function's args
-		world.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb, Players)
+		world.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
 
 		player.setBombCount(player.getBombCount() - 1)
 
@@ -119,17 +119,12 @@ function Game ()
 	}
 
 	// Bomb exploded Event
-	function BombExploded(bomb, Players)
+	function BombExploded(bomb)
 	{
 		bombLayer.Remove(bomb)
 
 		var row = bomb.getRow()
 		var col = bomb.getCol()
-
-		console.log("Bomb Col: " + bomb.getCol())
-		console.log("Bomb Row: " + bomb.getRow())
-		console.log("Player col: " + Players[0].getCol())
-		console.log("Player row: " + Players[0].getRow())
 
 	    for(var i = -1; i <= 1; i += 2)
 		{
@@ -217,7 +212,14 @@ function Game ()
 	// Removes a dead player
 	function PlayerDied(player)
 	{
-		playerLayer.Remove(player)
+		for(var i = 0; i < Players.length; i++)
+		{
+			if(player.getName() === Players[i].getName())
+			{
+				Players.splice(i,1);
+				playerLayer.Remove(player);
+			}
+		}
 	}
 
 	// Adds unbreakable walls to the right location
