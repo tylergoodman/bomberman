@@ -32,10 +32,12 @@ function Game ()
 
    		// Managers
    		layerManager = new LayerManager(preferences)
-   		explosionManager = new ExplosionManager(preferences, layerManager)
 
    		// Set up the layers for the world
    		layerManager.SetUpWorld()
+
+   		// Set up the world before adding it to explosion manager
+   		explosionManager = new ExplosionManager(preferences, layerManager)
 
 		// Player
 		player = new Player(world, "Player 1", 0, 0, 0, 0)
@@ -79,7 +81,7 @@ function Game ()
 		// Player dies if  he/she collides with explosion
 		if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
 		{
-			explosionManager.PlayerDied(player, layerManager)
+			explosionManager.PlayerDied(player)
 		}
 
 		// check if spacebar was pressed / second param is for debouncing

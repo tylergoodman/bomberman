@@ -5,7 +5,10 @@ function ExplosionManager(preferences, layerManager)
 	var BoardColSize = preferences.BoardColSize
 	var BoardRowSize = preferences.BoardRowSize
 	var ImageSize = preferences.ImageSize
-	var LayerManager = layerManager
+	var PlayerLayer = layerManager.ReturnLayer("Player")
+	var WallLayer = layerManager.ReturnLayer("Wall")
+	var BombLayer = layerManager.ReturnLayer("Bomb")
+	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
 
 	// Process Bomb dropped 
 	this.DropBomb = function (player)
@@ -15,7 +18,7 @@ function ExplosionManager(preferences, layerManager)
 			player.getCol() * ImageSize, player.getRow() * ImageSize, "normal")
 
 		// Add bomb to layer
-		LayerManager.ReturnLayer("Bomb").Add(bomb)
+		BombLayer.Add(bomb)
 
 		// Add the bomb event - last parm is the callback function's args
 		World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
@@ -27,7 +30,7 @@ function ExplosionManager(preferences, layerManager)
 	function BombExploded(bomb)
 	{
 		// Remove the bomb 
-		LayerManager.ReturnLayer("Bomb").Remove(bomb)
+		BombLayer.Remove(bomb)
 
 		// Add explosions based on the bomb type
 		switch(bomb.getType())
@@ -44,26 +47,22 @@ function ExplosionManager(preferences, layerManager)
 	function AddExplosion(col, row)
 	{
 
-		// define layers
-		var explosionLayer = LayerManager.ReturnLayer("Explosion")
-		var wallLayer = LayerManager.ReturnLayer("Wall")
-
 		// Array to store explosion - fire area
 		var explosions = [];
 
 		for(var i = -1; i <= 1; i += 2)
 		{
-			var explodeOne = explosionLayer.getObjectAt(col+i, row);
-			var explodeTwo = explosionLayer.getObjectAt(col, row+i);
-			var wallOne = wallLayer.getObjectAt(col+i, row);
-			var wallTwo = wallLayer.getObjectAt(col, row+i);
+			var explodeOne = ExplosionLayer.getObjectAt(col+i, row);
+			var explodeTwo = ExplosionLayer.getObjectAt(col, row+i);
+			var wallOne = WallLayer.getObjectAt(col+i, row);
+			var wallTwo = WallLayer.getObjectAt(col, row+i);
 
 			if(explodeOne == undefined && col+i >= 0 && col+i < BoardColSize)
 			{
 				if(wallOne == undefined)
 				{
 					var explosion = new Explosion(World, col+i, row, (col+i) * ImageSize, row * ImageSize);
-					explosionLayer.Add(explosion);
+					ExplosionLayer.Add(explosion);
 					explosions.push(explosion)
 				}
 				else
@@ -71,7 +70,7 @@ function ExplosionManager(preferences, layerManager)
 					if(wallOne.getCanBreak())
 					{
 						var explosion = new Explosion(World, col+i, row, (col+i) * ImageSize, row * ImageSize);
-						explosionLayer.Add(explosion);
+						ExplosionLayer.Add(explosion);
 						explosions.push(explosion)
 					}
 				}
@@ -82,7 +81,7 @@ function ExplosionManager(preferences, layerManager)
 				if(wallTwo == undefined)
 				{
 					var explosion = new Explosion(World, col, row+i, col * ImageSize, (row+i) * ImageSize);
-					explosionLayer.Add(explosion);
+					ExplosionLayer.Add(explosion);
 					explosions.push(explosion)
 				}
 				else
@@ -90,7 +89,7 @@ function ExplosionManager(preferences, layerManager)
 					if(wallTwo.getCanBreak())
 					{
 						var explosion = new Explosion(World, col, row+i, col * ImageSize, (row+i) * ImageSize);
-						explosionLayer.Add(explosion);
+						ExplosionLayer.Add(explosion);
 						explosions.push(explosion)
 					}
 				}
@@ -99,63 +98,59 @@ function ExplosionManager(preferences, layerManager)
 		
 		// remove explosions event
 		World.time.events.add(Phaser.Timer.SECOND * .5, 
-			function(explosions, wallLayer) {
+			function(explosions, WallLayer) {
 				for(var i = 0; i < explosions.length; i++) 
 				{
 					// remove breakable wall after explosion / explosions can only spawn on breakable walls / no wall
-					var wall = wallLayer.getObjectAt(explosions[i].getCol(), explosions[i].getRow())
+					var wall = WallLayer.getObjectAt(explosions[i].getCol(), explosions[i].getRow())
 					if(wall != undefined)
 					{
-						wallLayer.remove(wall)
+						WallLayer.remove(wall)
 					}
 
 					// remove explosion from explosion layer
-					explosionLayer.Remove(explosions[i])}
+					ExplosionLayer.Remove(explosions[i])}
 				}, 
-		this, explosions, wallLayer)
+		this, explosions, WallLayer)
 	}
 
 	function NormalBombExplosion(bomb)
 	{
-		// define layers
-		var bombLayer = LayerManager.ReturnLayer("Bomb")
-		var wallLayer = LayerManager.ReturnLayer("Wall")
-		var playerLayer = LayerManager.ReturnLayer("Player")
-
 		var col = bomb.getCol()
 		var row = bomb.getRow()
 
+		// Remove walls
 	    for(var i = -1; i <= 1; i += 2)
 		{
-			var wallOne = wallLayer.getObjectAt(col+i, row)
-			var wallTwo = wallLayer.getObjectAt(col, row+i)
+			var wallOne = WallLayer.getObjectAt(col+i, row)
+			var wallTwo = WallLayer.getObjectAt(col, row+i)
 
-			var playerLocOne = playerLayer.getObjectAt(col+i, row)
-			var playerLocTwo = playerLayer.getObjectAt(col,row+i)
+			var playerLocOne = PlayerLayer.getObjectAt(col+i, row)
+			var playerLocTwo = PlayerLayer.getObjectAt(col,row+i)
 
 			if(wallOne instanceof Wall)
 			{
 				if(wallOne.getCanBreak() == true)
 				{
-					wallLayer.Remove(wallOne)
+					WallLayer.Remove(wallOne)
 				}	
 			}
 			if(wallTwo instanceof Wall)
 			{
 				if(wallTwo.getCanBreak() == true)
 				{
-					wallLayer.Remove(wallTwo)
+					WallLayer.Remove(wallTwo)
 				}	
 			}
 
 			if(playerLocOne instanceof Player)
 			{
-				PlayerDied(playerLocOne, LayerManager)
+				PlayerDied(playerLocOne)
 			}
 
 			if(playerLocTwo instanceof Player)
 			{
-				PlayerDied(playerLocTwo, LayerManager)
+				PlayerDied(playerLocTwo)
 			}
 		}
 
@@ -163,37 +158,37 @@ function ExplosionManager(preferences, layerManager)
 		AddExplosion(col,row)
 
 		// Special case when player is on the bomb
-		var player = playerLayer.getObjectAt(col, row)
+		var player = PlayerLayer.getObjectAt(col, row)
 		
 		if(player instanceof Player)
 		{
-			PlayerDied(player, LayerManager)
+			PlayerDied(player)
 		}
 	}
 
 	// Removes a dead player
-	this.PlayerDied = function(player, layerManager)
+	this.PlayerDied = function(player)
 	{
 		for(var i = 0; i < Players.length; i++)
 		{
 			if(player.getName() === Players[i].getName())
 			{
 				Players.splice(i,1);
-				layerManager.ReturnLayer("Player").Remove(player);
+				PlayerLayer.Remove(player);
 			}
 		}
 	}
 
 	// Removes a dead player - private duplicate function to maintain
 	// code structure
-	function PlayerDied(player, layerManager)
+	function PlayerDied(player)
 	{
 		for(var i = 0; i < Players.length; i++)
 		{
 			if(player.getName() === Players[i].getName())
 			{
 				Players.splice(i,1);
-				layerManager.ReturnLayer("Player").Remove(player);
+				PlayerLayer.Remove(player);
 			}
 		}
 	}
