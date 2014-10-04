@@ -3,16 +3,11 @@ function Game ()
 {
 	var world = new Phaser.Game(1050, 630, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update })
 	var player = null
-	var playerLayer = null
-	var wallLayer = null
 	var layerManager = null
 	var explosionManager = null
 
 	// Array to keep track of players
-	var Players = [];
-
-	// Preferences
-	var preferences = new Preferences(world, Players)
+	var Players = []
 
 	// Preload images needed
 	function preload() {
@@ -32,30 +27,22 @@ function Game ()
    		background.z = 1;
    		background.add(world.add.sprite(0,0,'background'))
 
+		// Preferences
+		var preferences = new Preferences(world, Players)
+
    		// Managers
    		layerManager = new LayerManager(preferences)
    		explosionManager = new ExplosionManager(preferences)
 
-   		// Player Layer
-   		playerLayer = layerManager.AddLayer(new Layer(world, "Player", 15, 9, Player, 4))
-
-   		// Wall Layer
-   		wallLayer = layerManager.AddLayer(new Layer(world, "Wall", 15, 9, Wall, 3))
-
-   		// Bomb Layer
-   		bombLayer = layerManager.AddLayer(new Layer(world, "Bomb", 15, 9, Bomb, 2))
-
-   		// Explosion Layer
-   		explosionLayer = layerManager.AddLayer(new Layer(world, "Explosion", 15, 9, Explosion, 1))
+   		// Set up the layers for the world
+   		layerManager.SetUpWorld()
 
 		// Player
 		player = new Player(world, "Player 1", 0, 0, 0, 0)
 
 		// Add player to world
 		Players.push(player)
-		playerLayer.Add(player)
-
-		layerManager.SetUpWorld()
+		layerManager.ReturnLayer("Player").Add(player)
 	}
 
 	function update() {
@@ -83,14 +70,14 @@ function Game ()
 		}
 
 		// return player to previous position if collides with wall
-		if(wallLayer.collisionWith(player) && !player.GhostMode)
+		if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
 		{
 			player.setPosX(curX)
 			player.setPosY(curY)
 		}
 
 		// Player dies if  he/she collides with explosion
-		if(explosionLayer.collisionWith(player) && !player.GhostMode)
+		if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
 		{
 			explosionManager.PlayerDied(player, layerManager)
 		}
@@ -106,7 +93,7 @@ function Game ()
 
 		// update player
 		player.update()
-		playerLayer.newBoard(Players)
+		layerManager.ReturnLayer("Player").newBoard(Players)
 	}
 
 	/******************************************************************************

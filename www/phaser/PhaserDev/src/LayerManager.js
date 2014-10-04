@@ -4,15 +4,6 @@ function LayerManager(preferences)
 	var Preferences = preferences
 	var World = preferences.World
 
-	this.AddLayer = function(layer)
-	{
-		// Add layer to Layers array
-		Layers.push(layer)
-
-		// return layer so it can be assigned
-		return layer
-	}
-
 	// returns a layer from the list based on name
 	this.ReturnLayer = function(name)
 	{
@@ -33,9 +24,28 @@ function LayerManager(preferences)
 		return null
 	}
 
-	// Sets up the world based on the functions called in this method
+	// Sets up the world with specified layers
+	// Add walls based on function
 	this.SetUpWorld = function()
 	{
+
+		// Player Layer
+		Layers.push(new Layer(World, "Player", 15, 9, Player, 4))
+
+		// Wall Layer
+		Layers.push(new Layer(World, "Wall", 15, 9, Wall, 3))
+
+		// Bomb Layer
+		Layers.push(new Layer(World, "Bomb", 15, 9, Bomb, 2))
+
+		// Explosion Layer
+		Layers.push(new Layer(World, "Explosion", 15, 9, Explosion, 1))
+
+
+	/******************************************************************************
+								Add Walls / Can Change for new map
+	******************************************************************************/
+
 		// add unbreakable walls
 		AddUnbreakableWalls()
 
