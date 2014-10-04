@@ -1,18 +1,17 @@
-function ExplosionManager(world, preferences)
+function ExplosionManager(preferences)
 {
-	var World = world
-
-	this.Players = preferences.Players
-	this.BoardColSize = preferences.BoardColSize
-	this.BoardRowSize = preferences.BoardRowSize
-	this.ImageSize = preferences.ImageSize
+	var World = preferences.World
+	var Players = preferences.Players
+	var BoardColSize = preferences.BoardColSize
+	var BoardRowSize = preferences.BoardRowSize
+	var ImageSize = preferences.ImageSize
 
 	// Process Bomb dropped 
 	this.DropBomb = function (player, layerManager)
 	{
 		// Create bomb
 		var bomb = new Bomb(World, player.getCol(), player.getRow(), 
-			player.getCol() * this.ImageSize, player.getRow() * this.ImageSize)
+			player.getCol() * ImageSize, player.getRow() * ImageSize)
 
 		// Add bomb to layer
 		layerManager.ReturnLayer("Bomb").Add(bomb)
@@ -99,11 +98,11 @@ function ExplosionManager(world, preferences)
 			var wallOne = wallLayer.getObjectAt(col+i, row);
 			var wallTwo = wallLayer.getObjectAt(col, row+i);
 
-			if(explodeOne == undefined && col+i >= 0 && col+i < this.BoardColSize)
+			if(explodeOne == undefined && col+i >= 0 && col+i < BoardColSize)
 			{
 				if(wallOne == undefined)
 				{
-					var explosion = new Explosion(World, col+i, row, (col+i) * this.ImageSize, row * this.ImageSize);
+					var explosion = new Explosion(World, col+i, row, (col+i) * ImageSize, row * ImageSize);
 					explosionLayer.Add(explosion);
 					explosions.push(explosion)
 				}
@@ -111,18 +110,18 @@ function ExplosionManager(world, preferences)
 				{
 					if(wallOne.getCanBreak())
 					{
-						var explosion = new Explosion(World, col+i, row, (col+i) * this.ImageSize, row * this.ImageSize);
+						var explosion = new Explosion(World, col+i, row, (col+i) * ImageSize, row * ImageSize);
 						explosionLayer.Add(explosion);
 						explosions.push(explosion)
 					}
 				}
 			}
 
-			if(explodeTwo == undefined && row+i >= 0 && row+i < this.BoardRowSize)
+			if(explodeTwo == undefined && row+i >= 0 && row+i < BoardRowSize)
 			{
 				if(wallTwo == undefined)
 				{
-					var explosion = new Explosion(World, col, row+i, col * this.ImageSize, (row+i) * this.ImageSize);
+					var explosion = new Explosion(World, col, row+i, col * ImageSize, (row+i) * ImageSize);
 					explosionLayer.Add(explosion);
 					explosions.push(explosion)
 				}
@@ -130,7 +129,7 @@ function ExplosionManager(world, preferences)
 				{
 					if(wallTwo.getCanBreak())
 					{
-						var explosion = new Explosion(World, col, row+i, col * this.ImageSize, (row+i) * this.ImageSize);
+						var explosion = new Explosion(World, col, row+i, col * ImageSize, (row+i) * ImageSize);
 						explosionLayer.Add(explosion);
 						explosions.push(explosion)
 					}
@@ -159,11 +158,11 @@ function ExplosionManager(world, preferences)
 	// Removes a dead player
 	this.PlayerDied = function(player, layerManager)
 	{
-		for(var i = 0; i < this.Players.length; i++)
+		for(var i = 0; i < Players.length; i++)
 		{
-			if(player.getName() === this.Players[i].getName())
+			if(player.getName() === Players[i].getName())
 			{
-				this.Players.splice(i,1);
+				Players.splice(i,1);
 				layerManager.ReturnLayer("Player").Remove(player);
 			}
 		}
