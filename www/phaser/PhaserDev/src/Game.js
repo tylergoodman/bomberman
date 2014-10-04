@@ -32,7 +32,7 @@ function Game ()
 
    		// Managers
    		layerManager = new LayerManager(preferences)
-   		explosionManager = new ExplosionManager(preferences)
+   		explosionManager = new ExplosionManager(preferences, layerManager)
 
    		// Set up the layers for the world
    		layerManager.SetUpWorld()
@@ -87,7 +87,7 @@ function Game ()
 		{
 			if(player.getBombCount() > 0)
 			{
-				explosionManager.DropBomb(player, layerManager)
+				explosionManager.DropBomb(player)
 			}
 		}
 

@@ -1,34 +1,35 @@
-function ExplosionManager(preferences)
+function ExplosionManager(preferences, layerManager)
 {
 	var World = preferences.World
 	var Players = preferences.Players
 	var BoardColSize = preferences.BoardColSize
 	var BoardRowSize = preferences.BoardRowSize
 	var ImageSize = preferences.ImageSize
+	var LayerManager = layerManager
 
 	// Process Bomb dropped 
-	this.DropBomb = function (player, layerManager)
+	this.DropBomb = function (player)
 	{
 		// Create bomb
 		var bomb = new Bomb(World, player.getCol(), player.getRow(), 
 			player.getCol() * ImageSize, player.getRow() * ImageSize)
 
 		// Add bomb to layer
-		layerManager.ReturnLayer("Bomb").Add(bomb)
+		LayerManager.ReturnLayer("Bomb").Add(bomb)
 
 		// Add the bomb event - last parm is the callback function's args
-		World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), this.BombExploded, this, bomb, layerManager)
+		World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), this.BombExploded, this, bomb)
 
 		player.setBombCount(player.getBombCount() - 1)
 	}
 
 	// Bomb exploded Event
-	this.BombExploded = function(bomb, layerManager)
+	this.BombExploded = function(bomb)
 	{
 		// define layers
-		var bombLayer = layerManager.ReturnLayer("Bomb")
-		var wallLayer = layerManager.ReturnLayer("Wall")
-		var playerLayer = layerManager.ReturnLayer("Player")
+		var bombLayer = LayerManager.ReturnLayer("Bomb")
+		var wallLayer = LayerManager.ReturnLayer("Wall")
+		var playerLayer = LayerManager.ReturnLayer("Player")
 
 		bombLayer.Remove(bomb)
 
@@ -60,33 +61,33 @@ function ExplosionManager(preferences)
 
 			if(playerLocOne instanceof Player)
 			{
-				this.PlayerDied(playerLocOne, layerManager)
+				this.PlayerDied(playerLocOne, LayerManager)
 			}
 
 			if(playerLocTwo instanceof Player)
 			{
-				this.PlayerDied(playerLocTwo, layerManager)
+				this.PlayerDied(playerLocTwo, LayerManager)
 			}
 		}
 
 		// Adds explosions
-		this.AddExplosion(col, row, layerManager);
+		this.AddExplosion(col, row);
 
 		// Special case when player is on the bomb
 		var player = playerLayer.getObjectAt(col, row)
 		if(player instanceof Player)
 		{
-			PlayerDied(player)
+			this.PlayerDied(player.LayerManager)
 		}
 	}
 
 	// Adds explosion images
-	this.AddExplosion = function(col, row, layerManager)
+	this.AddExplosion = function(col, row)
 	{
 
 		// define layers
-		var explosionLayer = layerManager.ReturnLayer("Explosion")
-		var wallLayer = layerManager.ReturnLayer("Wall")
+		var explosionLayer = LayerManager.ReturnLayer("Explosion")
+		var wallLayer = LayerManager.ReturnLayer("Wall")
 
 		// Array to store explosion - fire area
 		var explosions = [];
