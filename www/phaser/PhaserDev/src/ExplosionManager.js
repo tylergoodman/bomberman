@@ -1,11 +1,11 @@
-function ExplosionManager(world, players, boardColSize, boardRowSize, imageSize)
+function ExplosionManager(world, preferences)
 {
 	var World = world
 
-	this.Players = players
-	this.BoardColSize = boardColSize
-	this.BoardRowSize = boardRowSize
-	this.ImageSize = imageSize
+	this.Players = preferences.Players
+	this.BoardColSize = preferences.BoardColSize
+	this.BoardRowSize = preferences.BoardRowSize
+	this.ImageSize = preferences.ImageSize
 
 	// Process Bomb dropped 
 	this.DropBomb = function (player, layerManager)

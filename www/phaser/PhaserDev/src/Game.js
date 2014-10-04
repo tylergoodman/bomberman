@@ -2,18 +2,17 @@
 function Game () 
 {
 	var world = new Phaser.Game(1050, 630, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update })
-	var boardColSize = 15
-	var boardRowSize = 9
-	var imageSize = 70
 	var player = null
 	var playerLayer = null
 	var wallLayer = null
-	var bombLayer = null
 	var layerManager = null
 	var explosionManager = null
 
 	// Array to keep track of players
 	var Players = [];
+
+	// Preferences
+	var preferences = new Preferences(Players)
 
 	// Preload images needed
 	function preload() {
@@ -35,7 +34,7 @@ function Game ()
 
    		// Managers
    		layerManager = new LayerManager()
-   		explosionManager = new ExplosionManager(world, Players, boardColSize, boardRowSize, imageSize)
+   		explosionManager = new ExplosionManager(world, preferences)
 
    		// Player Layer
    		playerLayer = layerManager.AddLayer(new Layer(world, "Player", 15, 9, Player, 4))
@@ -121,12 +120,13 @@ function Game ()
 	// Adds unbreakable walls to the right location
 	function AddUnbreakableWalls()
 	{
-		for(var i = 1; i < boardColSize; i += 2)
+		for(var i = 1; i < preferences.BoardColSize; i += 2)
 		{
-			for(var j = 1; j < boardRowSize; j+=2)
+			for(var j = 1; j < preferences.BoardRowSize; j+=2)
 			{
 				// Create the wall
-				var unbreakWall = new Wall(world, false, i, j, i*imageSize, j*imageSize)
+				var unbreakWall = new Wall(world, false, i, j, 
+					i*preferences.ImageSize, j*preferences.ImageSize)
 
 				// Add the wall to board
 				wallLayer.Add(unbreakWall, i, j)
@@ -138,10 +138,10 @@ function Game ()
 	// Adds breakable walls to the right location
 	function AddBreakableWalls()
 	{
-		for(var i = 0; i < boardColSize; i++)
+		for(var i = 0; i < preferences.BoardColSize; i++)
 		{
 			// fill in rows 1-8
-			for(var j = 1; j < boardRowSize; j++)
+			for(var j = 1; j < preferences.BoardRowSize; j++)
 			{
 				// if col is odd than skip every other row to ignore unbreakable walls
 				if(i % 2 == 1)
@@ -152,16 +152,18 @@ function Game ()
 				}
 
 				// Create the wall
-				var breakWall = new Wall(world, true, i, j, i*imageSize, j*imageSize)
+				var breakWall = new Wall(world, true, i, j, 
+					i*preferences.ImageSize, j*preferences.ImageSize)
 
 				// Add the wall to board
 				wallLayer.Add(breakWall, i, j)
 			}
 
 			// fills in first row with space
-			if(i < boardColSize && i > 2)
+			if(i < preferences.BoardColSize && i > 2)
 			{
-				var breakWall = new Wall(world, true, i, 0, i*imageSize, 0)
+				var breakWall = new Wall(world, true, i, 0, 
+					i*preferences.ImageSize, 0)
 
 				wallLayer.Add(breakWall, i, 0)
 			}
