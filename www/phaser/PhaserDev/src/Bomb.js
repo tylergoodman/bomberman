@@ -3,14 +3,27 @@
 						Constructor
 ******************************************************************************/
 
-function Bomb (world, col, row, posX, posY) {
+function Bomb (world, col, row, posX, posY, type) {
 	GameObject.call(this, world, col, row, posX, posY, 'bomb');
 
 	// fuse time
 	this.fuse = 1.5
+	this.type  = "normal"
 /******************************************************************************
 							 Methods
 ******************************************************************************/
+
+	
+	function SetType(type)
+	{
+		switch(type)
+		{
+			case "normal":
+				break;
+			default:
+				break;
+		}
+	}
 
 	// Returns if Bomb should explode
 	this.isExploding = function()
@@ -28,6 +41,13 @@ function Bomb (world, col, row, posX, posY) {
 		return this.fuse
 	}
 
+	this.getType = function()
+	{
+		return this.type
+	}
+
+	// Set Type and fuze
+	SetType(type)
 }
 /******************************************************************************
 						End of Constructor
