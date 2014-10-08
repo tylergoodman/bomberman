@@ -45,10 +45,6 @@ function Game ()
 		// Add player to world
 		Players.push(player)
 		layerManager.ReturnLayer("Player").Add(player)
-
-					// animations
-		player.Sprite.animations.add('run');
-		 player.Sprite.animations.play('run', 15, true);
 	}
 
 	function update() {
@@ -61,6 +57,7 @@ function Game ()
 		if (world.input.keyboard.isDown(Phaser.Keyboard.A))
 		{
 			player.setPosX(player.getPosX() - moveValue)
+			player.animate("left")
 		}
 		else if (world.input.keyboard.isDown(Phaser.Keyboard.D))
 		{
@@ -73,6 +70,10 @@ function Game ()
 		else if (world.input.keyboard.isDown(Phaser.Keyboard.S))
 		{
 			player.setPosY(player.getPosY() + moveValue)
+		}
+		else
+		{
+			player.animate("stop")
 		}
 
 		// return player to previous position if collides with wall

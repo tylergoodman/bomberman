@@ -11,6 +11,14 @@ function Player (world, name, col, row, posX, posY) {
 	this.Name = name
 	this.BombCount = 20
 	this.GhostMode = false
+	this.CurrentAnimation = null
+
+/******************************************************************************
+							 Animations
+******************************************************************************/
+
+// animations
+this.Sprite.animations.add('run');
 
 /******************************************************************************
 							 Methods
@@ -52,6 +60,44 @@ function Player (world, name, col, row, posX, posY) {
 		// update player col / row
 		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / 70))
 		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / 70))
+	}
+
+	Player.prototype.animate = function(animation)
+	{
+		switch(animation)
+		{
+			case "left":
+				if(this.CurrentAnimation != 'run')
+				{
+					this.animationChanged = true
+					this.CurrentAnimation = 'run'
+				}				
+				break;
+			case "stop":
+				if(this.CurrentAnimation != 'stop')
+				{
+					this.animationChanged = true
+					this.CurrentAnimation = 'stop'
+					this.Sprite.animations.stop(null, true)
+				}	
+				break;
+			default:
+				if(this.CurrentAnimation != 'stop')
+				{
+					this.animationChanged = true
+					this.CurrentAnimation = 'stop'
+				}				
+				break;
+		}
+
+		if(this.animationChanged)
+		{
+			if(this.CurrentAnimation != 'stop')
+			{
+				this.Sprite.animations.play(this.CurrentAnimation, 15, true)
+			}
+			this.animationChanged = false
+		}
 	}
 
 	Player.prototype.render = function()
