@@ -5,7 +5,7 @@
 
 function Player (world, name, col, row, posX, posY) {
 
-	GameObject.call(this, world, col, row, posX, posY, 'bomberman')
+	GameObject.call(this, world, col, row, posX, posY, 'bot')
 
 	// Set up Object's properties
 	this.Name = name

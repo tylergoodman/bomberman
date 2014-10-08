@@ -11,7 +11,7 @@ function Game ()
 
 	// Preload images needed
 	function preload() {
-
+		world.load.atlasJSONHash('bot', 'assets/running_bot.png', 'src/running_bot.json');
 	    world.load.image('bomberman', 'assets/bomberman.jpg')
 	    world.load.image('background', 'assets/background.png')
 	    world.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
@@ -45,6 +45,10 @@ function Game ()
 		// Add player to world
 		Players.push(player)
 		layerManager.ReturnLayer("Player").Add(player)
+
+					// animations
+		player.Sprite.animations.add('run');
+		 player.Sprite.animations.play('run', 15, true);
 	}
 
 	function update() {
