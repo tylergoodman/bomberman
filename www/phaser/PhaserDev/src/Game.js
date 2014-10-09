@@ -105,6 +105,14 @@ function Game ()
 			}
 		}
 
+		if(world.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && Players[0] != null)
+		{
+			if(player.getBombCount() > 0)
+			{
+				explosionManager.DropBomb(player, "horizontal")
+			}
+		}
+
 		// update player
 		player.update()
 		layerManager.ReturnLayer("Player").newBoard(Players)

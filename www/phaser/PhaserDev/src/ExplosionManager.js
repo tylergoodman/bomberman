@@ -41,6 +41,9 @@ function ExplosionManager(preferences, layerManager)
 			case "vertical":
 				VerticalBombExplosion(bomb)
 				break;
+			case "horizontal":
+				HorizontalBombExplosion(bomb)
+				break;
 			default:
 				break;
 		}
@@ -65,6 +68,10 @@ function ExplosionManager(preferences, layerManager)
 			this, explosion, WallLayer)
 		}
 	}
+
+	/******************************************************************************
+						Different Types of Bombs
+	******************************************************************************/
 
 	function NormalBombExplosion(bomb)
 	{
@@ -128,6 +135,7 @@ function ExplosionManager(preferences, layerManager)
 		}
 	}
 
+	// Vertical Bomb
 	function VerticalBombExplosion(bomb)
 	{
 		var col = bomb.getCol()
@@ -197,6 +205,80 @@ function ExplosionManager(preferences, layerManager)
 		AddExplosion(col,row)
 	}
 
+	// Vertical Bomb
+	function HorizontalBombExplosion(bomb)
+	{
+		var col = bomb.getCol()
+		var row = bomb.getRow()
+
+		// Check left side of the bomb
+	    for(var i = col; i >= 0; i--)
+		{
+			var wall = WallLayer.getObjectAt(i, row)
+			var player = PlayerLayer.getObjectAt(i, row)
+
+
+			if(wall instanceof Wall)
+			{
+				if(wall.getCanBreak() == true)
+				{
+					WallLayer.Remove(wall)
+				}	
+				// Stop, dont explode pass 1 wall
+				break;
+			}
+
+			if(player instanceof Player)
+			{
+				PlayerDied(player)
+			}
+
+			// Add explosion
+			AddExplosion(i,row)
+		}
+
+		// Check Below the bomb
+	    for(var i = col; i < BoardColSize; i++)
+		{
+			var wall = WallLayer.getObjectAt(i, row)
+			var player = PlayerLayer.getObjectAt(i, row)
+
+
+			if(wall instanceof Wall)
+			{
+				if(wall.getCanBreak() == true)
+				{
+					WallLayer.Remove(wall)
+				}	
+				// Stop, dont explode pass 1 wall
+				break;
+			}
+
+			if(player instanceof Player)
+			{
+				PlayerDied(player)
+			}
+
+			// Add explosion
+			AddExplosion(i,row)
+		}
+
+		// Special case when player is on the bomb
+		var player = PlayerLayer.getObjectAt(col, row)
+		
+		if(player instanceof Player)
+		{
+			PlayerDied(player)
+		}
+
+		// Add explosion
+		AddExplosion(col,row)
+	}
+
+
+/******************************************************************************
+					Player's Died Logic
+******************************************************************************/
 	// Removes a dead player
 	this.PlayerDied = function(player)
 	{

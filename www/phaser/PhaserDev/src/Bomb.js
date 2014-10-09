@@ -24,6 +24,9 @@ function Bomb (world, col, row, posX, posY, type) {
 			case "vertical":
 				this.type = "vertical"
 				break;
+			case "horizontal":
+				this.type = "horizontal"
+				break;
 			default:
 				break;
 		}
