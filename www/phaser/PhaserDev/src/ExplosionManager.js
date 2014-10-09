@@ -11,11 +11,11 @@ function ExplosionManager(preferences, layerManager)
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
 
 	// Process Bomb dropped 
-	this.DropBomb = function (player)
+	this.DropBomb = function (player, type)
 	{
 		// Create bomb
 		var bomb = new Bomb(World, player.getCol(), player.getRow(), 
-			player.getCol() * ImageSize, player.getRow() * ImageSize, "normal")
+			player.getCol() * ImageSize, player.getRow() * ImageSize, type)
 
 		// Add bomb to layer
 		BombLayer.Add(bomb)
@@ -38,6 +38,9 @@ function ExplosionManager(preferences, layerManager)
 			case "normal":
 				NormalBombExplosion(bomb)
 				break;
+			case "vertical":
+				VerticalBombExplosion(bomb)
+				break;
 			default:
 				break;
 		}
@@ -46,72 +49,21 @@ function ExplosionManager(preferences, layerManager)
 	// Adds explosion images
 	function AddExplosion(col, row)
 	{
-
-		// Array to store explosion - fire area
-		var explosions = [];
-
-		for(var i = -1; i <= 1; i += 2)
+		// only add explosion if there isnt one there already
+		if(!(ExplosionLayer.getObjectAt(col,row) instanceof Explosion))
 		{
-			var explodeOne = ExplosionLayer.getObjectAt(col+i, row);
-			var explodeTwo = ExplosionLayer.getObjectAt(col, row+i);
-			var wallOne = WallLayer.getObjectAt(col+i, row);
-			var wallTwo = WallLayer.getObjectAt(col, row+i);
-
-			if(explodeOne == undefined && col+i >= 0 && col+i < BoardColSize)
-			{
-				if(wallOne == undefined)
-				{
-					var explosion = new Explosion(World, col+i, row, (col+i) * ImageSize, row * ImageSize);
-					ExplosionLayer.Add(explosion);
-					explosions.push(explosion)
-				}
-				else
-				{
-					if(wallOne.getCanBreak())
-					{
-						var explosion = new Explosion(World, col+i, row, (col+i) * ImageSize, row * ImageSize);
-						ExplosionLayer.Add(explosion);
-						explosions.push(explosion)
-					}
-				}
-			}
-
-			if(explodeTwo == undefined && row+i >= 0 && row+i < BoardRowSize)
-			{
-				if(wallTwo == undefined)
-				{
-					var explosion = new Explosion(World, col, row+i, col * ImageSize, (row+i) * ImageSize);
-					ExplosionLayer.Add(explosion);
-					explosions.push(explosion)
-				}
-				else
-				{
-					if(wallTwo.getCanBreak())
-					{
-						var explosion = new Explosion(World, col, row+i, col * ImageSize, (row+i) * ImageSize);
-						ExplosionLayer.Add(explosion);
-						explosions.push(explosion)
-					}
-				}
-			}
-		}
-		
-		// remove explosions event
-		World.time.events.add(Phaser.Timer.SECOND * .5, 
-			function(explosions, WallLayer) {
-				for(var i = 0; i < explosions.length; i++) 
-				{
-					// remove breakable wall after explosion / explosions can only spawn on breakable walls / no wall
-					var wall = WallLayer.getObjectAt(explosions[i].getCol(), explosions[i].getRow())
-					if(wall != undefined)
-					{
-						WallLayer.remove(wall)
-					}
-
+			// Create explosion
+			var explosion = new Explosion(World, col, row, col * ImageSize, row * ImageSize)
+			// Add it to layer
+			ExplosionLayer.Add(explosion)
+			//Add remove explosion event
+			World.time.events.add(Phaser.Timer.SECOND * .5, 
+			function(explosion, WallLayer) {
 					// remove explosion from explosion layer
-					ExplosionLayer.Remove(explosions[i])}
+					ExplosionLayer.Remove(explosion)
 				}, 
-		this, explosions, WallLayer)
+			this, explosion, WallLayer)
+		}
 	}
 
 	function NormalBombExplosion(bomb)
@@ -135,13 +87,23 @@ function ExplosionManager(preferences, layerManager)
 					WallLayer.Remove(wallOne)
 				}	
 			}
+
+			// Check if you can add explosion at where wall one is suppose to be
+			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
+				AddExplosion(col+i, row)
+
 			if(wallTwo instanceof Wall)
 			{
 				if(wallTwo.getCanBreak() == true)
 				{
 					WallLayer.Remove(wallTwo)
+					AddExplosion(col, row+i)
 				}	
 			}
+
+			// Check if you can add explosion at where wall two is suppose to be
+			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
+				AddExplosion(col, row+i)
 
 			if(playerLocOne instanceof Player)
 			{
@@ -164,6 +126,75 @@ function ExplosionManager(preferences, layerManager)
 		{
 			PlayerDied(player)
 		}
+	}
+
+	function VerticalBombExplosion(bomb)
+	{
+		var col = bomb.getCol()
+		var row = bomb.getRow()
+
+		// Check above the bomb
+	    for(var i = row; i >= 0; i--)
+		{
+			var wall = WallLayer.getObjectAt(col, i)
+			var player = PlayerLayer.getObjectAt(col, i)
+
+
+			if(wall instanceof Wall)
+			{
+				if(wall.getCanBreak() == true)
+				{
+					WallLayer.Remove(wall)
+				}	
+				// Stop, dont explode pass 1 wall
+				break;
+			}
+
+			if(player instanceof Player)
+			{
+				PlayerDied(player)
+			}
+
+			// Add explosion
+			AddExplosion(col,i)
+		}
+
+		// Check Below the bomb
+	    for(var i = row; i < BoardRowSize; i++)
+		{
+			var wall = WallLayer.getObjectAt(col, i)
+			var player = PlayerLayer.getObjectAt(col, i)
+
+
+			if(wall instanceof Wall)
+			{
+				if(wall.getCanBreak() == true)
+				{
+					WallLayer.Remove(wall)
+				}	
+				// Stop, dont explode pass 1 wall
+				break;
+			}
+
+			if(player instanceof Player)
+			{
+				PlayerDied(player)
+			}
+
+			// Add explosion
+			AddExplosion(col,i)
+		}
+
+		// Special case when player is on the bomb
+		var player = PlayerLayer.getObjectAt(col, row)
+		
+		if(player instanceof Player)
+		{
+			PlayerDied(player)
+		}
+
+		// Add explosion
+		AddExplosion(col,row)
 	}
 
 	// Removes a dead player

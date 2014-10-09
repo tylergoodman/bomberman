@@ -93,7 +93,15 @@ function Game ()
 		{
 			if(player.getBombCount() > 0)
 			{
-				explosionManager.DropBomb(player)
+				explosionManager.DropBomb(player, "normal")
+			}
+		}
+
+		if(world.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && Players[0] != null)
+		{
+			if(player.getBombCount() > 0)
+			{
+				explosionManager.DropBomb(player, "vertical")
 			}
 		}
 

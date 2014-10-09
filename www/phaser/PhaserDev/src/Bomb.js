@@ -8,7 +8,7 @@ function Bomb (world, col, row, posX, posY, type) {
 
 	// fuse time
 	this.fuse = 1.5
-	this.type  = "normal"
+	this.type  = type
 /******************************************************************************
 							 Methods
 ******************************************************************************/
@@ -19,6 +19,10 @@ function Bomb (world, col, row, posX, posY, type) {
 		switch(type)
 		{
 			case "normal":
+				this.type = "normal"
+				break;
+			case "vertical":
+				this.type = "vertical"
 				break;
 			default:
 				break;
@@ -46,8 +50,6 @@ function Bomb (world, col, row, posX, posY, type) {
 		return this.type
 	}
 
-	// Set Type and fuze
-	SetType(type)
 }
 /******************************************************************************
 						End of Constructor
