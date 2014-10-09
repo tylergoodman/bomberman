@@ -47,10 +47,10 @@ function LayerManager(preferences)
 	******************************************************************************/
 
 		// add unbreakable walls
-		//AddUnbreakableWalls()
+		AddUnbreakableWalls()
 
 		// add breakable walls
-		//AddBreakableWalls()
+		AddBreakableWalls()
 
 	}
 

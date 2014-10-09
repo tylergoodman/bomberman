@@ -52,8 +52,25 @@ function ExplosionManager(preferences, layerManager)
 	// Adds explosion images
 	function AddExplosion(col, row)
 	{
+		if(WallLayer.getObjectAt(col,row) instanceof Wall)
+		{
+			if(WallLayer.getObjectAt(col,row).getCanBreak())
+			{
+				// Create explosion
+				var explosion = new Explosion(World, col, row, col * ImageSize, row * ImageSize)
+				// Add it to layer
+				ExplosionLayer.Add(explosion)
+				//Add remove explosion event
+				World.time.events.add(Phaser.Timer.SECOND * .5, 
+				function(explosion, WallLayer) {
+						// remove explosion from explosion layer
+						ExplosionLayer.Remove(explosion)
+					}, 
+				this, explosion, WallLayer)
+			}
+		}
 		// only add explosion if there isnt one there already
-		if(!(ExplosionLayer.getObjectAt(col,row) instanceof Explosion))
+		else if(!(ExplosionLayer.getObjectAt(col,row) instanceof Explosion))
 		{
 			// Create explosion
 			var explosion = new Explosion(World, col, row, col * ImageSize, row * ImageSize)
@@ -92,6 +109,7 @@ function ExplosionManager(preferences, layerManager)
 				if(wallOne.getCanBreak() == true)
 				{
 					WallLayer.Remove(wallOne)
+					AddExplosion(col+i, row)
 				}	
 			}
 
@@ -147,6 +165,8 @@ function ExplosionManager(preferences, layerManager)
 			var wall = WallLayer.getObjectAt(col, i)
 			var player = PlayerLayer.getObjectAt(col, i)
 
+			// Add explosion
+			AddExplosion(col,i)
 
 			if(wall instanceof Wall)
 			{
@@ -162,9 +182,6 @@ function ExplosionManager(preferences, layerManager)
 			{
 				PlayerDied(player)
 			}
-
-			// Add explosion
-			AddExplosion(col,i)
 		}
 
 		// Check Below the bomb
@@ -173,6 +190,8 @@ function ExplosionManager(preferences, layerManager)
 			var wall = WallLayer.getObjectAt(col, i)
 			var player = PlayerLayer.getObjectAt(col, i)
 
+			// Add explosion
+			AddExplosion(col,i)
 
 			if(wall instanceof Wall)
 			{
@@ -188,9 +207,6 @@ function ExplosionManager(preferences, layerManager)
 			{
 				PlayerDied(player)
 			}
-
-			// Add explosion
-			AddExplosion(col,i)
 		}
 
 		// Special case when player is on the bomb
@@ -217,6 +233,8 @@ function ExplosionManager(preferences, layerManager)
 			var wall = WallLayer.getObjectAt(i, row)
 			var player = PlayerLayer.getObjectAt(i, row)
 
+			// Add explosion
+			AddExplosion(i,row)
 
 			if(wall instanceof Wall)
 			{
@@ -232,9 +250,6 @@ function ExplosionManager(preferences, layerManager)
 			{
 				PlayerDied(player)
 			}
-
-			// Add explosion
-			AddExplosion(i,row)
 		}
 
 		// Check Below the bomb
@@ -243,6 +258,8 @@ function ExplosionManager(preferences, layerManager)
 			var wall = WallLayer.getObjectAt(i, row)
 			var player = PlayerLayer.getObjectAt(i, row)
 
+			// Add explosion
+			AddExplosion(i,row)
 
 			if(wall instanceof Wall)
 			{
@@ -258,9 +275,6 @@ function ExplosionManager(preferences, layerManager)
 			{
 				PlayerDied(player)
 			}
-
-			// Add explosion
-			AddExplosion(i,row)
 		}
 
 		// Special case when player is on the bomb
