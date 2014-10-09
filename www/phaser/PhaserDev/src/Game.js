@@ -57,7 +57,6 @@ function Game ()
 		if (world.input.keyboard.isDown(Phaser.Keyboard.A))
 		{
 			player.setPosX(player.getPosX() - moveValue)
-			player.animate("left")
 		}
 		else if (world.input.keyboard.isDown(Phaser.Keyboard.D))
 		{

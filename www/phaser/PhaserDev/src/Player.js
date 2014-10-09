@@ -12,6 +12,8 @@ function Player (world, name, col, row, posX, posY) {
 	this.BombCount = 20
 	this.GhostMode = false
 	this.CurrentAnimation = null
+	this.PreviousAnimation = null
+	this.AnimationChanged = false
 
 /******************************************************************************
 							 Animations
@@ -60,18 +62,36 @@ this.Sprite.animations.add('run');
 		// update player col / row
 		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / 70))
 		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / 70))
+
+		// plays animation
+		if(this.AnimationChanged)
+		{
+			if(this.CurrentAnimation != 'stop')
+			{
+				this.animate(this.CurrentAnimation)
+			}
+			this.AnimationChanged = false
+		}
 	}
+
+	// Decides which animation to play when user moves
+
 
 	Player.prototype.animate = function(animation)
 	{
 		switch(animation)
 		{
 			case "left":
-				if(this.CurrentAnimation != 'run')
-				{
-					this.animationChanged = true
-					this.CurrentAnimation = 'run'
-				}				
+				this.Sprite.animations.play('run', 15, true)			
+				break;
+			case "right":
+				this.Sprite.animations.stop(null, true)
+				break;
+			case "up" :
+				this.Sprite.animations.stop(null, true)
+				break;
+			case "down" :
+				this.Sprite.animations.stop(null, true)
 				break;
 			case "stop":
 				if(this.CurrentAnimation != 'stop')
@@ -82,22 +102,49 @@ this.Sprite.animations.add('run');
 				}	
 				break;
 			default:
-				if(this.CurrentAnimation != 'stop')
-				{
-					this.animationChanged = true
-					this.CurrentAnimation = 'stop'
-				}				
 				break;
 		}
+	}
 
-		if(this.animationChanged)
+
+	// Override Game object's setPosX
+	Player.prototype.setPosX = function (newPosition) {
+		var curPosition = this.getPosX()
+		var newAnimation = null
+
+		if(curPosition > newPosition)
+			newAnimation = 'left'
+		else if(curPosition < newPosition)
+			newAnimation = 'right'
+
+		if(newAnimation != this.CurrentAnimation && newAnimation != null)
 		{
-			if(this.CurrentAnimation != 'stop')
-			{
-				this.Sprite.animations.play(this.CurrentAnimation, 15, true)
-			}
-			this.animationChanged = false
+			this.AnimationChanged = true
+			this.CurrentAnimation = newAnimation
 		}
+
+		// update the sprites x position
+		this.Sprite.x = newPosition
+	}
+
+	// Override Game object's setPosX
+	Player.prototype.setPosY = function (newPosition) {
+		var curPosition = this.getPosY()
+		var newAnimation = null
+
+		if(curPosition > newPosition)
+			newAnimation = 'down'
+		else if(curPosition < newPosition)
+			newAnimation = 'up'
+
+		if(newAnimation != this.CurrentAnimation && newAnimation != null)
+		{
+			this.AnimationChanged = true
+			this.CurrentAnimation = newAnimation
+		}
+		
+		// update the sprites y position
+		this.Sprite.y = newPosition
 	}
 
 	Player.prototype.render = function()
