@@ -10,6 +10,9 @@ function ExplosionManager(preferences, layerManager)
 	var BombLayer = layerManager.ReturnLayer("Bomb")
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
 
+	// Perk Manager to manage perks
+	var perkManager = new PerkManager(preferences, layerManager)
+
 	// Process Bomb dropped 
 	this.DropBomb = function (player, type)
 	{
@@ -106,11 +109,8 @@ function ExplosionManager(preferences, layerManager)
 
 			if(wallOne instanceof Wall)
 			{
-				if(wallOne.getCanBreak() == true)
-				{
-					WallLayer.Remove(wallOne)
-					AddExplosion(col+i, row)
-				}	
+				if(perkManager.RemoveWall(wallOne))
+					AddExplosion(col+i, row)	
 			}
 
 			// Check if you can add explosion at where wall one is suppose to be
@@ -119,11 +119,8 @@ function ExplosionManager(preferences, layerManager)
 
 			if(wallTwo instanceof Wall)
 			{
-				if(wallTwo.getCanBreak() == true)
-				{
-					WallLayer.Remove(wallTwo)
+				if(perkManager.RemoveWall(wallTwo))
 					AddExplosion(col, row+i)
-				}	
 			}
 
 			// Check if you can add explosion at where wall two is suppose to be
@@ -170,10 +167,7 @@ function ExplosionManager(preferences, layerManager)
 
 			if(wall instanceof Wall)
 			{
-				if(wall.getCanBreak() == true)
-				{
-					WallLayer.Remove(wall)
-				}	
+				perkManager.RemoveWall(wall)
 				// Stop, dont explode pass 1 wall
 				break;
 			}
@@ -195,10 +189,7 @@ function ExplosionManager(preferences, layerManager)
 
 			if(wall instanceof Wall)
 			{
-				if(wall.getCanBreak() == true)
-				{
-					WallLayer.Remove(wall)
-				}	
+				perkManager.RemoveWall(wall)	
 				// Stop, dont explode pass 1 wall
 				break;
 			}
@@ -238,10 +229,7 @@ function ExplosionManager(preferences, layerManager)
 
 			if(wall instanceof Wall)
 			{
-				if(wall.getCanBreak() == true)
-				{
-					WallLayer.Remove(wall)
-				}	
+				perkManager.RemoveWall(wall)
 				// Stop, dont explode pass 1 wall
 				break;
 			}
@@ -263,10 +251,7 @@ function ExplosionManager(preferences, layerManager)
 
 			if(wall instanceof Wall)
 			{
-				if(wall.getCanBreak() == true)
-				{
-					WallLayer.Remove(wall)
-				}	
+				perkManager.RemoveWall(wall)
 				// Stop, dont explode pass 1 wall
 				break;
 			}

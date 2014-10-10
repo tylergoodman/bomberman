@@ -30,10 +30,13 @@ function LayerManager(preferences)
 	{
 
 		// Player Layer
-		Layers.push(new Layer(World, "Player", 15, 9, Player, 4))
+		Layers.push(new Layer(World, "Player", 15, 9, Player, 5))
 
 		// Wall Layer
-		Layers.push(new Layer(World, "Wall", 15, 9, Wall, 3))
+		Layers.push(new Layer(World, "Wall", 15, 9, Wall, 4))
+
+		// Perk Layer
+		Layers.push(new Layer(World, "Perk", 15, 9, Perk, 3))
 
 		// Bomb Layer
 		Layers.push(new Layer(World, "Bomb", 15, 9, Bomb, 2))
