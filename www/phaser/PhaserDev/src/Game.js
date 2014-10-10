@@ -18,6 +18,9 @@ function Game ()
 	    world.load.image('breakableWall', 'assets/breakableWall.png')
 	    world.load.image('bomb', 'assets/bomb.png')
 	    world.load.image('explosion', 'assets/explosion.png')
+	   	world.load.image('normalBombPerk', 'assets/normalBombPerk.png')
+	    world.load.image('horizontalBombPerk', 'assets/horizontalBombPerk.png')
+	    world.load.image('verticalBombPerk', 'assets/verticalBombPerk.png')
 
 	}
 
