@@ -1,4 +1,4 @@
-function PerkManager(preferences, layerManager)
+function PerkManager(preferences, layerManager, players)
 {
 	// Preferences
 	var World = preferences.World
@@ -7,6 +7,9 @@ function PerkManager(preferences, layerManager)
 	// Layers 
 	var PerkLayer = layerManager.ReturnLayer("Perk")
 	var WallLayer = layerManager.ReturnLayer("Wall")
+
+	// Players
+	var Players = players
 
 	// Array containing all the types of perks
 	// This should match whats in the Perk Class's constructor
@@ -34,5 +37,28 @@ function PerkManager(preferences, layerManager)
 	{
 		var randomType = PerkTypes[Math.floor((Math.random() * PerkTypes.length) + 1)]
 		return new Perk(World, col, row, col*ImageSize, row*ImageSize, randomType)
+	}
+
+	// Check if a player is on a perk
+	this.Update = function()
+	{
+		if(Players.length > 0)
+		{
+			for(var i = 0; i < Players.length; i++)
+			{
+				var col = Players[i].getCol(), row = Players[i].getRow()
+				if(PerkLayer.getObjectAt(col, row) instanceof Perk)
+				{
+					// Apply perk if user is on a perk
+					this.ApplyPerk(Player[i], PerkLayer.getObjectAt(col, row))
+				}
+			}
+		}
+	}
+
+	// Apply Perks to Players that are on top of it
+	this.ApplyPerk = function(player, perk)
+	{
+		console.log("Found Perk")
 	}
 }

@@ -5,6 +5,7 @@ function Game ()
 	var player = null
 	var layerManager = null
 	var explosionManager = null
+	var perkManager = null
 
 	// Array to keep track of players
 	var Players = []
@@ -39,8 +40,11 @@ function Game ()
    		// Set up the layers for the world
    		layerManager.SetUpWorld()
 
+   		// have to setup Perk Manager before Explosion Manager
+   		 perkManager = new PerkManager(preferences, layerManager, Players)
+
    		// Set up the world before adding it to explosion manager
-   		explosionManager = new ExplosionManager(preferences, layerManager)
+   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
 
 		// Player
 		player = new Player(world, "Player 1", 0, 0, 0, 0)
@@ -119,6 +123,9 @@ function Game ()
 		// update player
 		player.update()
 		layerManager.ReturnLayer("Player").newBoard(Players)
+
+		// update perks
+		perkManager.Update()
 	}
 
 	/******************************************************************************

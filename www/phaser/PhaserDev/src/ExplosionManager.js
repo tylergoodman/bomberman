@@ -1,4 +1,4 @@
-function ExplosionManager(preferences, layerManager)
+function ExplosionManager(preferences, layerManager, perkManager)
 {
 	var World = preferences.World
 	var Players = preferences.Players
@@ -11,7 +11,7 @@ function ExplosionManager(preferences, layerManager)
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
 
 	// Perk Manager to manage perks
-	var perkManager = new PerkManager(preferences, layerManager)
+	var perkManager = perkManager
 
 	// Process Bomb dropped 
 	this.DropBomb = function (player, type)
