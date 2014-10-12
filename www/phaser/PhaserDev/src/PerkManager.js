@@ -59,6 +59,17 @@ function PerkManager(preferences, layerManager, players)
 	// Apply Perks to Players that are on top of it
 	this.ApplyPerk = function(player, perk)
 	{
-		console.log("Found Perk")
+		switch(perk.getType())
+		{
+			case "NormalBombPerk" :
+				break;
+			case "HorizontalBombPerk" :
+				break;
+			case "VerticalBombPerk" :
+				break;
+			default:
+				console.log("Invalid perk type")
+				break;
+		}
 	}
 }

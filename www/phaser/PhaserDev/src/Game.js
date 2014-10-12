@@ -98,25 +98,25 @@ function Game ()
 		// check if spacebar was pressed / second param is for debouncing
 		if(world.input.keyboard.justPressed(Phaser.Keyboard.F, 10) && Players[0] != null)
 		{
-			if(player.getBombCount() > 0)
+			if(player.getBombCount("Normal") > 0)
 			{
-				explosionManager.DropBomb(player, "normal")
+				explosionManager.DropBomb(player, "Normal")
 			}
 		}
 
 		if(world.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && Players[0] != null)
 		{
-			if(player.getBombCount() > 0)
+			if(player.getBombCount("Vertical") > 0)
 			{
-				explosionManager.DropBomb(player, "vertical")
+				explosionManager.DropBomb(player, "Vertical")
 			}
 		}
 
 		if(world.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && Players[0] != null)
 		{
-			if(player.getBombCount() > 0)
+			if(player.getBombCount("Horizontal") > 0)
 			{
-				explosionManager.DropBomb(player, "horizontal")
+				explosionManager.DropBomb(player, "Horizontal")
 			}
 		}
 

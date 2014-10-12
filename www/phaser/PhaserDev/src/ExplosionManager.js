@@ -26,7 +26,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		// Add the bomb event - last parm is the callback function's args
 		World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
 
-		player.setBombCount(player.getBombCount() - 1)
+		player.setBombCount(type, player.getBombCount(type) - 1)
 	}
 
 	// Bomb exploded Event
@@ -38,13 +38,13 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		// Add explosions based on the bomb type
 		switch(bomb.getType())
 		{
-			case "normal":
+			case "Normal":
 				NormalBombExplosion(bomb)
 				break;
-			case "vertical":
+			case "Vertical":
 				VerticalBombExplosion(bomb)
 				break;
-			case "horizontal":
+			case "Horizontal":
 				HorizontalBombExplosion(bomb)
 				break;
 			default:
