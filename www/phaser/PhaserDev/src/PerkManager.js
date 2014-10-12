@@ -35,7 +35,7 @@ function PerkManager(preferences, layerManager, players)
 	// Returns a random perk
 	this.RandomPerk = function(col, row)
 	{
-		var randomType = PerkTypes[Math.floor((Math.random() * PerkTypes.length) + 1)]
+		var randomType = PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
 		return new Perk(World, col, row, col*ImageSize, row*ImageSize, randomType)
 	}
 
@@ -50,7 +50,7 @@ function PerkManager(preferences, layerManager, players)
 				if(PerkLayer.getObjectAt(col, row) instanceof Perk)
 				{
 					// Apply perk if user is on a perk
-					this.ApplyPerk(Player[i], PerkLayer.getObjectAt(col, row))
+					this.ApplyPerk(Players[i], PerkLayer.getObjectAt(col, row))
 				}
 			}
 		}
@@ -59,16 +59,26 @@ function PerkManager(preferences, layerManager, players)
 	// Apply Perks to Players that are on top of it
 	this.ApplyPerk = function(player, perk)
 	{
+
+		// remove perk
+		PerkLayer.Remove(perk)
+
+		console.log(perk)
+
+		// Apply perk to player
 		switch(perk.getType())
 		{
 			case "NormalBombPerk" :
+				player.setBombCount("Normal", player.getBombCount("Normal") + 3)
 				break;
 			case "HorizontalBombPerk" :
+				player.setBombCount("Horizontal", player.getBombCount("Horizontal") + 3)
 				break;
 			case "VerticalBombPerk" :
+				player.setBombCount("Vertical", player.getBombCount("Vertical") + 3)
 				break;
 			default:
-				console.log("Invalid perk type")
+				console.log("Invalid perk type to add")
 				break;
 		}
 	}

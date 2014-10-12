@@ -10,8 +10,8 @@ function Player (world, name, col, row, posX, posY) {
 	// Set up Object's properties
 	this.Name = name
 	this.NormalBombCount = 20
-	this.VerticalBombCount = 20
-	this.HorizontalBombCount = 20
+	this.VerticalBombCount = 0
+	this.HorizontalBombCount = 0
 	this.GhostMode = false
 	this.CurrentAnimation = null
 	this.PreviousAnimation = null
