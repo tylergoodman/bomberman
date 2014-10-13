@@ -17,14 +17,18 @@
     <script type="text/javascript" src="src/PerkManager.js"></script>
     <script type="text/javascript" src="src/Perk.js"></script>
     <script type="text/javascript" src="src/MainMenu.js"></script>
+    <script type="text/javascript" src="src/Preloader.js"></script>
+    <script type="text/javascript" src="src/Lobby.js"></script>   
     <script type="text/javascript" src="src/GameState.js"></script>
     <script type="text/javascript" src="src/GameOver.js"></script>
     <script>
         var game = new Phaser.Game(1050, 630, Phaser.CANVAS, 'game')
+        game.state.add('Preloader', Preloader)
+        game.state.add('Lobby', Lobby)
         game.state.add('MainMenu', MainMenu)
         game.state.add('Game', GameState)
         game.state.add('GameOver', GameOver)
-        game.state.start('MainMenu')
+        game.state.start('Preloader')
     </script>
 </head>
 <body>
