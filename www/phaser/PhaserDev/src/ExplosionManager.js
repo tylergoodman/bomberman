@@ -68,6 +68,9 @@ function ExplosionManager(preferences, layerManager, perkManager)
 				function(explosion, WallLayer) {
 						// remove explosion from explosion layer
 						ExplosionLayer.Remove(explosion)
+						 // Let explosion animation play before ending the game
+						if(Players.length == 0)
+							this.game.state.start('GameOver');
 					}, 
 				this, explosion, WallLayer)
 			}
@@ -84,6 +87,9 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			function(explosion, WallLayer) {
 					// remove explosion from explosion layer
 					ExplosionLayer.Remove(explosion)
+					 // Let explosion animation play before ending the game
+					if(Players.length == 0)
+						this.game.state.start('GameOver');
 				}, 
 			this, explosion, WallLayer)
 		}
