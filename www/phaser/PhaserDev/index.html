@@ -5,7 +5,6 @@
     <style>
     </style>
     <script type="text/javascript" src="src/phaser.js"></script>
-    <script type="text/javascript" src="src/GameState.js"></script>
     <script type="text/javascript" src="src/GameObject.js"></script>
     <script type="text/javascript" src="src/Layer.js"></script>
     <script type="text/javascript" src="src/Player.js"></script>
@@ -17,7 +16,15 @@
     <script type="text/javascript" src="src/Preferences.js"></script>
     <script type="text/javascript" src="src/PerkManager.js"></script>
     <script type="text/javascript" src="src/Perk.js"></script>
-    <script>var game = new GameState()</script>
+    <script type="text/javascript" src="src/MainMenu.js"></script>
+    <script type="text/javascript" src="src/GameState.js"></script>
+    <script>
+        var game = new Phaser.Game(1050, 630, Phaser.CANVAS, 'game')
+        var gameStates = {}
+        game.state.add('MainMenu', MainMenu)
+        game.state.add('Game', GameState)
+        game.state.start('MainMenu')
+    </script>
 </head>
 <body>
 

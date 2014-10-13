@@ -1,136 +1,125 @@
-
-function GameState () 
-{
-	var world = new Phaser.Game(1050, 630, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update })
-	var player = null
-	var layerManager = null
-	var explosionManager = null
-	var perkManager = null
+var GameState = function(game) {
+	player = null
+	layerManager = null
+	explosionManager = null
+	perkManager = null
 
 	// Array to keep track of players
-	var Players = []
+	Players = []
+} 
 
-	// Preload images needed
-	function preload() {
-		world.load.atlasJSONHash('bot', 'assets/running_bot.png', 'src/running_bot.json');
-	    world.load.image('bomberman', 'assets/bomberman.jpg')
-	    world.load.image('background', 'assets/background.png')
-	    world.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
-	    world.load.image('breakableWall', 'assets/breakableWall.png')
-	    world.load.image('bomb', 'assets/bomb.png')
-	    world.load.image('explosion', 'assets/explosion.png')
-	   	world.load.image('normalBombPerk', 'assets/normalBombPerk.png')
-	    world.load.image('horizontalBombPerk', 'assets/horizontalBombPerk.png')
-	    world.load.image('verticalBombPerk', 'assets/verticalBombPerk.png')
+GameState.prototype = {
 
-	}
+  preload: function() 	{ 
+							this.game.load.atlasJSONHash('bot', 'assets/running_bot.png', 'src/running_bot.json');
+						    this.game.load.image('bomberman', 'assets/bomberman.jpg')
+						    this.game.load.image('background', 'assets/background.png')
+						    this.game.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
+						    this.game.load.image('breakableWall', 'assets/breakableWall.png')
+						    this.game.load.image('bomb', 'assets/bomb.png')
+						    this.game.load.image('explosion', 'assets/explosion.png')
+						   	this.game.load.image('normalBombPerk', 'assets/normalBombPerk.png')
+						    this.game.load.image('horizontalBombPerk', 'assets/horizontalBombPerk.png')
+						    this.game.load.image('verticalBombPerk', 'assets/verticalBombPerk.png')
+					  	},
+  create:  function()	{	
+							// background
+							var background = this.game.add.group();
+					   		background.z = 1;
+					   		background.add(this.game.add.sprite(0,0,'background'))
 
-	function create() {
-		// background
-		var background = world.add.group();
-   		background.z = 1;
-   		background.add(world.add.sprite(0,0,'background'))
+							// Preferences
+							var preferences = new Preferences(this.game, Players)
 
-		// Preferences
-		var preferences = new Preferences(world, Players)
+					   		// Managers
+					   		layerManager = new LayerManager(preferences)
 
-   		// Managers
-   		layerManager = new LayerManager(preferences)
+					   		// Set up the layers for the world
+					   		layerManager.SetUpWorld()
 
-   		// Set up the layers for the world
-   		layerManager.SetUpWorld()
+					   		// have to setup Perk Manager before Explosion Manager
+					   		 perkManager = new PerkManager(preferences, layerManager, Players)
 
-   		// have to setup Perk Manager before Explosion Manager
-   		 perkManager = new PerkManager(preferences, layerManager, Players)
+					   		// Set up the world before adding it to explosion manager
+					   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
 
-   		// Set up the world before adding it to explosion manager
-   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
+							// Player
+							player = new Player(this.game, "Player 1", 0, 0, 0, 0)
 
-		// Player
-		player = new Player(world, "Player 1", 0, 0, 0, 0)
+							// Add player to world
+							Players.push(player)
+							layerManager.ReturnLayer("Player").Add(player)
+				   		},
+  update:  function() 	{
+							var curX = player.getPosX()
+							var curY = player.getPosY()
 
-		// Add player to world
-		Players.push(player)
-		layerManager.ReturnLayer("Player").Add(player)
-	}
+							var moveValue = 5
 
-	function update() {
+							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
+							{
+								player.setPosX(player.getPosX() - moveValue)
+							}
+							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
+							{
+								player.setPosX(player.getPosX() + moveValue)
+							}
+							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.W))
+							{
+								player.setPosY(player.getPosY() - moveValue)
+							}
+							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S))
+							{
+								player.setPosY(player.getPosY() + moveValue)
+							}
+							else
+							{
+								player.animate("stop")
+							}
 
-		var curX = player.getPosX()
-		var curY = player.getPosY()
+							// return player to previous position if collides with wall
+							if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
+							{
+								player.setPosX(curX)
+								player.setPosY(curY)
+							}
 
-		var moveValue = 5
+							// Player dies if  he/she collides with explosion
+							if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
+							{
+								explosionManager.PlayerDied(player)
+							}
 
-		if (world.input.keyboard.isDown(Phaser.Keyboard.A))
-		{
-			player.setPosX(player.getPosX() - moveValue)
-		}
-		else if (world.input.keyboard.isDown(Phaser.Keyboard.D))
-		{
-			player.setPosX(player.getPosX() + moveValue)
-		}
-		else if (world.input.keyboard.isDown(Phaser.Keyboard.W))
-		{
-			player.setPosY(player.getPosY() - moveValue)
-		}
-		else if (world.input.keyboard.isDown(Phaser.Keyboard.S))
-		{
-			player.setPosY(player.getPosY() + moveValue)
-		}
-		else
-		{
-			player.animate("stop")
-		}
+							// check if spacebar was pressed / second param is for debouncing
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10) && Players[0] != null)
+							{
+								if(player.getBombCount("Normal") > 0)
+								{
+									explosionManager.DropBomb(player, "Normal")
+								}
+							}
 
-		// return player to previous position if collides with wall
-		if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
-		{
-			player.setPosX(curX)
-			player.setPosY(curY)
-		}
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && Players[0] != null)
+							{
+								if(player.getBombCount("Vertical") > 0)
+								{
+									explosionManager.DropBomb(player, "Vertical")
+								}
+							}
 
-		// Player dies if  he/she collides with explosion
-		if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
-		{
-			explosionManager.PlayerDied(player)
-		}
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && Players[0] != null)
+							{
+								if(player.getBombCount("Horizontal") > 0)
+								{
+									explosionManager.DropBomb(player, "Horizontal")
+								}
+							}
 
-		// check if spacebar was pressed / second param is for debouncing
-		if(world.input.keyboard.justPressed(Phaser.Keyboard.F, 10) && Players[0] != null)
-		{
-			if(player.getBombCount("Normal") > 0)
-			{
-				explosionManager.DropBomb(player, "Normal")
-			}
-		}
+							// update player
+							player.update()
+							layerManager.ReturnLayer("Player").newBoard(Players)
 
-		if(world.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && Players[0] != null)
-		{
-			if(player.getBombCount("Vertical") > 0)
-			{
-				explosionManager.DropBomb(player, "Vertical")
-			}
-		}
-
-		if(world.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && Players[0] != null)
-		{
-			if(player.getBombCount("Horizontal") > 0)
-			{
-				explosionManager.DropBomb(player, "Horizontal")
-			}
-		}
-
-		// update player
-		player.update()
-		layerManager.ReturnLayer("Player").newBoard(Players)
-
-		// update perks
-		perkManager.Update()
-	}
-
-	/******************************************************************************
-								Private  Methods
-	******************************************************************************/
-
+							// update perks
+							perkManager.Update()
+					  	}
 }
-
