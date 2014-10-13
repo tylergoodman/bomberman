@@ -1,5 +1,5 @@
 
-function Game () 
+function GameState () 
 {
 	var world = new Phaser.Game(1050, 630, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update })
 	var player = null
