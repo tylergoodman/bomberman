@@ -9,7 +9,9 @@ function Player (world, name, col, row, posX, posY) {
 
 	// Set up Object's properties
 	this.Name = name
-	this.BombCount = 20
+	this.NormalBombCount = 20
+	this.VerticalBombCount = 5
+	this.HorizontalBombCount = 5
 	this.GhostMode = false
 	this.CurrentAnimation = null
 	this.PreviousAnimation = null
@@ -32,12 +34,46 @@ this.Sprite.animations.add('run');
 	}
 
 	// BombCount Get/Set
-	this.getBombCount = function () {
-		return this.BombCount
+	this.getBombCount = function (type) {
+		var count = null
+		switch(type)
+		{
+			case "Normal" :
+				count = this.NormalBombCount
+				break;
+			case "Vertical" :
+				count = this.VerticalBombCount
+				break;
+			case "Horizontal" :
+				count = this.HorizontalBombCount
+				break;
+			default : 
+				console.log("Could not retrieve valid bomb type")
+				break;
+		}
+		if(count != null)
+			return count
+		else
+			return 0
+		// Returns 0 to avoid null errors in code
 	}
 
-	this.setBombCount = function (value) {
-		this.BombCount = value
+	this.setBombCount = function (type, value) {
+		switch(type)
+		{
+			case "Normal" :
+				this.NormalBombCount = value
+				break;
+			case "Vertical" :
+				this.VerticalBombCount = value
+				break;
+			case "Horizontal" :
+				this.HorizontalBombCount = value
+				break;
+			default : 
+				console.log("Could not set valid bomb type")
+				break;
+		}
 	}
 
 /******************************************************************************

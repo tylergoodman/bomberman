@@ -21,10 +21,12 @@ function Perk (world, col, row, posX, posY, type) {
 	// Create the object based on the type
 	// default will be normalbombperk to avoid any null errors in the future
 	if( sprite != null)
+	{
 		GameObject.call(this, world, col, row, posX, posY, sprite)
+	}
 	else
 	{
-		this.type = "normalBombPerk"
+		this.type = "NormalBombPerk"
 		GameObject.call(this, world, col, row, posX, posY, 'normalBombPerk')
 	}
 

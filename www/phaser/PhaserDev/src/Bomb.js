@@ -18,14 +18,14 @@ function Bomb (world, col, row, posX, posY, type) {
 	{
 		switch(type)
 		{
-			case "normal":
-				this.type = "normal"
+			case "Normal":
+				this.type = "Normal"
 				break;
-			case "vertical":
-				this.type = "vertical"
+			case "Vertical":
+				this.type = "Vertical"
 				break;
-			case "horizontal":
-				this.type = "horizontal"
+			case "Horizontal":
+				this.type = "Horizontal"
 				break;
 			default:
 				break;
