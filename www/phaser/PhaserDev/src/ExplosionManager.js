@@ -16,17 +16,20 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	// Process Bomb dropped 
 	this.DropBomb = function (player, type)
 	{
-		// Create bomb
-		var bomb = new Bomb(World, player.getCol(), player.getRow(), 
-			player.getCol() * ImageSize, player.getRow() * ImageSize, type)
+		if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
+		{
+			// Create bomb
+			var bomb = new Bomb(World, player.getCol(), player.getRow(), 
+				player.getCol() * ImageSize, player.getRow() * ImageSize, type)
 
-		// Add bomb to layer
-		BombLayer.Add(bomb)
+			// Add bomb to layer
+			BombLayer.Add(bomb)
 
-		// Add the bomb event - last parm is the callback function's args
-		World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
+			// Add the bomb event - last parm is the callback function's args
+			World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
 
-		player.setBombCount(type, player.getBombCount(type) - 1)
+			player.setBombCount(type, player.getBombCount(type) - 1)
+		}
 	}
 
 	// Bomb exploded Event
@@ -220,7 +223,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		AddExplosion(col,row)
 	}
 
-		// Vertical Bomb
+	// Super Bomb that destroys all breakable walls
 	function SuperBombExplosion(bomb)
 	{
 		for(var i = 0; i < BoardColSize; i++)
