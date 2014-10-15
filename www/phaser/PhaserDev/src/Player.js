@@ -5,7 +5,7 @@
 
 function Player (world, name, col, row, posX, posY) {
 
-	GameObject.call(this, world, col, row, posX, posY, 'bot')
+	GameObject.call(this, world, col, row, posX, posY, 'bombermanAnimation')
 
 	// Set up Object's properties
 	this.Name = name
@@ -22,7 +22,7 @@ function Player (world, name, col, row, posX, posY) {
 ******************************************************************************/
 
 // animations
-this.Sprite.animations.add('run');
+this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '.png', 0), 30, true);
 
 /******************************************************************************
 							 Methods
@@ -118,7 +118,7 @@ this.Sprite.animations.add('run');
 		switch(animation)
 		{
 			case "left":
-				this.Sprite.animations.play('run', 15, true)			
+				this.Sprite.animations.play('left', 15, true)			
 				break;
 			case "right":
 				this.Sprite.animations.stop(null, true)
