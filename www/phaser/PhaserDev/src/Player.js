@@ -23,6 +23,9 @@ function Player (world, name, col, row, posX, posY) {
 
 // animations
 this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1, 8, '.png', 0), 30, true);
 
 /******************************************************************************
 							 Methods
@@ -121,13 +124,13 @@ this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1
 				this.Sprite.animations.play('left', 15, true)			
 				break;
 			case "right":
-				this.Sprite.animations.stop(null, true)
+				this.Sprite.animations.play('right', 15, true)	
 				break;
 			case "up" :
-				this.Sprite.animations.stop(null, true)
+				this.Sprite.animations.play('front', 15, true)	
 				break;
 			case "down" :
-				this.Sprite.animations.stop(null, true)
+				this.Sprite.animations.play('back', 15, true)	
 				break;
 			case "stop":
 				if(this.CurrentAnimation != 'stop')
