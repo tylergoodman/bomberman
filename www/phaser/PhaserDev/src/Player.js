@@ -86,13 +86,13 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 	{
 		// Keep player within world
 		if(this.getPosX() < 0)
-			this.setPosX(0)
+			this.setPosX(0, true)
 		if(this.getPosX() + this.Sprite.width > world.width)
-			this.setPosX(world.width - this.Sprite.width)
+			this.setPosX(world.width - this.Sprite.width, true)
 		if(this.getPosY() < 0)
-			this.setPosY(0)
+			this.setPosY(0, true)
 		if(this.getPosY() + this.Sprite.height > world.height)
-			this.setPosY(world.height - this.Sprite.height)
+			this.setPosY(world.height - this.Sprite.height, true)
 
 		// players col/row before updated
 		var curCol = this.getCol()
@@ -147,7 +147,8 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 
 
 	// Override Game object's setPosX
-	Player.prototype.setPosX = function (newPosition) {
+	// systemchanged - if system changed players position
+	Player.prototype.setPosX = function (newPosition, systemChanged) {
 		var curPosition = this.getPosX()
 		var newAnimation = null
 
@@ -156,7 +157,7 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 		else if(curPosition < newPosition)
 			newAnimation = 'right'
 
-		if(newAnimation != this.CurrentAnimation && newAnimation != null)
+		if(newAnimation != this.CurrentAnimation && newAnimation != null && !systemChanged)
 		{
 			this.AnimationChanged = true
 			this.CurrentAnimation = newAnimation
@@ -167,7 +168,7 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 	}
 
 	// Override Game object's setPosX
-	Player.prototype.setPosY = function (newPosition) {
+	Player.prototype.setPosY = function (newPosition, systemChanged) {
 		var curPosition = this.getPosY()
 		var newAnimation = null
 
@@ -176,7 +177,7 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 		else if(curPosition < newPosition)
 			newAnimation = 'up'
 
-		if(newAnimation != this.CurrentAnimation && newAnimation != null)
+		if(newAnimation != this.CurrentAnimation && newAnimation != null && !systemChanged)
 		{
 			this.AnimationChanged = true
 			this.CurrentAnimation = newAnimation

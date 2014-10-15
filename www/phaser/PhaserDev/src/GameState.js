@@ -58,19 +58,19 @@ GameState.prototype = {
 
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
-								player.setPosX(player.getPosX() - moveValue)
+								player.setPosX(player.getPosX() - moveValue, false)
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
 							{
-								player.setPosX(player.getPosX() + moveValue)
+								player.setPosX(player.getPosX() + moveValue, false)
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.W))
 							{
-								player.setPosY(player.getPosY() - moveValue)
+								player.setPosY(player.getPosY() - moveValue, false)
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S))
 							{
-								player.setPosY(player.getPosY() + moveValue)
+								player.setPosY(player.getPosY() + moveValue, false)
 							}
 							else
 							{
@@ -80,8 +80,8 @@ GameState.prototype = {
 							// return player to previous position if collides with wall
 							if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
 							{
-								player.setPosX(curX)
-								player.setPosY(curY)
+								player.setPosX(curX, true)
+								player.setPosY(curY, true)
 							}
 
 							// Player dies if  he/she collides with explosion
