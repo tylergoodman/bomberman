@@ -24,8 +24,6 @@
     <script>
         var game = new Phaser.Game(1050, 630, Phaser.AUTO, 'game')
         game.state.add('Preloader', Preloader)
-        game.state.add('Lobby', Lobby)
-        game.state.add('MainMenu', MainMenu)
         game.state.add('Game', GameState)
         game.state.add('GameOver', GameOver)
         game.state.start('Preloader')

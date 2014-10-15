@@ -115,6 +115,11 @@ GameState.prototype = {
 								}
 							}
 
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && Players[0] != null)
+							{
+								explosionManager.DropBomb(player, "Super")
+							}
+
 							// update player
 							player.update()
 							layerManager.ReturnLayer("Player").newBoard(Players)

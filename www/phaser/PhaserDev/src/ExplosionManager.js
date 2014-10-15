@@ -47,6 +47,8 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			case "Horizontal":
 				HorizontalBombExplosion(bomb)
 				break;
+			case "Super":
+				SuperBombExplosion(bomb)
 			default:
 				break;
 		}
@@ -217,6 +219,26 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		// Add explosion
 		AddExplosion(col,row)
 	}
+
+		// Vertical Bomb
+	function SuperBombExplosion(bomb)
+	{
+		for(var i = 0; i < BoardColSize; i++)
+		{
+			for(var j = 0; j < BoardRowSize; j++)
+			{
+				var wall = WallLayer.getObjectAt(i, j)
+				if(wall instanceof Wall)
+				{
+					perkManager.RemoveWall(wall)
+
+					// Add explosion
+					AddExplosion(i,j)
+				}
+			}
+		}
+	}
+
 
 	// Vertical Bomb
 	function HorizontalBombExplosion(bomb)

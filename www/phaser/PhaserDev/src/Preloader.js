@@ -9,6 +9,6 @@ Preloader.prototype = {
   update:  function() {
 
 		if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
-			this.game.state.start('Lobby');
+			this.game.state.start('Game');
   }
 }

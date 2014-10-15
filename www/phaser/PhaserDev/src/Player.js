@@ -10,8 +10,9 @@ function Player (world, name, col, row, posX, posY) {
 	// Set up Object's properties
 	this.Name = name
 	this.NormalBombCount = 20
-	this.VerticalBombCount = 5
-	this.HorizontalBombCount = 5
+	this.VerticalBombCount = 20
+	this.HorizontalBombCount = 20
+	this.SuperBombCount = 1
 	this.GhostMode = false
 	this.CurrentAnimation = null
 	this.PreviousAnimation = null
@@ -50,6 +51,9 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 			case "Horizontal" :
 				count = this.HorizontalBombCount
 				break;
+			case "Super" :
+				count = this.SuperBombCount
+				break;
 			default : 
 				console.log("Could not retrieve valid bomb type")
 				break;
@@ -72,6 +76,9 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 				break;
 			case "Horizontal" :
 				this.HorizontalBombCount = value
+				break;
+			case "Super" :
+				this.SuperBombCount = value
 				break;
 			default : 
 				console.log("Could not set valid bomb type")
