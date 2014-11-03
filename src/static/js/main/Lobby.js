@@ -25,6 +25,9 @@
 				if (e.keyCode === 13)
 					this.model.set('name', this.name.val());
 			},
+			'mouseover .id': function (e) {
+				this.$('.id').select();
+			},
 		},
 
 		render: function () {
@@ -63,7 +66,6 @@
 					this.$join.prop('disabled', false);
 
 					Network.setClosed();
-					Network.setMode('client');
 
 					Chat.sendSysMessage('Your lobby is now closed.');
 				}
@@ -73,7 +75,6 @@
 					this.$join.prop('disabled', true);
 
 					Network.setOpen();
-					Network.setMode('host');
 
 					Chat.sendSysMessage('Your lobby is now open.');
 				}

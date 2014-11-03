@@ -18,10 +18,15 @@
 
 		events: {
 			'keyup .input input': function (e) {
-				if (e.keyCode === 13 && this.$input.val()) {
+				var text = this.$input.val();
+				if (e.keyCode === 13 && text) {
 					this.makeMessage({
 						name: Me.name,
-						text: this.$input.val(),
+						text: text,
+					});
+					Network.send({
+						evt: 'msg',
+						data: text,
 					});
 					this.$input.val('');
 				}

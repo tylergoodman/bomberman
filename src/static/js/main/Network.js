@@ -2,25 +2,22 @@
 		// 0 = client
 		// 1 = host
 		mode: 0,
-		setMode: function (mode) {
-			if (mode === 'client')
-				this.mode = 0;
-			else if (mode === 'host')
-				this.mode = 1;
-			else
-				throw new TypeError('Tried to set network to a mode that doesn\'t exist');
-		},
 		setOpen: function () {
 			this.host.open = true;
+			this.mode = 1;
 		},
 		setClosed: function () {
 			this.host.open = false;
+			this.mode = 0;
 		},
 		// for when you're connected to a host...
 		// and you're the client..............
 		client: {
-			connected: false,
-			connection: null,
+			host: {
+				lobby: null,
+				connection: null,
+			},
+			others: {},
 		},
 		// for when you're the host and others are the client
 		host: {
@@ -30,21 +27,22 @@
 		},
 	}
 
-	Network.Peer = (function () {
-		var peer = function (id) {
-			this.id = id;
-			this.connections = {};
+	Network.send = function (data) {
+		if (this.client.host.connection) {
+			// console.log('sending to host');
+			this.client.host.connection.send(data);
 		}
-		return peer;
-	})();
-
-
-	Network.send = function (data, connection) {
-		Logger.log('Sending some data to %s.', connection.peer, data);
-		connection.send({
-			data: data,
-			evt: event,
-		});
+		else if (Object.keys(this.host.peers).length) {
+			// console.log('sending to all clients');
+			this.host.sendToAll({
+				evt: data.evt,
+				orig: Me.peer.id,
+				data: data.data,
+			});
+		}
+		else {
+			Logger.log('No one to send %s to...', data);
+		}
 	}
 
 	// datahandler for Host mode
@@ -54,39 +52,67 @@
 		switch (data.evt) {
 			// message
 			case 'msg':
-				Logger.log(data.data);
+				// Logger.log(data.data);
+				// console.log(data);
+				Chat.makeMessage({
+					name: this.peers[connection.peer].lobby.get('name'),
+					text: data.data,
+				});
+				this.relay(connection, data);
 			break;
 			// name update
 			case 'name':
-				var peer = this.host.peers[connection.peer];
-				Logger.log('Name update: %s -> %s', peer.person.get('name'), data.data);
-				peer.person.set('name', data.data);
+				var peer = this.peers[connection.peer];
+				Logger.log('Name update: %s -> %s.', peer.lobby.get('name'), data.data);
+				peer.lobby.set('name', data.data);
 			break;
 		}
 	}
 	Network.host.relay = function (from, data) {
-		for (var p in this.host.peer)
-			if (p !== from)
-				this.host.peer[p].connection.send(data);
+		var data = {
+			evt: data.evt,
+			orig: from.peer,
+			data: data.data,
+		}
+		for (var p in this.peers)
+			if (p !== from.peer)
+				this.peers[p].connection.send(data);
+	}
+	Network.host.sendToAll = function (data) {
+		for (var p in this.peers)
+			this.peers[p].connection.send(data);
 	}
 	Network.client.handleData = function (connection, data) {
 		// Logger.log('Received some data from host %s!', connection.peer, data);
 
 		switch (data.evt) {
 			case 'msg':
-				Logger.log(data.data);
+				// Logger.log(data.data);
+				// console.log(data);
+				Chat.makeMessage({
+					name: data.orig,
+					text: data.data,
+				});
 			break;
 			// connect success
+			// TODO - receive list of other players here
+			// ... and other information
 			case 'cnsc':
-				Logger.log('Connection success to %s', connection.peer);
-				self.host.connected = true;
-				self.host.connection = this;
+				Logger.log('Connection success to %s!', connection.peer);
+				this.host.connection = connection;
+				// send name update on successful connection
 				if (Me.name !== Me.default_name) {
-					this.send({
+					connection.send({
 						evt: 'name',
 						data: Me.name,
 					});
 				}
+				// add host to lobby
+				this.host.lobby = new Person({
+					name: connection.peer,
+					id: connection.peer,
+				});
+				Lobby.addPerson(this.host.lobby);
 			break;
 		}
 	}
@@ -102,7 +128,7 @@
 			});
 		}
 		else if (Object.keys(self.host.peers).length === self.host.max_peers) {
-			Logger.log('Closing connection to %s: lobby is full', connection.peer);
+			Logger.log('Closing connection to %s: lobby is full.', connection.peer);
 			connection.on('open', function () {
 				connection.close();
 			});
@@ -110,7 +136,7 @@
 		else {
 
 			connection.on('open', function () {
-				Logger.log('Connection from %s established.', this.peer);
+				Logger.log('Connection with %s established.', this.peer);
 				this.send({
 					evt: 'cnsc',
 					// data: 'Request successful!',
@@ -136,15 +162,12 @@
 	Network.addPeer = function (connection) {
 		this.host.peers[connection.peer] = {
 			connection: connection,
-			person: new Person({
+			lobby: new Person({
 				name: connection.peer,
 				id: connection.peer,
 			}),
 		};
-		Lobby.addPerson(this.host.peers[connection.peer].person);
-		// connection.send({
-		// 	evt: 'name_req',
-		// });
+		Lobby.addPerson(this.host.peers[connection.peer].lobby);
 	}
 
 	/*
