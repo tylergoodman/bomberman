@@ -14,6 +14,7 @@
 
 			this.render();
 
+			// this might be fucked up
 			this.header = this.$('.person-name');
 			this.name = this.$('.name');
 			this.id = this.$('.id');
@@ -21,7 +22,7 @@
 
 		events: {
 			'keyup .name': function (e) {
-				// if (e.keyCode === 13)
+				if (e.keyCode === 13)
 					this.model.set('name', this.name.val());
 			},
 		},
@@ -34,7 +35,7 @@
 
 		update: function () {
 			this.header.text(this.model.get('name') || this.model.get('id'));
-			// this.name.val(this.model.get('name'));
+			this.name.val(this.model.get('name'));
 			this.id.val(this.model.get('id'));
 		},
 	});
@@ -43,32 +44,43 @@
 		el: '#lobby',
 
 		initialize: function () {
-			this.toggle = this.$('#lobby-toggle');
-			this.join = this.$('#lobby-join');
-			this.players = this.$('#players');
+			this.$toggle = this.$('#lobby-toggle');
+			this.$join = this.$('#lobby-join');
+			this.$players = this.$('#players');
 
+			this.$players.perfectScrollbar({
+				suppressScrollX: true,
+			});
+
+			Chat.sendSysMessage('Your lobby is closed.');
 		},
 
 		events: {
 			'click #lobby-toggle': function () {
 				if (Network.client.open) {
-					this.toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-					this.toggle.find('span').text('Open Lobby');
-					this.join.prop('disabled', false);
-					Network.client.open = false;
-					Logger.log('Set lobby closed');
+					this.$toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+					this.$toggle.find('span').text('Open Lobby');
+					this.$join.prop('disabled', false);
+
+					Network.setClosed();
+					Network.setMode('client');
+
+					Chat.sendSysMessage('Your lobby is now closed.');
 				}
 				else {
-					this.toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-					this.toggle.find('span').text('Close Lobby');
-					this.join.prop('disabled', true);
-					Network.client.open = true;
-					Logger.log('Set lobby open');
+					this.$toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+					this.$toggle.find('span').text('Close Lobby');
+					this.$join.prop('disabled', true);
+
+					Network.setOpen();
+					Network.setMode('host');
+
+					Chat.sendSysMessage('Your lobby is now open.');
 				}
 			},
 			'click #lobby-join': function () {
-				var modal = this.$('#modal-join');
-				modal.addClass('active');
+				var $modal = this.$('#modal-join');
+				$modal.addClass('active');
 				$('<div/>', {
 					id: 'modal-overlay',
 					css: {
@@ -81,10 +93,11 @@
 						opacity: '0.5',
 					},
 					click: function () {
-						modal.removeClass('active');
+						$modal.removeClass('active');
 						$(this).remove();
 					},
 				}).appendTo('body');
+				$modal.find('input').focus();
 			},
 			'click #modal-join button': function () {
 				var id = this.$('#modal-join input').val();
@@ -99,10 +112,10 @@
 			},
 		},
 
-		addPlayer: function (player) {
+		addPerson: function (player) {
 			var myview = new PersonView({
 				model: player,
 			});
-			this.players.append(myview.el);
+			this.$players.append(myview.el);
 		},
 	}));

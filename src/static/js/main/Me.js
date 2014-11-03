@@ -9,15 +9,11 @@
 				Logger.log(Array.prototype.slice.call(arguments).join(' '));
 			},
 		}),
-		name: 'ME',
+		default_name: 'ME',
 
-		amHost: function () {
-			return Network.host === 'self';
-		},
-		amClient: function () {
-			return Network.host !== 'self';
-		},
 	}
+	Me.name = Me.default_name;
+
 	_.extend(Me, Backbone.Events);
 
 	Me.peer.on('open', function (id) {
@@ -30,7 +26,7 @@
 		Me.listenTo(me, 'change:name', function () {
 			this.name = me.get('name');
 		});
-		Lobby.addPlayer(me);
+		Lobby.addPerson(me);
 	});
 	Me.peer.on('connection', function (connection) {
 		Network.handleConnection(connection);
