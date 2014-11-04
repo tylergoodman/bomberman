@@ -1,7 +1,7 @@
 var GameOver = function(game) {} 
 
 GameOver.prototype = {
-  preload: function() { this.load.image('gameover', 'assets/gameover.jpg')},
+  preload: function() { this.load.image('gameover', 'assets/gameover.png')},
   create:  function() {	
   						// background
 						var background = this.game.add.group();
