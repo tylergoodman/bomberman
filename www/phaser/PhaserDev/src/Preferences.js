@@ -49,5 +49,7 @@ function Preferences(world, players)
 	this.ExplosionWidthRatio = this.ImageSizeWidth  / this.ExplosionWidth
 	this.ExplosionHeightRatio = this.ImageSizeHeight / this.ExplosionHeight
 
+	// Calculate move value
+	this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
 
 }

@@ -3,6 +3,7 @@ var GameState = function(game) {
 	layerManager = null
 	explosionManager = null
 	perkManager = null
+	preferences = null
 
 	// Array to keep track of players
 	Players = []
@@ -24,7 +25,7 @@ GameState.prototype = {
 					  	},
   create:  function()	{	
   							// Preferences
-							var preferences = new Preferences(this.game, Players)
+							preferences = new Preferences(this.game, Players)
 
 							// background
 							var background = this.game.add.group();
@@ -57,7 +58,7 @@ GameState.prototype = {
 							var curX = player.getPosX()
 							var curY = player.getPosY()
 
-							var moveValue = 5
+							var moveValue = preferences.MoveValue
 
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
