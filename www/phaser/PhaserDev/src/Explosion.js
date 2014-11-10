@@ -3,8 +3,12 @@
 						Constructor
 ******************************************************************************/
 
-function Explosion (world, col, row, posX, posY) {
-	GameObject.call(this, world, col, row, posX, posY, 'explosion');
+function Explosion (preferences, col, row, posX, posY) {
+	GameObject.call(this, preferences.World, col, row, posX, posY, 'explosion');
+
+	// Scale the image
+	this.getSprite().scale.setTo(preferences.ExplosionWidthRatio, 
+		preferences.ExplosionHeightRatio)
 
 /******************************************************************************
 							 Methods

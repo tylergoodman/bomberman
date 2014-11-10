@@ -3,12 +3,15 @@
 						Constructor
 ******************************************************************************/
 
-function Bomb (world, col, row, posX, posY, type) {
-	GameObject.call(this, world, col, row, posX, posY, 'bomb');
+function Bomb (preferences, col, row, posX, posY, type) {
+	GameObject.call(this, preferences.World, col, row, posX, posY, 'bomb');
 
 	// fuse time
 	this.fuse = 1.5
 	this.type  = type
+
+	// Scale image
+	this.getSprite().scale.setTo(preferences.BombWidthRatio, preferences.BombHeightRatio)
 /******************************************************************************
 							 Methods
 ******************************************************************************/

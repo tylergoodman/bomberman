@@ -19,7 +19,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
 		{
 			// Create bomb
-			var bomb = new Bomb(World, player.getCol(), player.getRow(), 
+			var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
 				player.getCol() * ImageSize, player.getRow() * ImageSize, type)
 
 			// Add bomb to layer
@@ -65,7 +65,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			if(WallLayer.getObjectAt(col,row).getCanBreak())
 			{
 				// Create explosion
-				var explosion = new Explosion(World, col, row, col * ImageSize, row * ImageSize)
+				var explosion = new Explosion(preferences, col, row, col * ImageSize, row * ImageSize)
 				// Add it to layer
 				ExplosionLayer.Add(explosion)
 				//Add remove explosion event
@@ -84,7 +84,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		else if(!(ExplosionLayer.getObjectAt(col,row) instanceof Explosion))
 		{
 			// Create explosion
-			var explosion = new Explosion(World, col, row, col * ImageSize, row * ImageSize)
+			var explosion = new Explosion(preferences, col, row, col * ImageSize, row * ImageSize)
 			// Add it to layer
 			ExplosionLayer.Add(explosion)
 			//Add remove explosion event
