@@ -3,6 +3,7 @@ var GameState = function(game) {
 	layerManager = null
 	explosionManager = null
 	perkManager = null
+	preferences = null
 
 	// Array to keep track of players
 	Players = []
@@ -12,6 +13,7 @@ GameState.prototype = {
 
   preload: function() 	{ 
 							this.game.load.atlasJSONHash('bombermanAnimation', 'assets/Animations/Bomberman/bombermanAnimation.png', 'assets/Animations/Bomberman/bombermanAnimation.json');
+							this.game.load.atlasJSONHash('explosionAnimation', 'assets/Animations/Explosion/explosionAnimation.png', 'assets/Animations/Explosion/explosionAnimation.json');
 						    this.game.load.image('bomberman', 'assets/bomberman.png')
 						    this.game.load.image('background', 'assets/background.png')
 						    this.game.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
@@ -23,13 +25,16 @@ GameState.prototype = {
 						    this.game.load.image('verticalBombPerk', 'assets/verticalBombPerk.png')
 					  	},
   create:  function()	{	
+  							// Preferences
+							preferences = new Preferences(this.game, Players)
+
 							// background
 							var background = this.game.add.group();
 					   		background.z = 1;
-					   		background.add(this.game.add.sprite(0,0,'background'))
+					   		var bgSprite = this.game.add.sprite(0,0,'background')
+					   		bgSprite.scale.setTo(preferences.BgWidthRatio, preferences.BgHeightRatio)
 
-							// Preferences
-							var preferences = new Preferences(this.game, Players)
+					   		background.add(bgSprite)
 
 					   		// Managers
 					   		layerManager = new LayerManager(preferences)
@@ -38,13 +43,13 @@ GameState.prototype = {
 					   		layerManager.SetUpWorld()
 
 					   		// have to setup Perk Manager before Explosion Manager
-					   		 perkManager = new PerkManager(preferences, layerManager, Players)
+					   		perkManager = new PerkManager(preferences, layerManager, Players)
 
 					   		// Set up the world before adding it to explosion manager
 					   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
 
 							// Player
-							player = new Player(this.game, "Player 1", 0, 0, 0, 0)
+							player = new Player(preferences, "Player 1", 0, 0, 0, 0)
 
 							// Add player to world
 							Players.push(player)
@@ -54,7 +59,7 @@ GameState.prototype = {
 							var curX = player.getPosX()
 							var curY = player.getPosY()
 
-							var moveValue = 5
+							var moveValue = preferences.MoveValue
 
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{

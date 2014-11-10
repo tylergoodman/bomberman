@@ -3,15 +3,15 @@
 						Constructor
 ******************************************************************************/
 
-function Wall (world, breakable, col, row, posX, posY) {
+function Wall (preferences, breakable, col, row, posX, posY) {
 
 	if(breakable)
 	{
-		GameObject.call(this, world, col, row, posX, posY, 'breakableWall');
+		GameObject.call(this, preferences.World, col, row, posX, posY, 'breakableWall');
 	}
 	else
 	{
-		GameObject.call(this, world, col, row, posX, posY, 'unbreakableWall');
+		GameObject.call(this, preferences.World, col, row, posX, posY, 'unbreakableWall');
 	}
 
 	// Set up Object's properties 
