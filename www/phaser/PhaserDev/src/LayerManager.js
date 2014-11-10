@@ -66,7 +66,9 @@ function LayerManager(preferences)
 			{
 				// Create the wall
 				var unbreakWall = new Wall(World, false, i, j, 
-					i*Preferences.ImageSize, j*Preferences.ImageSize)
+					i*Preferences.AdjWallWidth, j*Preferences.AdjWallHeight)
+
+				unbreakWall.getSprite().scale.setTo(preferences.WallWidthRatio, preferences.WallHeightRatio)
 
 				// Add the wall to board
 				ReturnLayer("Wall").Add(unbreakWall, i, j)
@@ -93,7 +95,9 @@ function LayerManager(preferences)
 
 				// Create the wall
 				var breakWall = new Wall(World, true, i, j, 
-					i*Preferences.ImageSize, j*Preferences.ImageSize)
+					i*Preferences.AdjWallWidth, j*Preferences.AdjWallHeight)
+
+			    breakWall.getSprite().scale.setTo(preferences.WallWidthRatio, preferences.WallHeightRatio)
 
 				// Add the wall to board
 				ReturnLayer("Wall").Add(breakWall, i, j)
@@ -103,7 +107,10 @@ function LayerManager(preferences)
 			if(i < Preferences.BoardColSize && i > 2)
 			{
 				var breakWall = new Wall(World, true, i, 0, 
-					i*Preferences.ImageSize, 0)
+					i*Preferences.AdjWallHeight, 0)
+
+				breakWall.getSprite().scale.setTo(preferences.WallWidthRatio, preferences.WallHeightRatio)
+
 
 				ReturnLayer("Wall").Add(breakWall, i, 0)
 			}

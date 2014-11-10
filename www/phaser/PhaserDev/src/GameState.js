@@ -23,13 +23,16 @@ GameState.prototype = {
 						    this.game.load.image('verticalBombPerk', 'assets/verticalBombPerk.png')
 					  	},
   create:  function()	{	
+  							// Preferences
+							var preferences = new Preferences(this.game, Players)
+
 							// background
 							var background = this.game.add.group();
 					   		background.z = 1;
-					   		background.add(this.game.add.sprite(0,0,'background'))
+					   		var bgSprite = this.game.add.sprite(0,0,'background')
+					   		bgSprite.scale.setTo(preferences.BgWidthRatio, preferences.BgHeightRatio)
 
-							// Preferences
-							var preferences = new Preferences(this.game, Players)
+					   		background.add(bgSprite)
 
 					   		// Managers
 					   		layerManager = new LayerManager(preferences)
@@ -38,7 +41,7 @@ GameState.prototype = {
 					   		layerManager.SetUpWorld()
 
 					   		// have to setup Perk Manager before Explosion Manager
-					   		 perkManager = new PerkManager(preferences, layerManager, Players)
+					   		perkManager = new PerkManager(preferences, layerManager, Players)
 
 					   		// Set up the world before adding it to explosion manager
 					   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
