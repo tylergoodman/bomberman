@@ -36,6 +36,11 @@ Preloader.prototype = {
 
    		image = game.cache.getImage('background')
 
+   		this.game.width = document.getElementById('game').offsetWidth
+   		this.game.height = document.getElementById('game').offsetHeight
+
+   		this.game.scale.refresh()
+
    		scaleWidth = document.getElementById('game').offsetWidth / image.width 
    	    scaleHeight = document.getElementById('game').offsetHeight / image.height 
 
