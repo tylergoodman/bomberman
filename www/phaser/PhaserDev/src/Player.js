@@ -18,15 +18,18 @@ function Player (preferences, name, col, row, posX, posY) {
 	this.PreviousAnimation = null
 	this.AnimationChanged = false
 
+	// Scale Player
+	this.getSprite().scale.setTo(preferences.PlayerWidthRatio, preferences.PlayerHeightRatio)
+
 /******************************************************************************
 							 Animations
 ******************************************************************************/
 
 // animations
-this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '.png', 0), 30, true);
-this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '.png', 0), 30, true);
-this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '.png', 0), 30, true);
-this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
 
 /******************************************************************************
 							 Methods

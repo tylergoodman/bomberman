@@ -19,6 +19,15 @@ function Preferences(world, players)
 	this.BgWidthRatio = this.WindowWidth / this.BgWidth
 	this.BgHeightRatio = this.WindowLength / this.BgHeight
 
+	// Player Data
+	this.PlayerWidth = game.cache.getImage('bomberman').width
+	this.PlayerHeight = game.cache.getImage('bomberman').height
+	this.PlayerWidthRatio = this.ImageSize / this.PlayerWidth * .8
+	this.PlayerHeightRatio = this.ImageSize / this.PlayerHeight * .8
+
+	console.log(this.PlayerWidth + "," + this.PlayerHeight)
+	console.log(this.PlayerWidthRatio + "," + this.PlayerHeightRatio)
+
 	// Wall Data
 	this.WallWidth = game.cache.getImage('breakableWall').width
 	this.WallHeight = game.cache.getImage('breakableWall').height
