@@ -109,8 +109,8 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback'
 		var curRow = this.getRow()
 
 		// update player col / row
-		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / preferences.ImageSize))
-		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / preferences.ImageSize))
+		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / preferences.ImageSizeWidth))
+		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / preferences.ImageSizeHeight))
 
 		// plays animation
 		if(this.AnimationChanged)

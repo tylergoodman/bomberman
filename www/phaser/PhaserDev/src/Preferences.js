@@ -7,50 +7,47 @@ function Preferences(world, players)
 
 	// Window Data
 	this.WindowWidth = document.getElementById('game').offsetWidth 
-	this.WindowLength = document.getElementById('game').offsetHeight
+	this.WindowHeight = document.getElementById('game').offsetHeight
 
 	// Image size for bombs/walls
-	this.ImageSize = this.WindowWidth / this.BoardColSize
-
+	this.ImageSizeWidth = this.WindowWidth / this.BoardColSize
+	this.ImageSizeHeight = this.WindowHeight / this.BoardRowSize
 
 	// Background Data
 	this.BgWidth = game.cache.getImage('background').width
 	this.BgHeight = game.cache.getImage('background').height
 	this.BgWidthRatio = this.WindowWidth / this.BgWidth
-	this.BgHeightRatio = this.WindowLength / this.BgHeight
+	this.BgHeightRatio = this.ImageSizeHeight / this.BgHeight
 
 	// Player Data
 	this.PlayerWidth = game.cache.getImage('bomberman').width
 	this.PlayerHeight = game.cache.getImage('bomberman').height
-	this.PlayerWidthRatio = this.ImageSize / this.PlayerWidth * .8
-	this.PlayerHeightRatio = this.ImageSize / this.PlayerHeight * .8
-
-	console.log(this.PlayerWidth + "," + this.PlayerHeight)
-	console.log(this.PlayerWidthRatio + "," + this.PlayerHeightRatio)
+	this.PlayerWidthRatio = this.ImageSizeWidth / this.PlayerWidth * .8
+	this.PlayerHeightRatio = this.ImageSizeHeight / this.PlayerHeight * .8
 
 	// Wall Data
 	this.WallWidth = game.cache.getImage('breakableWall').width
 	this.WallHeight = game.cache.getImage('breakableWall').height
-	this.WallWidthRatio = this.ImageSize  / this.WallWidth
-	this.WallHeightRatio = this.ImageSize / this.WallHeight
+	this.WallWidthRatio = this.ImageSizeWidth  / this.WallWidth
+	this.WallHeightRatio = this.ImageSizeHeight / this.WallHeight
 
 	// Perk Data
 	this.PerkWidth = game.cache.getImage('normalBombPerk').width
 	this.PerkHeight = game.cache.getImage('normalBombPerk').height
-	this.PerkWidthRatio = this.ImageSize  / this.PerkWidth
-	this.PerkHeightRatio = this.ImageSize / this.PerkHeight
+	this.PerkWidthRatio = this.ImageSizeWidth  / this.PerkWidth
+	this.PerkHeightRatio = this.ImageSizeHeight / this.PerkHeight
 
 	// Bomb Data
 	this.BombWidth = game.cache.getImage('bomb').width
 	this.BombHeight = game.cache.getImage('bomb').height
-	this.BombWidthRatio = this.ImageSize  / this.BombWidth
-	this.BombHeightRatio = this.ImageSize / this.BombHeight
+	this.BombWidthRatio = this.ImageSizeWidth  / this.BombWidth
+	this.BombHeightRatio = this.ImageSizeHeight / this.BombHeight
 
 	// Explosion Data
 	this.ExplosionWidth = game.cache.getImage('explosion').width
 	this.ExplosionHeight = game.cache.getImage('explosion').height
-	this.ExplosionWidthRatio = this.ImageSize  / this.ExplosionWidth
-	this.ExplosionHeightRatio = this.ImageSize / this.ExplosionHeight
+	this.ExplosionWidthRatio = this.ImageSizeWidth  / this.ExplosionWidth
+	this.ExplosionHeightRatio = this.ImageSizeHeight / this.ExplosionHeight
 
 
 }
