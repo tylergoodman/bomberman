@@ -47,7 +47,7 @@ GameState.prototype = {
 					   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
 
 							// Player
-							player = new Player(this.game, "Player 1", 0, 0, 0, 0)
+							player = new Player(preferences, "Player 1", 0, 0, 0, 0)
 
 							// Add player to world
 							Players.push(player)

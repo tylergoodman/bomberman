@@ -3,9 +3,9 @@
 						Constructor
 ******************************************************************************/
 
-function Player (world, name, col, row, posX, posY) {
+function Player (preferences, name, col, row, posX, posY) {
 
-	GameObject.call(this, world, col, row, posX, posY, 'bombermanAnimation')
+	GameObject.call(this, preferences.World, col, row, posX, posY, 'bombermanAnimation')
 
 	// Set up Object's properties
 	this.Name = name
@@ -94,11 +94,11 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 		// Keep player within world
 		if(this.getPosX() < 0)
 			this.setPosX(0, true)
-		if(this.getPosX() + this.Sprite.width > world.width)
+		if(this.getPosX() + this.Sprite.width > preferences.World.width)
 			this.setPosX(world.width - this.Sprite.width, true)
 		if(this.getPosY() < 0)
 			this.setPosY(0, true)
-		if(this.getPosY() + this.Sprite.height > world.height)
+		if(this.getPosY() + this.Sprite.height > preferences.World.height)
 			this.setPosY(world.height - this.Sprite.height, true)
 
 		// players col/row before updated
