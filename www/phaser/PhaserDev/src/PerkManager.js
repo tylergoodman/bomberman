@@ -1,7 +1,6 @@
 function PerkManager(preferences, layerManager, players)
 {
 	// Preferences
-	var World = preferences.World
 	var ImageSize = preferences.ImageSize
 
 	// Layers 
@@ -36,7 +35,7 @@ function PerkManager(preferences, layerManager, players)
 	this.RandomPerk = function(col, row)
 	{
 		var randomType = PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
-		return new Perk(World, col, row, col*ImageSize, row*ImageSize, randomType)
+		return new Perk(preferences, col, row, col*ImageSize, row*ImageSize, randomType)
 	}
 
 	// Check if a player is on a perk
@@ -62,8 +61,6 @@ function PerkManager(preferences, layerManager, players)
 
 		// remove perk
 		PerkLayer.Remove(perk)
-
-		console.log(perk)
 
 		// Apply perk to player
 		switch(perk.getType())

@@ -95,19 +95,19 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 		if(this.getPosX() < 0)
 			this.setPosX(0, true)
 		if(this.getPosX() + this.Sprite.width > preferences.World.width)
-			this.setPosX(world.width - this.Sprite.width, true)
+			this.setPosX(preferences.World.width - this.Sprite.width, true)
 		if(this.getPosY() < 0)
 			this.setPosY(0, true)
 		if(this.getPosY() + this.Sprite.height > preferences.World.height)
-			this.setPosY(world.height - this.Sprite.height, true)
+			this.setPosY(preferences.World.height - this.Sprite.height, true)
 
 		// players col/row before updated
 		var curCol = this.getCol()
 		var curRow = this.getRow()
 
 		// update player col / row
-		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / 70))
-		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / 70))
+		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / preferences.ImageSize))
+		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / preferences.ImageSize))
 
 		// plays animation
 		if(this.AnimationChanged)
