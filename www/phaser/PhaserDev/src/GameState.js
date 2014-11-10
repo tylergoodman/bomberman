@@ -13,6 +13,7 @@ GameState.prototype = {
 
   preload: function() 	{ 
 							this.game.load.atlasJSONHash('bombermanAnimation', 'assets/Animations/Bomberman/bombermanAnimation.png', 'assets/Animations/Bomberman/bombermanAnimation.json');
+							this.game.load.atlasJSONHash('explosionAnimation', 'assets/Animations/Explosion/explosionAnimation.png', 'assets/Animations/Explosion/explosionAnimation.json');
 						    this.game.load.image('bomberman', 'assets/bomberman.png')
 						    this.game.load.image('background', 'assets/background.png')
 						    this.game.load.image('unbreakableWall', 'assets/unbreakableWall.jpg')
