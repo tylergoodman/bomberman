@@ -3,12 +3,15 @@ function Preferences(world, players)
 	this.World = world
 	this.BoardColSize = 15
 	this.BoardRowSize =  9
-	this.ImageSize = 70
 	this.Players = players
 
 	// Window Data
 	this.WindowWidth = document.getElementById('game').offsetWidth 
 	this.WindowLength = document.getElementById('game').offsetHeight
+
+	// Image size for bombs/walls
+	this.ImageSize = this.WindowWidth / this.BoardColSize
+
 
 	// Background Data
 	this.BgWidth = game.cache.getImage('background').width
@@ -19,10 +22,8 @@ function Preferences(world, players)
 	// Wall Data
 	this.WallWidth = game.cache.getImage('breakableWall').width
 	this.WallHeight = game.cache.getImage('breakableWall').height
-	this.AdjWallWidth = this.WindowWidth / this.BoardColSize
-	this.AdjWallHeight = this.WindowLength / this.BoardRowSize
-	this.WallWidthRatio = this.AdjWallWidth  / this.WallWidth
-	this.WallHeightRatio = this.AdjWallHeight / this.WallHeight
+	this.WallWidthRatio = this.ImageSize  / this.WallWidth
+	this.WallHeightRatio = this.ImageSize / this.WallHeight
 
 
 }
