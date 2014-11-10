@@ -17,7 +17,7 @@ function Preferences(world, players)
 	this.BgWidth = game.cache.getImage('background').width
 	this.BgHeight = game.cache.getImage('background').height
 	this.BgWidthRatio = this.WindowWidth / this.BgWidth
-	this.BgHeightRatio = this.ImageSizeHeight / this.BgHeight
+	this.BgHeightRatio = this.WindowHeight / this.BgHeight
 
 	// Player Data
 	this.PlayerWidth = game.cache.getImage('bomberman').width

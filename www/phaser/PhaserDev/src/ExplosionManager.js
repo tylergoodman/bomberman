@@ -4,7 +4,8 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	var Players = preferences.Players
 	var BoardColSize = preferences.BoardColSize
 	var BoardRowSize = preferences.BoardRowSize
-	var ImageSize = preferences.ImageSize
+	var ImageSizeWidth = preferences.ImageSizeWidth
+	var ImageSizeHeight = preferences.ImageSizeHeight
 	var PlayerLayer = layerManager.ReturnLayer("Player")
 	var WallLayer = layerManager.ReturnLayer("Wall")
 	var BombLayer = layerManager.ReturnLayer("Bomb")
@@ -20,7 +21,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		{
 			// Create bomb
 			var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
-				player.getCol() * ImageSize, player.getRow() * ImageSize, type)
+				player.getCol() * ImageSizeWidth, player.getRow() * ImageSizeHeight, type)
 
 			// Add bomb to layer
 			BombLayer.Add(bomb)
@@ -65,7 +66,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			if(WallLayer.getObjectAt(col,row).getCanBreak())
 			{
 				// Create explosion
-				var explosion = new Explosion(preferences, col, row, col * ImageSize, row * ImageSize)
+				var explosion = new Explosion(preferences, col, row, col * ImageSizeWidth, row * ImageSizeHeight)
 				// Add it to layer
 				ExplosionLayer.Add(explosion)
 				//Add remove explosion event
@@ -84,7 +85,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		else if(!(ExplosionLayer.getObjectAt(col,row) instanceof Explosion))
 		{
 			// Create explosion
-			var explosion = new Explosion(preferences, col, row, col * ImageSize, row * ImageSize)
+			var explosion = new Explosion(preferences, col, row, col * ImageSizeWidth, row * ImageSizeHeight)
 			// Add it to layer
 			ExplosionLayer.Add(explosion)
 			//Add remove explosion event
