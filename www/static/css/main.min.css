@@ -125,9 +125,6 @@ input[type='text'] {
 #players .person-row-value {
   flex-grow: 1;
 }
-#players .person input[readonly] {
-  cursor: not-allowed;
-}
 #players .person + .person {
   margin-top: 1em;
 }

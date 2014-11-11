@@ -14,7 +14,7 @@
 	}
 	Me.name = Me.default_name;
 
-	_.extend(Me, Backbone.Events);
+	// _.extend(Me, Backbone.Events);
 
 	Me.peer.on('open', function (id) {
 		var me = new Person({
@@ -32,8 +32,8 @@
 		Network.handleConnection(connection);
 	});
 	Me.peer.on('close', function () {
-		Logger.log('Own peer closed, refresh necessary');
+		Logger.log('Disconnected from server.');
 	});
 	Me.peer.on('error', function (err) {
-		Logger.warn('Own peer errored', err)
+		Logger.warn('Disconnected from server: %s', err)
 	});

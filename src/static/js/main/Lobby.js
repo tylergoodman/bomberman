@@ -5,12 +5,14 @@
 			id: null,
 			editable: false,
 		},
+		sync: $.noop,
 	});
 	var PersonView = Bomberman.PersonView = Backbone.View.extend({
 		template: _.template($('#template-Person').html()),
 
 		initialize: function () {
 			this.listenTo(this.model, 'change', this.update);
+			this.listenTo(this.model, 'destroy', this.remove)
 
 			this.render();
 
@@ -27,6 +29,9 @@
 			},
 			'mouseover .id': function (e) {
 				this.$('.id').select();
+			},
+			'destroy': function () {
+				this.remove();
 			},
 		},
 
@@ -60,7 +65,7 @@
 
 		events: {
 			'click #lobby-toggle': function () {
-				if (Network.client.open) {
+				if (Network.isOpen()) {
 					this.$toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
 					this.$toggle.find('span').text('Open Lobby');
 					this.$join.prop('disabled', false);
@@ -111,6 +116,9 @@
 				if (e.keyCode === 13)
 					this.$('#modal-join button').trigger('click');
 			},
+			'click #lobby-disconnect': function (e) {
+				Network.client.disconnect();
+			},
 		},
 
 		addPerson: function (player) {
@@ -119,4 +127,14 @@
 			});
 			this.$players.append(myview.el);
 		},
+
+		setConnected: function () {
+			this.$('#lobby-disconnect').prop('hidden', false);
+			this.$('#lobby-join').prop('hidden', true);
+		},
+		setDisconnected: function () {
+			this.$('#lobby-disconnect').prop('hidden', true);
+			this.$('#lobby-join').prop('hidden', false);
+		},
+
 	}));

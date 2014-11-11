@@ -75,12 +75,14 @@
 			id: null,
 			editable: false,
 		},
+		sync: $.noop,
 	});
 	var PersonView = Bomberman.PersonView = Backbone.View.extend({
 		template: _.template($('#template-Person').html()),
 
 		initialize: function () {
 			this.listenTo(this.model, 'change', this.update);
+			this.listenTo(this.model, 'destroy', this.remove)
 
 			this.render();
 
@@ -97,6 +99,9 @@
 			},
 			'mouseover .id': function (e) {
 				this.$('.id').select();
+			},
+			'destroy': function () {
+				this.remove();
 			},
 		},
 
@@ -130,7 +135,7 @@
 
 		events: {
 			'click #lobby-toggle': function () {
-				if (Network.client.open) {
+				if (Network.isOpen()) {
 					this.$toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
 					this.$toggle.find('span').text('Open Lobby');
 					this.$join.prop('disabled', false);
@@ -181,6 +186,9 @@
 				if (e.keyCode === 13)
 					this.$('#modal-join button').trigger('click');
 			},
+			'click #lobby-disconnect': function (e) {
+				Network.client.disconnect();
+			},
 		},
 
 		addPerson: function (player) {
@@ -189,6 +197,16 @@
 			});
 			this.$players.append(myview.el);
 		},
+
+		setConnected: function () {
+			this.$('#lobby-disconnect').prop('hidden', false);
+			this.$('#lobby-join').prop('hidden', true);
+		},
+		setDisconnected: function () {
+			this.$('#lobby-disconnect').prop('hidden', true);
+			this.$('#lobby-join').prop('hidden', false);
+		},
+
 	}));
 	var Logger = Bomberman.Logger = {
 		_log: function (type, args) {
@@ -219,7 +237,7 @@
 	}
 	Me.name = Me.default_name;
 
-	_.extend(Me, Backbone.Events);
+	// _.extend(Me, Backbone.Events);
 
 	Me.peer.on('open', function (id) {
 		var me = new Person({
@@ -237,10 +255,10 @@
 		Network.handleConnection(connection);
 	});
 	Me.peer.on('close', function () {
-		Logger.log('Own peer closed, refresh necessary');
+		Logger.log('Disconnected from server.');
 	});
 	Me.peer.on('error', function (err) {
-		Logger.warn('Own peer errored', err)
+		Logger.warn('Disconnected from server: %s', err)
 	});
 	var Network = Bomberman.Network = {
 		// 0 = client
@@ -253,6 +271,11 @@
 		setClosed: function () {
 			this.host.open = false;
 			this.mode = 0;
+			if (Object.keys(this.host.peers).length)
+				this.host.disconnect();
+		},
+		isOpen: function () {
+			return this.host.open;
 		},
 		// for when you're connected to a host...
 		// and you're the client..............
@@ -269,6 +292,7 @@
 			peers: {},
 			max_peers: 4,
 		},
+
 	}
 
 	Network.send = function (data) {
@@ -293,6 +317,12 @@
 	Network.host.handleData = function (connection, data) {
 		// Logger.log('Received some data from client %s!', connection.peer, data);
 
+		// data = {
+		// 	evt: event name,
+		// 	data: actual data needed for the event
+		// }
+		// the origin is implied from the connection
+
 		switch (data.evt) {
 			// message
 			case 'msg':
@@ -309,9 +339,81 @@
 				var peer = this.peers[connection.peer];
 				Logger.log('Name update: %s -> %s.', peer.lobby.get('name'), data.data);
 				peer.lobby.set('name', data.data);
+				this.relay(connection, data);
 			break;
 		}
 	}
+	Network.client.handleData = function (connection, data) {
+		// Logger.log('Received some data from host %s!', connection.peer, data);
+
+		// data = {
+		// 	evt: event name,
+		// 	orig: origin (who sent this data),
+		// 	data: actual data needed for event
+		// }
+
+		switch (data.evt) {
+			case 'msg':
+				// Logger.log(data.data);
+				// console.log(data);
+				Chat.makeMessage({
+					name: data.orig,
+					text: data.data,
+				});
+			break;
+			// connect success
+			case 'cnsc':
+				Logger.log('Connection success to %s!', connection.peer);
+				this.host.connection = connection;
+				// add host to lobby
+				this.host.lobby = new Person({
+					name: connection.peer,
+					id: connection.peer,
+				});
+				Lobby.addPerson(this.host.lobby);
+
+				// add other players to lobby
+				for (var i = 0; i < data.data.length; i++) {
+					this.addPerson(data.data[i]);
+				}
+
+				// send name update on successful connection
+				if (Me.name !== Me.default_name) {
+					connection.send({
+						evt: 'name',
+						data: Me.name,
+					});
+				}
+			break;
+			// new player
+			case 'np':
+				Logger.log('New peer: %s', data.data);
+				this.addPerson(data.data);
+			break;
+			// player disconnect
+			case 'dc':
+				Logger.log('%s disconnected.');
+				this.others[data.data].destroy();
+				delete this.others[data.data];
+			break;
+		}
+	}
+	Network.client.addPerson = function (id) {
+		this.others[id] = new Person({
+			name: id,
+			id: id,
+		});
+		Lobby.addPerson(this.others[id]);
+	}
+	// needs updating
+	Network.client.disconnect = function () {
+		this.host.lobby.destroy();
+		this.host.connection.close();
+		for (var id in this.others)
+			this.others[id].destroy();
+	}
+
+
 	Network.host.relay = function (from, data) {
 		var data = {
 			evt: data.evt,
@@ -326,39 +428,44 @@
 		for (var p in this.peers)
 			this.peers[p].connection.send(data);
 	}
-	Network.client.handleData = function (connection, data) {
-		// Logger.log('Received some data from host %s!', connection.peer, data);
+	Network.host.removePeer = function (id) {
+		this.peers[id].lobby.destroy();
+		this.peers[id].connection.close();
+		delete this.peers[id];
+	}
+	Network.host.disconnectPeer = function (id) {
+		this.removePeer(id);
+		this.sendToAll({
+			evt: 'dc',
+			data: id,
+		});
+	}
+	Network.host.disconnect = function () {
+		for (var p in this.peers)
+			this.removePeer(p);
+	}
 
-		switch (data.evt) {
-			case 'msg':
-				// Logger.log(data.data);
-				// console.log(data);
-				Chat.makeMessage({
-					name: data.orig,
-					text: data.data,
-				});
-			break;
-			// connect success
-			// TODO - receive list of other players here
-			// ... and other information
-			case 'cnsc':
-				Logger.log('Connection success to %s!', connection.peer);
-				this.host.connection = connection;
-				// send name update on successful connection
-				if (Me.name !== Me.default_name) {
-					connection.send({
-						evt: 'name',
-						data: Me.name,
-					});
-				}
-				// add host to lobby
-				this.host.lobby = new Person({
-					name: connection.peer,
-					id: connection.peer,
-				});
-				Lobby.addPerson(this.host.lobby);
-			break;
+	Network.host.addPeer = function (connection) {
+		connection.send({
+			evt: 'cnsc',
+			data: Object.keys(this.peers),
+			// data: 'Request successful!',
+		});
+		for (var p in this.peers) {
+			this.peers[p].connection.send({
+				evt: 'np',
+				data: connection.peer,
+			});
 		}
+
+		this.peers[connection.peer] = {
+			connection: connection,
+			lobby: new Person({
+				name: connection.peer,
+				id: connection.peer,
+			}),
+		};
+		Lobby.addPerson(this.peers[connection.peer].lobby);
 	}
 
 	Network.handleConnection = function (connection) {
@@ -368,7 +475,7 @@
 		if (!self.host.open) {
 			Logger.log('Closing connection to %s: lobby is closed.', connection.peer);
 			connection.on('open', function () {
-				connection.close();
+				this.close();
 			});
 		}
 		else if (Object.keys(self.host.peers).length === self.host.max_peers) {
@@ -381,11 +488,7 @@
 
 			connection.on('open', function () {
 				Logger.log('Connection with %s established.', this.peer);
-				this.send({
-					evt: 'cnsc',
-					// data: 'Request successful!',
-				});
-				self.addPeer(this);
+				self.host.addPeer(this);
 			});
 
 			connection.on('data', function (data) {
@@ -393,25 +496,16 @@
 			});
 
 			connection.on('close', function () {
-				Logger.log('Connection to %s closed.', this.peer);
+				Logger.log('%s disconnected.', this.peer);
+				self.host.disconnectPeer(this.peer);
 			});
 
 			connection.on('error', function (err) {
 				Logger.warn('Connection to %s errored!', this.peer);
+				self.host.disconnectPeer(this.peer);
 			});
 
 		}
-	}
-
-	Network.addPeer = function (connection) {
-		this.host.peers[connection.peer] = {
-			connection: connection,
-			lobby: new Person({
-				name: connection.peer,
-				id: connection.peer,
-			}),
-		};
-		Lobby.addPerson(this.host.peers[connection.peer].lobby);
 	}
 
 	/*
@@ -425,27 +519,25 @@
 
 		var connection = Me.peer.connect(id);
 		connection.on('open', function () {
-			Logger.log('Connection to %s established.', this.peer);
+			Logger.log('Connection to host %s established.', this.peer);
+			Lobby.setConnected();
 		});
 		connection.on('data', function (data) {
 			self.client.handleData(this, data);
 		});
 		connection.on('close', function () {
-			Logger.log('Connection to %s closed.', this.peer);
-			self.disconnect();
+			Logger.log('Connection to host %s closed.', this.peer);
+			self.client.disconnect();
+			Lobby.setDisconnected();
 		});
 		connection.on('error', function (err) {
-			Logger.warn('Connection to %s errored!', this.peer, err);
-			self.disconnect();
+			Logger.warn('Connection to host %s errored!', this.peer, err);
+			self.client.disconnect();
+			Lobby.setDisconnected();
 		});
 	}
 
-	Network.disconnect = function () {
-		this.host.connected = false;
-		this.host.connection = null;
-	}
-
-	_.extend(Network, Backbone.Events);
+	// _.extend(Network, Backbone.Events);
 
 
 
