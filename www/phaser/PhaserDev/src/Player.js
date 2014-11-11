@@ -3,9 +3,9 @@
 						Constructor
 ******************************************************************************/
 
-function Player (world, name, col, row, posX, posY) {
+function Player (preferences, name, col, row, posX, posY) {
 
-	GameObject.call(this, world, col, row, posX, posY, 'bombermanAnimation')
+	GameObject.call(this, preferences.World, col, row, posX, posY, 'bombermanAnimation')
 
 	// Set up Object's properties
 	this.Name = name
@@ -18,15 +18,18 @@ function Player (world, name, col, row, posX, posY) {
 	this.PreviousAnimation = null
 	this.AnimationChanged = false
 
+	// Scale Player
+	this.getSprite().scale.setTo(preferences.PlayerWidthRatio, preferences.PlayerHeightRatio)
+
 /******************************************************************************
 							 Animations
 ******************************************************************************/
 
 // animations
-this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '.png', 0), 30, true);
-this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '.png', 0), 30, true);
-this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '.png', 0), 30, true);
-this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
+this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
 
 /******************************************************************************
 							 Methods
@@ -94,20 +97,20 @@ this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1
 		// Keep player within world
 		if(this.getPosX() < 0)
 			this.setPosX(0, true)
-		if(this.getPosX() + this.Sprite.width > world.width)
-			this.setPosX(world.width - this.Sprite.width, true)
+		if(this.getPosX() + this.Sprite.width > preferences.World.width)
+			this.setPosX(preferences.World.width - this.Sprite.width, true)
 		if(this.getPosY() < 0)
 			this.setPosY(0, true)
-		if(this.getPosY() + this.Sprite.height > world.height)
-			this.setPosY(world.height - this.Sprite.height, true)
+		if(this.getPosY() + this.Sprite.height > preferences.World.height)
+			this.setPosY(preferences.World.height - this.Sprite.height, true)
 
 		// players col/row before updated
 		var curCol = this.getCol()
 		var curRow = this.getRow()
 
 		// update player col / row
-		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / 70))
-		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / 70))
+		this.setCol(Math.floor((this.getPosX() + this.getWidth() / 2) / preferences.ImageSizeWidth))
+		this.setRow(Math.floor((this.getPosY() + this.getHeight() / 2) / preferences.ImageSizeHeight))
 
 		// plays animation
 		if(this.AnimationChanged)

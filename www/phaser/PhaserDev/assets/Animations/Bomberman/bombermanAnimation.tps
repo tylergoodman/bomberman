@@ -4,7 +4,7 @@
         <key>fileFormatVersion</key>
         <int>3</int>
         <key>texturePackerVersion</key>
-        <string>3.5.2</string>
+        <string>3.5.3</string>
         <key>fileName</key>
         <string>D:/repos/bomberman/www/phaser/PhaserDev/assets/Animations/Bomberman/bombermanAnimation.tps</string>
         <key>autoSDSettings</key>
@@ -188,10 +188,38 @@
         </struct>
         <key>fileList</key>
         <array>
-            <filename>left</filename>
-            <filename>right</filename>
-            <filename>front</filename>
-            <filename>back</filename>
+            <filename>right/newright8.png</filename>
+            <filename>right/newright1.png</filename>
+            <filename>right/newright2.png</filename>
+            <filename>right/newright3.png</filename>
+            <filename>right/newright4.png</filename>
+            <filename>right/newright5.png</filename>
+            <filename>right/newright6.png</filename>
+            <filename>right/newright7.png</filename>
+            <filename>left/newleft1.png</filename>
+            <filename>left/newleft2.png</filename>
+            <filename>left/newleft3.png</filename>
+            <filename>left/newleft4.png</filename>
+            <filename>left/newleft5.png</filename>
+            <filename>left/newleft6.png</filename>
+            <filename>left/newleft7.png</filename>
+            <filename>left/newleft8.png</filename>
+            <filename>front/newfront1.png</filename>
+            <filename>front/newfront2.png</filename>
+            <filename>front/newfront3.png</filename>
+            <filename>front/newfront4.png</filename>
+            <filename>front/newfront5.png</filename>
+            <filename>front/newfront6.png</filename>
+            <filename>front/newfront7.png</filename>
+            <filename>front/newfront8.png</filename>
+            <filename>back/newback.png</filename>
+            <filename>back/newback2.png</filename>
+            <filename>back/newback3.png</filename>
+            <filename>back/newback4.png</filename>
+            <filename>back/newback5.png</filename>
+            <filename>back/newback6.png</filename>
+            <filename>back/newback7.png</filename>
+            <filename>back/newback8.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

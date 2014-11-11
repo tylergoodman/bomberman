@@ -1,8 +1,10 @@
-function Perk (world, col, row, posX, posY, type) {
+function Perk (preferences, col, row, posX, posY, type) {
 
 	this.type = type
 
 	var sprite = null
+
+	// Decode perk type
 	switch(type)
 	{
 		case "NormalBombPerk" :
@@ -22,13 +24,16 @@ function Perk (world, col, row, posX, posY, type) {
 	// default will be normalbombperk to avoid any null errors in the future
 	if( sprite != null)
 	{
-		GameObject.call(this, world, col, row, posX, posY, sprite)
+		GameObject.call(this, preferences.World, col, row, posX, posY, sprite)
 	}
 	else
 	{
 		this.type = "NormalBombPerk"
-		GameObject.call(this, world, col, row, posX, posY, 'normalBombPerk')
+		GameObject.call(this, preferences.World, col, row, posX, posY, 'normalBombPerk')
 	}
+
+	// Scale the perks image properly
+	this.getSprite().scale.setTo(preferences.PerkWidthRatio, preferences.PerkHeightRatio)
 
 
 /******************************************************************************

@@ -1,7 +1,6 @@
 function LayerManager(preferences)
 {
 	var Layers = []
-	var Preferences = preferences
 	var World = preferences.World
 
 	// returns a layer from the list based on name
@@ -60,13 +59,17 @@ function LayerManager(preferences)
 	// Adds unbreakable walls to the right location
 	function AddUnbreakableWalls()
 	{
-		for(var i = 1; i < Preferences.BoardColSize; i += 2)
+		for(var i = 1; i < preferences.BoardColSize; i += 2)
 		{
-			for(var j = 1; j < Preferences.BoardRowSize; j+=2)
+			for(var j = 1; j < preferences.BoardRowSize; j+=2)
 			{
 				// Create the wall
-				var unbreakWall = new Wall(World, false, i, j, 
-					i*Preferences.ImageSize, j*Preferences.ImageSize)
+				var unbreakWall = new Wall(preferences, false, i, j, 
+					i*preferences.ImageSizeWidth, j*preferences.ImageSizeHeight)
+
+				// Scale the wall
+				unbreakWall.getSprite().scale.setTo(
+					preferences.WallWidthRatio, preferences.WallHeightRatio)
 
 				// Add the wall to board
 				ReturnLayer("Wall").Add(unbreakWall, i, j)
@@ -78,10 +81,10 @@ function LayerManager(preferences)
 	// Adds breakable walls to the right location
 	function AddBreakableWalls()
 	{
-		for(var i = 0; i < Preferences.BoardColSize; i++)
+		for(var i = 0; i < preferences.BoardColSize; i++)
 		{
 			// fill in rows 1-8
-			for(var j = 1; j < Preferences.BoardRowSize; j++)
+			for(var j = 1; j < preferences.BoardRowSize; j++)
 			{
 				// if col is odd than skip every other row to ignore unbreakable walls
 				if(i % 2 == 1)
@@ -92,18 +95,27 @@ function LayerManager(preferences)
 				}
 
 				// Create the wall
-				var breakWall = new Wall(World, true, i, j, 
-					i*Preferences.ImageSize, j*Preferences.ImageSize)
+				var breakWall = new Wall(preferences, true, i, j, 
+					i*preferences.ImageSizeWidth, j*preferences.ImageSizeHeight)
+
+				// Scale the wall
+			    breakWall.getSprite().scale.setTo(
+			    	preferences.WallWidthRatio, preferences.WallHeightRatio)
 
 				// Add the wall to board
 				ReturnLayer("Wall").Add(breakWall, i, j)
 			}
 
 			// fills in first row with space
-			if(i < Preferences.BoardColSize && i > 2)
+			if(i < preferences.BoardColSize && i > 2)
 			{
-				var breakWall = new Wall(World, true, i, 0, 
-					i*Preferences.ImageSize, 0)
+				var breakWall = new Wall(preferences, true, i, 0, 
+					i*preferences.ImageSizeWidth, 0)
+
+				// Scale the wall
+				breakWall.getSprite().scale.setTo(
+					preferences.WallWidthRatio, preferences.WallHeightRatio)
+
 
 				ReturnLayer("Wall").Add(breakWall, i, 0)
 			}
