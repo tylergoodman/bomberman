@@ -55,6 +55,12 @@ function Preferences(world, players)
 	// public function to update all scale values
 	this.updateScaleValues = function()
 	{
+
+		world.width = document.getElementById('game').offsetWidth
+   		world.height = document.getElementById('game').offsetHeight
+
+   		world.scale.refresh()
+
 		// Window Data
 		this.WindowWidth = document.getElementById('game').offsetWidth 
 		this.WindowHeight = document.getElementById('game').offsetHeight

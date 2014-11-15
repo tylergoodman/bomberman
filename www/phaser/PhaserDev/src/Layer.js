@@ -85,7 +85,9 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 	this.Add = function (object)
 	{
 		if(object instanceof Type)
+		{
 			Board[object.getCol()][object.getRow()] = object
+		}
 	}
 
 	// Remove object at [row][col]

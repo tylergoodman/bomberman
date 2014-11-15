@@ -1,8 +1,5 @@
 function PerkManager(preferences, layerManager, players)
 {
-	// Preferences
-	var ImageSizeWidth = preferences.ImageSizeWidth
-	var ImageSizeHeight = preferences.ImageSizeHeight
 	// Layers 
 	var PerkLayer = layerManager.ReturnLayer("Perk")
 	var WallLayer = layerManager.ReturnLayer("Wall")
@@ -35,7 +32,7 @@ function PerkManager(preferences, layerManager, players)
 	this.RandomPerk = function(col, row)
 	{
 		var randomType = PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
-		return new Perk(preferences, col, row, col*ImageSizeWidth, row*ImageSizeHeight, randomType)
+		return new Perk(preferences, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight, randomType)
 	}
 
 	// Check if a player is on a perk
