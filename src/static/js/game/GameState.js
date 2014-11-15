@@ -84,7 +84,7 @@ GameState.prototype = {
 							}
 							else
 							{
-								//this.player.animate("stop")
+								this.playerManager.stopAnimation(this.player)
 							}
 							
 							// check if spacebar was pressed / second param is for debouncing

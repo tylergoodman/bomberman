@@ -1158,9 +1158,24 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		}
 	}
 }
-function PlayerManager(preferences, layerManager, explosionManager)
+function PlayerManager(preferences, layerManager, explosi)
 {
 	var playerID = ["Player 1", "Player 2", "Player 3", "Player 4"]
+
+	// Stops a player's animation
+	this.stopAnimation = function(id)
+	{
+		(id <= 3 && id >= 0)
+		{
+			// Get player from preference
+			var player = preferences.Players[id]
+			
+			if(player instanceof Player)
+			{	
+				player.animate("stop")
+			}
+		}
+	}
 
 	/* Moves a player to the new location
 	 	id : 0 - Player 1
@@ -1215,8 +1230,7 @@ function PlayerManager(preferences, layerManager, explosionManager)
 				// Player dies if he/she collides with explosion
 				if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
 				{
-					layerManager.R
-					explosionManager.PlayerDied(player)
+					explosionManager.PlayerDied(this.player)
 				}
 
 				// Update player data and layermanager
@@ -1687,7 +1701,7 @@ GameState.prototype = {
 							}
 							else
 							{
-								//this.player.animate("stop")
+								this.playerManager.stopAnimation(this.player)
 							}
 							
 							// check if spacebar was pressed / second param is for debouncing
