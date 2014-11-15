@@ -24,8 +24,15 @@
 
 		events: {
 			'keyup .name': function (e) {
-				if (e.keyCode === 13)
-					this.model.set('name', this.name.val());
+				if (e.keyCode === 13) {
+					var name = this.name.val();
+					this.model.set('name', name);
+					Logger.log('Changed name to %s.', name);
+					Network.send({
+						evt: 'nc',
+						data: name,
+					});
+				}
 			},
 			'mouseover .id': function (e) {
 				this.$('.id').select();

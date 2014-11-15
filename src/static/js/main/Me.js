@@ -14,7 +14,7 @@
 	}
 	Me.name = Me.default_name;
 
-	// _.extend(Me, Backbone.Events);
+	_.extend(Me, Backbone.Events);
 
 	Me.peer.on('open', function (id) {
 		var me = new Person({

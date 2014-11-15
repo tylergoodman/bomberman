@@ -46,6 +46,10 @@ module.exports = function (grunt) {
             main: {
                 src: 'src/static/js/main.js',
                 dest: 'www/static/js/main.built.js'
+            },
+            game: {
+                src: 'src/static/js/game.js',
+                dest: 'www/static/js/game.built.js'
             }
         },
 
@@ -77,6 +81,10 @@ module.exports = function (grunt) {
                 files: ['src/static/js/main/*.js'],
                 tasks: ['includereplace:main'],
             },
+            game: {
+                files: ['src/static/js/game/*.js'],
+                tasks: ['includereplace:game']
+            }
         }
     });
 

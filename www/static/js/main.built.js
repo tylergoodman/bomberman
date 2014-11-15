@@ -94,8 +94,15 @@
 
 		events: {
 			'keyup .name': function (e) {
-				if (e.keyCode === 13)
-					this.model.set('name', this.name.val());
+				if (e.keyCode === 13) {
+					var name = this.name.val();
+					this.model.set('name', name);
+					Logger.log('Changed name to %s.', name);
+					Network.send({
+						evt: 'nc',
+						data: name,
+					});
+				}
 			},
 			'mouseover .id': function (e) {
 				this.$('.id').select();
@@ -237,7 +244,7 @@
 	}
 	Me.name = Me.default_name;
 
-	// _.extend(Me, Backbone.Events);
+	_.extend(Me, Backbone.Events);
 
 	Me.peer.on('open', function (id) {
 		var me = new Person({
@@ -334,9 +341,10 @@
 				});
 				this.relay(connection, data);
 			break;
-			// name update
-			case 'name':
+			// name change
+			case 'nc':
 				var peer = this.peers[connection.peer];
+				console.log(peer);
 				Logger.log('Name update: %s -> %s.', peer.lobby.get('name'), data.data);
 				peer.lobby.set('name', data.data);
 				this.relay(connection, data);
@@ -384,6 +392,12 @@
 						data: Me.name,
 					});
 				}
+			break;
+			// name change
+			case 'nc':
+				var peer = this.others[data.orig];
+				Logger.log('Name update: %s -> %s.', peer.get('name'), data.data);
+				peer.set('name', data.data);
 			break;
 			// new player
 			case 'np':

@@ -72,9 +72,10 @@
 				});
 				this.relay(connection, data);
 			break;
-			// name update
-			case 'name':
+			// name change
+			case 'nc':
 				var peer = this.peers[connection.peer];
+				console.log(peer);
 				Logger.log('Name update: %s -> %s.', peer.lobby.get('name'), data.data);
 				peer.lobby.set('name', data.data);
 				this.relay(connection, data);
@@ -122,6 +123,12 @@
 						data: Me.name,
 					});
 				}
+			break;
+			// name change
+			case 'nc':
+				var peer = this.others[data.orig];
+				Logger.log('Name update: %s -> %s.', peer.get('name'), data.data);
+				peer.set('name', data.data);
 			break;
 			// new player
 			case 'np':
