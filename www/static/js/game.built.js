@@ -1581,10 +1581,6 @@ Preloader.prototype = {
    			
    		bg.scale.setTo(scaleWidth, scaleHeight);
 
-   		$('#game > canvas').height('100%');
-   		$('#game > canvas').width('100%');
-
-
     	game.scale.setScreenSize();
 
 		if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))

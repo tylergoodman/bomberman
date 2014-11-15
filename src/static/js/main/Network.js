@@ -33,11 +33,11 @@
 
 	Network.send = function (data) {
 		if (this.client.host_connection) {
-			console.log('sending to host');
+			// console.log('sending to host');
 			this.client.host_connection.send(data);
 		}
 		else if (Object.keys(this.host.peers).length) {
-			console.log('sending to all clients');
+			// console.log('sending to all clients');
 			this.host.sendToAll({
 				evt: data.evt,
 				orig: Me.peer.id,
@@ -103,7 +103,6 @@
 			case 'cnsc':
 				Logger.log('Connection success to %s!', connection.peer);
 				this.host_connection = connection;
-				// this.addPerson(connection.peer);
 
 				// add other players to lobby
 				for (var p in data.data)
@@ -111,7 +110,7 @@
 
 				// send name update on successful connection
 				if (Me.name !== Me.default_name) {
-					connection.send({
+					this.host_connection.send({
 						evt: 'nc',
 						data: Me.name,
 					});
@@ -136,6 +135,7 @@
 			break;
 		}
 	}
+
 	Network.client.addPerson = function (id, name) {
 		if (name === undefined || name === Me.default_name)
 			name = id;
