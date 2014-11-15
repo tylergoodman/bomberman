@@ -1714,11 +1714,10 @@ GameState.prototype = {
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
 							}
-							/*
 
 							// update perks
 							this.perkManager.Update()
-							*/
+							
 					  	}
 }
 var GameOver = function(game) {} 
