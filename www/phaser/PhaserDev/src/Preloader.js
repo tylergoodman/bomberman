@@ -13,6 +13,8 @@ Preloader.prototype = {
 						var background = this.game.add.group();
 				   		background.z = 1;
 				   		bg = this.game.add.sprite(0,0,'background')
+
+				   		// Scales background image
 				   		image = game.cache.getImage('background')
 
 				   		scaleWidth = document.getElementById('game').offsetWidth / image.width 
@@ -30,6 +32,7 @@ Preloader.prototype = {
 				   	    	ratio = scaleHeight;
 				   			bg.scale.setTo(ratio, ratio);
 				   	    }
+
 
 				   	  },
   update:  function() {

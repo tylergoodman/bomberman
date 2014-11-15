@@ -52,4 +52,44 @@ function Preferences(world, players)
 	// Calculate move value
 	this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
 
+	// public function to update all scale values
+	this.updateScaleValues = function()
+	{
+		// Window Data
+		this.WindowWidth = document.getElementById('game').offsetWidth 
+		this.WindowHeight = document.getElementById('game').offsetHeight
+
+		// Image size for bombs/walls
+		this.ImageSizeWidth = this.WindowWidth / this.BoardColSize
+		this.ImageSizeHeight = this.WindowHeight / this.BoardRowSize
+
+		// Background Data
+		this.BgWidthRatio = this.WindowWidth / this.BgWidth
+		this.BgHeightRatio = this.WindowHeight / this.BgHeight
+
+		// Player Data
+		this.PlayerWidthRatio = this.ImageSizeWidth / this.PlayerWidth * .8
+		this.PlayerHeightRatio = this.ImageSizeHeight / this.PlayerHeight * .8
+
+		// Wall Data
+		this.WallWidthRatio = this.ImageSizeWidth  / this.WallWidth
+		this.WallHeightRatio = this.ImageSizeHeight / this.WallHeight
+
+		// Perk Data
+		this.PerkWidthRatio = this.ImageSizeWidth  / this.PerkWidth
+		this.PerkHeightRatio = this.ImageSizeHeight / this.PerkHeight
+
+		// Bomb Data
+		this.BombWidthRatio = this.ImageSizeWidth  / this.BombWidth
+		this.BombHeightRatio = this.ImageSizeHeight / this.BombHeight
+
+		// Explosion Data
+		this.ExplosionWidthRatio = this.ImageSizeWidth  / this.ExplosionWidth
+		this.ExplosionHeightRatio = this.ImageSizeHeight / this.ExplosionHeight
+
+
+		// Calculate move value
+		this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
+	}
+
 }

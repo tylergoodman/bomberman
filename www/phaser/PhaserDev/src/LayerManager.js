@@ -121,4 +121,32 @@ function LayerManager(preferences)
 			}
 		}
 	}
+
+	/******************************************************************************
+								Scale
+	******************************************************************************/
+
+	// Scales all the layers if the window size changes
+	this.ScaleLayers = function()
+	{
+		// Update Wall Layer
+		var layer = ReturnLayer("Wall")
+		layer.scaleObjects(preferences.WallWidthRatio, preferences.WallHeightRatio, preferences.ImageSizeWidth, preferences.ImageSizeHeight)
+
+		// Update Player Layer
+		layer = ReturnLayer("Player")
+		layer.scaleObjects(preferences.PlayerWidthRatio, preferences.PlayerHeightRatio, preferences.ImageSizeWidth, preferences.ImageSizeHeight)
+
+		// Update Bomb Layer
+		layer = ReturnLayer("Bomb")
+		layer.scaleObjects(preferences.BombWidthRatio, preferences.BombHeightRatio, preferences.ImageSizeWidth, preferences.ImageSizeHeight)
+
+		// Update Perk Layer
+		layer = ReturnLayer("Perk")
+		layer.scaleObjects(preferences.PerkWidthRatio, preferences.PerkHeightRatio, preferences.ImageSizeWidth, preferences.ImageSizeHeight)
+
+		// Update Explosion Layer
+		layer = ReturnLayer("Explosion")
+		layer.scaleObjects(preferences.ExplosionWidthRatio, preferences.ExplosionHeightRatio, preferences.ImageSizeWidth, preferences.ImageSizeHeight)
+	}
 }

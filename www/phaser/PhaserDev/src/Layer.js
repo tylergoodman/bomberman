@@ -134,9 +134,9 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 	// Checks if an object has collided with any object in this layer
 	this.collisionWith = function(object)
 	{
-		for(var i = 0; i < sizeOfCol; i++)
+		for(var i = 0; i < ColSize; i++)
 		{
-			for(var j = 0; j  < sizeOfRow; j++)
+			for(var j = 0; j  < RowSize; j++)
 			{
 				if(Board[i][j] instanceof Type)
 				{
@@ -147,6 +147,25 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 		}
 
 		return false;
+	}
+
+	// Scales each item in the layer by a value
+	this.scaleObjects = function(scaleX, scaleY, imageSizeWidth, ImageSizeHeight)
+	{
+		for(var i = 0; i < ColSize; i++)
+		{
+			for(var j = 0; j  < RowSize; j++)
+			{
+				if(Board[i][j] instanceof Type)
+				{
+					// Rescale the image
+					Board[i][j].getSprite().scale.setTo(scaleX, scaleY)
+					// Redraw the image
+					Board[i][j].setPosX(Board[i][j].getCol()*imageSizeWidth)
+					Board[i][j].setPosY(Board[i][j].getRow()*ImageSizeHeight)
+				}
+			}
+		}
 	}
 
 /******************************************************************************

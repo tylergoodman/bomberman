@@ -54,6 +54,14 @@ GameState.prototype = {
 							// Add player to world
 							Players.push(player)
 							layerManager.ReturnLayer("Player").Add(player)
+
+							// Resize window if window size changes
+							$(window).resize(function() {
+								// Update scale values
+								preferences.updateScaleValues()
+								// Update all layers
+							  	layerManager.ScaleLayers()
+							})
 				   		},
   update:  function() 	{
 							var curX = player.getPosX()
