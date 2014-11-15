@@ -86,40 +86,28 @@ GameState.prototype = {
 							{
 								//this.player.animate("stop")
 							}
-							/*
+							
 							// check if spacebar was pressed / second param is for debouncing
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
-								if(player.getBombCount("Normal") > 0)
-								{
-									this.explosionManager.DropBomb(this.player, "Normal")
-								}
+								this.explosionManager.DropBomb(this.player, "Normal")
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)
 							{
-								if(player.getBombCount("Vertical") > 0)
-								{
-									this.explosionManager.DropBomb(this.player, "Vertical")
-								}
+								this.explosionManager.DropBomb(this.player, "Vertical")
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && this.Players[0] != null)
 							{
-								if(player.getBombCount("Horizontal") > 0)
-								{
-									this.explosionManager.DropBomb(this.player, "Horizontal")
-								}
+								this.explosionManager.DropBomb(this.player, "Horizontal")
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
 							}
-
-							// update player
-							this.player.update()
-							this.layerManager.ReturnLayer("Player").newBoard(this.Players)
+							/*
 
 							// update perks
 							this.perkManager.Update()

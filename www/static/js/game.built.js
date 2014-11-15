@@ -813,7 +813,6 @@ function LayerManager(preferences)
 function ExplosionManager(preferences, layerManager, perkManager)
 {
 	var World = preferences.World
-	var Players = preferences.Players
 	var BoardColSize = preferences.BoardColSize
 	var BoardRowSize = preferences.BoardRowSize
 	var PlayerLayer = layerManager.ReturnLayer("Player")
@@ -825,21 +824,33 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	var perkManager = perkManager
 
 	// Process Bomb dropped 
-	this.DropBomb = function (player, type)
+	this.DropBomb = function (playerId, type)
 	{
-		if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
+		// Verify that player exist
+		if(preferences.Players[playerId] instanceof Player)
 		{
-			// Create bomb
-			var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
-				player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
+			// Get player from Players array in preference
+			var player = preferences.Players[playerId]
 
-			// Add bomb to layer
-			BombLayer.Add(bomb)
+			// Verify player has enough normal bombs
+			if(player.getBombCount(type) > 0)
+			{
+				// Verify there isnt a bomb already there
+				if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
+				{
+					// Create bomb
+					var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
+						player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
 
-			// Add the bomb event - last parm is the callback function's args
-			World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
+					// Add bomb to layer
+					BombLayer.Add(bomb)
 
-			player.setBombCount(type, player.getBombCount(type) - 1)
+					// Add the bomb event - last parm is the callback function's args
+					World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
+
+					player.setBombCount(type, player.getBombCount(type) - 1)
+				}
+			}
 		}
 	}
 
@@ -885,7 +896,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 						// remove explosion from explosion layer
 						ExplosionLayer.Remove(explosion)
 						 // Let explosion animation play before ending the game
-						if(Players.length == 0)
+						if(preferences.Players.length == 0)
 							this.game.state.start('GameOver');
 					}, 
 				this, explosion, WallLayer)
@@ -904,7 +915,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 					// remove explosion from explosion layer
 					ExplosionLayer.Remove(explosion)
 					 // Let explosion animation play before ending the game
-					if(Players.length == 0)
+					if(preferences.Players.length == 0)
 						this.game.state.start('GameOver');
 				}, 
 			this, explosion, WallLayer)
@@ -1123,11 +1134,11 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	// Removes a dead player
 	this.PlayerDied = function(player)
 	{
-		for(var i = 0; i < Players.length; i++)
+		for(var i = 0; i < preferences.Players.length; i++)
 		{
-			if(player.getName() === Players[i].getName())
+			if(player.getName() === preferences.Players[i].getName())
 			{
-				Players.splice(i,1);
+				preferences.Players.splice(i,1);
 				PlayerLayer.Remove(player);
 			}
 		}
@@ -1137,11 +1148,11 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	// code structure
 	function PlayerDied(player)
 	{
-		for(var i = 0; i < Players.length; i++)
+		for(var i = 0; i < preferences.Players.length; i++)
 		{
-			if(player.getName() === Players[i].getName())
+			if(player.getName() === preferences.Players[i].getName())
 			{
-				Players.splice(i,1);
+				preferences.Players.splice(i,1);
 				PlayerLayer.Remove(player);
 			}
 		}
@@ -1682,40 +1693,28 @@ GameState.prototype = {
 							{
 								//this.player.animate("stop")
 							}
-							/*
+							
 							// check if spacebar was pressed / second param is for debouncing
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
-								if(player.getBombCount("Normal") > 0)
-								{
-									this.explosionManager.DropBomb(this.player, "Normal")
-								}
+								this.explosionManager.DropBomb(this.player, "Normal")
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)
 							{
-								if(player.getBombCount("Vertical") > 0)
-								{
-									this.explosionManager.DropBomb(this.player, "Vertical")
-								}
+								this.explosionManager.DropBomb(this.player, "Vertical")
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && this.Players[0] != null)
 							{
-								if(player.getBombCount("Horizontal") > 0)
-								{
-									this.explosionManager.DropBomb(this.player, "Horizontal")
-								}
+								this.explosionManager.DropBomb(this.player, "Horizontal")
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
 							}
-
-							// update player
-							this.player.update()
-							this.layerManager.ReturnLayer("Player").newBoard(this.Players)
+							/*
 
 							// update perks
 							this.perkManager.Update()
