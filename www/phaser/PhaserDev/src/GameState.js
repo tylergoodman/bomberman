@@ -1,10 +1,10 @@
 var GameState = function(game) {
 	player = null
 	layerManager = null
+	playerManager = null
 	explosionManager = null
 	perkManager = null
 	preferences = null
-
 	// Array to keep track of players
 	Players = []
 } 
@@ -48,6 +48,7 @@ GameState.prototype = {
 					   		// Set up the world before adding it to explosion manager
 					   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
 
+					   		// Set up player manager to manage all the players
 							// Player
 							player = new Player(preferences, "Player 1", 0, 0, 0, 0)
 

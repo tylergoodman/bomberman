@@ -1,11 +1,8 @@
-function PerkManager(preferences, layerManager, players)
+function PerkManager(preferences, layerManager)
 {
 	// Layers 
 	var PerkLayer = layerManager.ReturnLayer("Perk")
 	var WallLayer = layerManager.ReturnLayer("Wall")
-
-	// Players
-	var Players = players
 
 	// Array containing all the types of perks
 	// This should match whats in the Perk Class's constructor
@@ -38,15 +35,15 @@ function PerkManager(preferences, layerManager, players)
 	// Check if a player is on a perk
 	this.Update = function()
 	{
-		if(Players.length > 0)
+		if(preferences.Players.length > 0)
 		{
-			for(var i = 0; i < Players.length; i++)
+			for(var i = 0; i < preferences.Players.length; i++)
 			{
-				var col = Players[i].getCol(), row = Players[i].getRow()
+				var col = preferences.Players[i].getCol(), row = preferences.Players[i].getRow()
 				if(PerkLayer.getObjectAt(col, row) instanceof Perk)
 				{
 					// Apply perk if user is on a perk
-					this.ApplyPerk(Players[i], PerkLayer.getObjectAt(col, row))
+					this.ApplyPerk(preferences.Players[i], PerkLayer.getObjectAt(col, row))
 				}
 			}
 		}
