@@ -59,7 +59,7 @@ Preloader.prototype = {
 
     	game.scale.setScreenSize();
 
-		if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
-			this.game.state.start('Game');
+		//if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
+		//	this.game.state.start('Game');
   }
 }

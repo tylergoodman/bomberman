@@ -126,6 +126,21 @@
 			'click #lobby-disconnect': function (e) {
 				Network.client.disconnect();
 			},
+			'click #game-start': function (e) {
+				this.$('#game-start').prop('disabled', true);
+				var peers = Object.keys(Network.getPeers());
+				peers.push(Me.peer.id);
+				peers = peers.randomize();
+
+				Me.index = peers.indexOf(Me.peer.id);
+				game.state.start('Game', true, false, Me.index, peers);
+				// console.log(peers);
+
+				Network.send({
+					evt: 'gs',
+					data: peers,
+				});
+			},
 		},
 
 		addPerson: function (player) {
@@ -138,10 +153,14 @@
 		setConnected: function () {
 			this.$('#lobby-disconnect').prop('hidden', false);
 			this.$('#lobby-join').prop('hidden', true);
+			this.$('#game-start').prop('disabled', true);
 		},
 		setDisconnected: function () {
+			console.log('adf');
 			this.$('#lobby-disconnect').prop('hidden', true);
 			this.$('#lobby-join').prop('hidden', false);
+			this.$('#game-start').prop('disabled', false);
 		},
+
 
 	}));

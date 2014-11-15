@@ -1,5 +1,6 @@
 var GameState = function(game) {
 	this.player = null
+	this.peers = null
 	this.layerManager = null
 	this.playerManager = null
 	this.explosionManager = null
@@ -51,8 +52,16 @@ GameState.prototype = {
 					   		// Set up player manager to manage all the players
 					   		this.playerManager = new PlayerManager(this.preferences, this.layerManager, this.explosionManager)
 
+					   		// Create peers
+					   		this.player = Bomberman.Me.index;
+							//this.player = game.state.states.Game.playerManager.newPlayer(Me.index)
+							for(var i = 0; i < this.peers.length; i++)
+							{
+								this.playerManager.newPlayer(this.peers[i])
+							}
+
 							// Player
-							this.player = this.playerManager.newPlayer()
+							//this.player = this.playerManager.newPlayer()
 
 							// Reference to this object
 							var self = this
@@ -112,5 +121,9 @@ GameState.prototype = {
 							// update perks
 							this.perkManager.Update()
 							*/
+					  	},
+					  	init: function(myId, peersID) {
+					  		this.player = myId;
+					  		this.peers = peersID
 					  	}
 }

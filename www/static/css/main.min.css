@@ -87,10 +87,12 @@ input[type='text'] {
   display: flex;
   flex-direction: row;
 }
-#lobby .controls button {
+#lobby button {
   flex-grow: 1;
-  width: calc(42%);
   margin: 4px;
+}
+#lobby #game-start {
+  flex-grow: 0;
 }
 #players {
   flex-grow: 1;

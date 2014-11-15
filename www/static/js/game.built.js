@@ -1227,7 +1227,7 @@ function PlayerManager(preferences, layerManager, explosionManager)
 	}
 
 	// Creates a new player if possible
-	this.newPlayer = function()
+	this.newPlayer = function(id)
 	{
 		if(preferences.Players.length < 4)
 		{
@@ -1259,14 +1259,17 @@ function PlayerManager(preferences, layerManager, explosionManager)
 			}
 
 			// Create the player with the right location data
-			var player = new Player(preferences, playerID[preferences.Players.length], col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight)
+			var player = new Player(preferences, id, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight)
 
 			// Add player to world
 			preferences.Players.push(player)
 			layerManager.ReturnLayer("Player").Add(player)
 
+
+			console.log("worked")
 			// Return the index value that the player belongs to in the Players array
 			return preferences.Players.length-1
+
 		}
 	}
 }
@@ -1583,8 +1586,8 @@ Preloader.prototype = {
 
     	game.scale.setScreenSize();
 
-		if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
-			this.game.state.start('Game');
+		//if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
+		//	this.game.state.start('Game');
   }
 }
 var Lobby = function(game) {} 
@@ -1603,6 +1606,7 @@ Lobby.prototype = {
 }   
 var GameState = function(game) {
 	this.player = null
+	this.peers = null
 	this.layerManager = null
 	this.playerManager = null
 	this.explosionManager = null
@@ -1654,8 +1658,16 @@ GameState.prototype = {
 					   		// Set up player manager to manage all the players
 					   		this.playerManager = new PlayerManager(this.preferences, this.layerManager, this.explosionManager)
 
+					   		// Create peers
+					   		this.player = Bomberman.Me.index;
+							//this.player = game.state.states.Game.playerManager.newPlayer(Me.index)
+							for(var i = 0; i < this.peers.length; i++)
+							{
+								this.playerManager.newPlayer(this.peers[i])
+							}
+
 							// Player
-							this.player = this.playerManager.newPlayer()
+							//this.player = this.playerManager.newPlayer()
 
 							// Reference to this object
 							var self = this
@@ -1715,6 +1727,10 @@ GameState.prototype = {
 							// update perks
 							this.perkManager.Update()
 							*/
+					  	},
+					  	init: function(myId, peersID) {
+					  		this.player = myId;
+					  		this.peers = peersID
 					  	}
 }
 var GameOver = function(game) {} 

@@ -67,7 +67,7 @@ function PlayerManager(preferences, layerManager, explosionManager)
 	}
 
 	// Creates a new player if possible
-	this.newPlayer = function()
+	this.newPlayer = function(id)
 	{
 		if(preferences.Players.length < 4)
 		{
@@ -99,14 +99,17 @@ function PlayerManager(preferences, layerManager, explosionManager)
 			}
 
 			// Create the player with the right location data
-			var player = new Player(preferences, playerID[preferences.Players.length], col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight)
+			var player = new Player(preferences, id, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight)
 
 			// Add player to world
 			preferences.Players.push(player)
 			layerManager.ReturnLayer("Player").Add(player)
 
+
+			console.log("worked")
 			// Return the index value that the player belongs to in the Players array
 			return preferences.Players.length-1
+
 		}
 	}
 }

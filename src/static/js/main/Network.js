@@ -29,6 +29,12 @@
 			peers: {}
 		},
 
+		getPeers: function () {
+			if (this.isOpen)
+				return this.host.peers;
+			return this.client.peers;
+		},
+
 	}
 
 	Network.send = function (data) {
@@ -133,6 +139,15 @@
 				this.peers[data.data].destroy();
 				delete this.peers[data.data];
 			break;
+			// start game
+			case 'gs':
+				var data = data.data
+				
+				Me.index = data.indexOf(Me.peer.id)
+
+				game.state.start('Game', true, false, Me.index, data);
+
+			break;
 		}
 	}
 
@@ -148,7 +163,8 @@
 	}
 	// needs updating
 	Network.client.disconnect = function () {
-		this.host_connection.close();
+		if (this.host_connection)
+			this.host_connection.close();
 		for (var id in this.peers)
 			this.peers[id].destroy();
 	}
@@ -191,7 +207,6 @@
 		for (var p in this.peers)
 			data[p] = this.peers[p].lobby.get('name');
 		data[Me.peer.id] = Me.name;
-		console.log(data);
 
 		connection.send({
 			evt: 'cnsc',
@@ -223,13 +238,13 @@
 		var self = this;
 
 		if (!self.host.open) {
-			Logger.log('Closing connection to %s: lobby is closed.', connection.peer);
+			Logger.log('Refusing connection to %s: lobby is closed.', connection.peer);
 			connection.on('open', function () {
 				this.close();
 			});
 		}
 		else if (Object.keys(self.host.peers).length === self.host.max_peers) {
-			Logger.log('Closing connection to %s: lobby is full.', connection.peer);
+			Logger.log('Refusing connection to %s: lobby is full.', connection.peer);
 			connection.on('open', function () {
 				connection.close();
 			});

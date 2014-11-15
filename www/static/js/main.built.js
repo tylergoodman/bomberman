@@ -196,6 +196,21 @@
 			'click #lobby-disconnect': function (e) {
 				Network.client.disconnect();
 			},
+			'click #game-start': function (e) {
+				this.$('#game-start').prop('disabled', true);
+				var peers = Object.keys(Network.getPeers());
+				peers.push(Me.peer.id);
+				peers = peers.randomize();
+
+				Me.index = peers.indexOf(Me.peer.id);
+				game.state.start('Game', true, false, Me.index, peers);
+				// console.log(peers);
+
+				Network.send({
+					evt: 'gs',
+					data: peers,
+				});
+			},
 		},
 
 		addPerson: function (player) {
@@ -208,11 +223,15 @@
 		setConnected: function () {
 			this.$('#lobby-disconnect').prop('hidden', false);
 			this.$('#lobby-join').prop('hidden', true);
+			this.$('#game-start').prop('disabled', true);
 		},
 		setDisconnected: function () {
+			console.log('adf');
 			this.$('#lobby-disconnect').prop('hidden', true);
 			this.$('#lobby-join').prop('hidden', false);
+			this.$('#game-start').prop('disabled', false);
 		},
+
 
 	}));
 	var Logger = Bomberman.Logger = {
@@ -296,6 +315,12 @@
 		host: {
 			open: false,
 			peers: {}
+		},
+
+		getPeers: function () {
+			if (this.isOpen)
+				return this.host.peers;
+			return this.client.peers;
 		},
 
 	}
@@ -402,6 +427,15 @@
 				this.peers[data.data].destroy();
 				delete this.peers[data.data];
 			break;
+			// start game
+			case 'gs':
+				var data = data.data
+				
+				Me.index = data.indexOf(Me.peer.id)
+
+				game.state.start('Game', true, false, Me.index, data);
+
+			break;
 		}
 	}
 
@@ -417,7 +451,8 @@
 	}
 	// needs updating
 	Network.client.disconnect = function () {
-		this.host_connection.close();
+		if (this.host_connection)
+			this.host_connection.close();
 		for (var id in this.peers)
 			this.peers[id].destroy();
 	}
@@ -460,7 +495,6 @@
 		for (var p in this.peers)
 			data[p] = this.peers[p].lobby.get('name');
 		data[Me.peer.id] = Me.name;
-		console.log(data);
 
 		connection.send({
 			evt: 'cnsc',
@@ -492,13 +526,13 @@
 		var self = this;
 
 		if (!self.host.open) {
-			Logger.log('Closing connection to %s: lobby is closed.', connection.peer);
+			Logger.log('Refusing connection to %s: lobby is closed.', connection.peer);
 			connection.on('open', function () {
 				this.close();
 			});
 		}
 		else if (Object.keys(self.host.peers).length === self.host.max_peers) {
-			Logger.log('Closing connection to %s: lobby is full.', connection.peer);
+			Logger.log('Refusing connection to %s: lobby is full.', connection.peer);
 			connection.on('open', function () {
 				connection.close();
 			});
