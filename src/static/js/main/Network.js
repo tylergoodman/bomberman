@@ -2,6 +2,8 @@
 		// 0 = client
 		// 1 = host
 		mode: 0,
+		max_peers: 4,
+
 		setOpen: function () {
 			this.host.open = true;
 			this.mode = 1;
@@ -18,28 +20,24 @@
 		// for when you're connected to a host...
 		// and you're the client..............
 		client: {
-			host: {
-				lobby: null,
-				connection: null,
-			},
-			others: {},
+			host_connection: null,
+			peers: {},
 		},
 		// for when you're the host and others are the client
 		host: {
 			open: false,
-			peers: {},
-			max_peers: 4,
+			peers: {}
 		},
 
 	}
 
 	Network.send = function (data) {
-		if (this.client.host.connection) {
-			// console.log('sending to host');
-			this.client.host.connection.send(data);
+		if (this.client.host_connection) {
+			console.log('sending to host');
+			this.client.host_connection.send(data);
 		}
 		else if (Object.keys(this.host.peers).length) {
-			// console.log('sending to all clients');
+			console.log('sending to all clients');
 			this.host.sendToAll({
 				evt: data.evt,
 				orig: Me.peer.id,
@@ -47,7 +45,7 @@
 			});
 		}
 		else {
-			Logger.log('No one to send %s to...', data);
+			console.log('No one to send %s to...', data);
 		}
 	}
 
@@ -84,6 +82,7 @@
 	}
 	Network.client.handleData = function (connection, data) {
 		// Logger.log('Received some data from host %s!', connection.peer, data);
+		// console.log(data);
 
 		// data = {
 		// 	evt: event name,
@@ -103,30 +102,24 @@
 			// connect success
 			case 'cnsc':
 				Logger.log('Connection success to %s!', connection.peer);
-				this.host.connection = connection;
-				// add host to lobby
-				this.host.lobby = new Person({
-					name: connection.peer,
-					id: connection.peer,
-				});
-				Lobby.addPerson(this.host.lobby);
+				this.host_connection = connection;
+				// this.addPerson(connection.peer);
 
 				// add other players to lobby
-				for (var i = 0; i < data.data.length; i++) {
-					this.addPerson(data.data[i]);
-				}
+				for (var p in data.data)
+					this.addPerson(p, data.data[p]);
 
 				// send name update on successful connection
 				if (Me.name !== Me.default_name) {
 					connection.send({
-						evt: 'name',
+						evt: 'nc',
 						data: Me.name,
 					});
 				}
 			break;
 			// name change
 			case 'nc':
-				var peer = this.others[data.orig];
+				var peer = this.peers[data.orig];
 				Logger.log('Name update: %s -> %s.', peer.get('name'), data.data);
 				peer.set('name', data.data);
 			break;
@@ -138,24 +131,26 @@
 			// player disconnect
 			case 'dc':
 				Logger.log('%s disconnected.');
-				this.others[data.data].destroy();
-				delete this.others[data.data];
+				this.peers[data.data].destroy();
+				delete this.peers[data.data];
 			break;
 		}
 	}
-	Network.client.addPerson = function (id) {
-		this.others[id] = new Person({
-			name: id,
+	Network.client.addPerson = function (id, name) {
+		if (name === undefined || name === Me.default_name)
+			name = id;
+
+		this.peers[id] = new Person({
+			name: name,
 			id: id,
 		});
-		Lobby.addPerson(this.others[id]);
+		Lobby.addPerson(this.peers[id]);
 	}
 	// needs updating
 	Network.client.disconnect = function () {
-		this.host.lobby.destroy();
-		this.host.connection.close();
-		for (var id in this.others)
-			this.others[id].destroy();
+		this.host_connection.close();
+		for (var id in this.peers)
+			this.peers[id].destroy();
 	}
 
 
@@ -191,11 +186,18 @@
 	}
 
 	Network.host.addPeer = function (connection) {
+		// notify new peer that connection succeeded
+		var data = {};
+		for (var p in this.peers)
+			data[p] = this.peers[p].lobby.get('name');
+		data[Me.peer.id] = Me.name;
+		console.log(data);
+
 		connection.send({
 			evt: 'cnsc',
-			data: Object.keys(this.peers),
-			// data: 'Request successful!',
+			data: data,
 		});
+		// notify other players of the new peer
 		for (var p in this.peers) {
 			this.peers[p].connection.send({
 				evt: 'np',
@@ -203,6 +205,7 @@
 			});
 		}
 
+		// remember our new peer
 		this.peers[connection.peer] = {
 			connection: connection,
 			lobby: new Person({
@@ -213,6 +216,8 @@
 		Lobby.addPerson(this.peers[connection.peer].lobby);
 	}
 
+
+	// Receive connection (you're a host now maybe)
 	Network.handleConnection = function (connection) {
 		Logger.log('Received connection request from %s.', connection.peer);
 		var self = this;
