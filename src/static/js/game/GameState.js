@@ -93,7 +93,7 @@ GameState.prototype = {
 							}
 							else
 							{
-								//this.player.animate("stop")
+								this.playerManager.stopAnimation(this.player)
 							}
 							
 							// check if spacebar was pressed / second param is for debouncing
@@ -116,14 +116,13 @@ GameState.prototype = {
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
 							}
-							/*
 
 							// update perks
 							this.perkManager.Update()
-							*/
 					  	},
-					  	init: function(myId, peersID) {
+	init: function(myId, peersID) {
 					  		this.player = myId;
 					  		this.peers = peersID
+
 					  	}
 }
