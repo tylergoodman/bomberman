@@ -1,6 +1,70 @@
-function PlayerManager(preferences, layerManager)
+function PlayerManager(preferences, layerManager, explosionManager)
 {
 	var playerID = ["Player 1", "Player 2", "Player 3", "Player 4"]
+
+	/* Moves a player to the new location
+	 	id : 0 - Player 1
+			 1 - Player 2
+			 2 - Player 3
+			 3 - Player 4
+		direction: 	0 - Up
+					1 - Down
+					2 - Left
+					3 - Right
+	*/
+	this.movePlayer = function(id, direction)
+	{
+		if(id <= 3 && id >= 0 && direction <= 3 && direction >= 0)
+		{
+			// Get data from preference
+			var player = preferences.Players[id]
+			var moveValue = preferences.MoveValue
+			
+			if(player instanceof Player)
+			{	
+				// Get current position to revert player if needed			
+				var curX = player.getPosX()
+				var curY = player.getPosY()
+				
+				switch(direction)
+				{
+					case 0:
+						player.setPosY(player.getPosY() - moveValue, false)
+						break;
+					case 1:
+						player.setPosY(player.getPosY() + moveValue, false)
+						break;	
+					case 2:
+						player.setPosX(player.getPosX() - moveValue, false)
+						break;
+					case 3:
+						player.setPosX(player.getPosX() + moveValue, false)
+						break;
+					default : 
+						console.log("invalid move command")
+						break;
+				}
+
+				// return player to previous position if collides with wall
+				if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
+				{
+					player.setPosX(curX, true)
+					player.setPosY(curY, true)
+				}
+
+				// Player dies if he/she collides with explosion
+				if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
+				{
+					layerManager.R
+					explosionManager.PlayerDied(player)
+				}
+
+				// Update player data and layermanager
+				player.update()
+				layerManager.ReturnLayer("Player").newBoard(preferences.Players)
+			}
+		}
+	}
 
 	// Creates a new player if possible
 	this.newPlayer = function()
@@ -41,7 +105,8 @@ function PlayerManager(preferences, layerManager)
 			preferences.Players.push(player)
 			layerManager.ReturnLayer("Player").Add(player)
 
-			return player
+			// Return the index value that the player belongs to in the Players array
+			return preferences.Players.length-1
 		}
 	}
 }

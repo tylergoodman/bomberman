@@ -1147,9 +1147,73 @@ function ExplosionManager(preferences, layerManager, perkManager)
 		}
 	}
 }
-function PlayerManager(preferences, layerManager)
+function PlayerManager(preferences, layerManager, explosionManager)
 {
 	var playerID = ["Player 1", "Player 2", "Player 3", "Player 4"]
+
+	/* Moves a player to the new location
+	 	id : 0 - Player 1
+			 1 - Player 2
+			 2 - Player 3
+			 3 - Player 4
+		direction: 	0 - Up
+					1 - Down
+					2 - Left
+					3 - Right
+	*/
+	this.movePlayer = function(id, direction)
+	{
+		if(id <= 3 && id >= 0 && direction <= 3 && direction >= 0)
+		{
+			// Get data from preference
+			var player = preferences.Players[id]
+			var moveValue = preferences.MoveValue
+			
+			if(player instanceof Player)
+			{	
+				// Get current position to revert player if needed			
+				var curX = player.getPosX()
+				var curY = player.getPosY()
+				
+				switch(direction)
+				{
+					case 0:
+						player.setPosY(player.getPosY() - moveValue, false)
+						break;
+					case 1:
+						player.setPosY(player.getPosY() + moveValue, false)
+						break;	
+					case 2:
+						player.setPosX(player.getPosX() - moveValue, false)
+						break;
+					case 3:
+						player.setPosX(player.getPosX() + moveValue, false)
+						break;
+					default : 
+						console.log("invalid move command")
+						break;
+				}
+
+				// return player to previous position if collides with wall
+				if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
+				{
+					player.setPosX(curX, true)
+					player.setPosY(curY, true)
+				}
+
+				// Player dies if he/she collides with explosion
+				if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
+				{
+					layerManager.R
+					explosionManager.PlayerDied(player)
+				}
+
+				// Update player data and layermanager
+				player.update()
+				layerManager.ReturnLayer("Player").newBoard(preferences.Players)
+			}
+		}
+	}
 
 	// Creates a new player if possible
 	this.newPlayer = function()
@@ -1190,7 +1254,8 @@ function PlayerManager(preferences, layerManager)
 			preferences.Players.push(player)
 			layerManager.ReturnLayer("Player").Add(player)
 
-			return player
+			// Return the index value that the player belongs to in the Players array
+			return preferences.Players.length-1
 		}
 	}
 }
@@ -1530,14 +1595,14 @@ Lobby.prototype = {
   }
 }   
 var GameState = function(game) {
-	player = null
-	layerManager = null
-	playerManager = null
-	explosionManager = null
-	perkManager = null
-	preferences = null
+	this.player = null
+	this.layerManager = null
+	this.playerManager = null
+	this.explosionManager = null
+	this.perkManager = null
+	this.preferences = null
 	// Array to keep track of players
-	Players = []
+	this.Players = []
 } 
 
 GameState.prototype = {
@@ -1557,118 +1622,104 @@ GameState.prototype = {
 					  	},
   create:  function()	{	
   							// Preferences
-							preferences = new Preferences(this.game, Players)
+							this.preferences = new Preferences(this.game, this.Players)
 
 							// background
 							var background = this.game.add.group();
 					   		background.z = 1;
 					   		var bgSprite = this.game.add.sprite(0,0,'background')
-					   		bgSprite.scale.setTo(preferences.BgWidthRatio, preferences.BgHeightRatio)
+					   		bgSprite.scale.setTo(this.preferences.BgWidthRatio, this.preferences.BgHeightRatio)
 
 					   		background.add(bgSprite)
 
 					   		// Managers
-					   		layerManager = new LayerManager(preferences)
+					   		this.layerManager = new LayerManager(this.preferences)
 
 					   		// Set up the layers for the world
-					   		layerManager.SetUpWorld()
+					   		this.layerManager.SetUpWorld()
 
 					   		// have to setup Perk Manager before Explosion Manager
-					   		perkManager = new PerkManager(preferences, layerManager)
+					   		this.perkManager = new PerkManager(this.preferences, this.layerManager)
 
 					   		// Set up the world before adding it to explosion manager
-					   		explosionManager = new ExplosionManager(preferences, layerManager, perkManager)
+					   		this.explosionManager = new ExplosionManager(this.preferences, this.layerManager, this.perkManager)
 
 					   		// Set up player manager to manage all the players
-					   		playerManager = new PlayerManager(preferences, layerManager)
+					   		this.playerManager = new PlayerManager(this.preferences, this.layerManager, this.explosionManager)
 
 							// Player
-							player = playerManager.newPlayer()
+							this.player = this.playerManager.newPlayer()
+
+							// Reference to this object
+							var self = this
 
 							// Resize window if window size changes
 							$(window).resize(function() {
 								// Update scale values
-								preferences.updateScaleValues()
+								self.preferences.updateScaleValues()
 								// Update all layers
-							  	layerManager.ScaleLayers()
+							  	self.layerManager.ScaleLayers()
 							})
 				   		},
   update:  function() 	{
-							var curX = player.getPosX()
-							var curY = player.getPosY()
-
-							var moveValue = preferences.MoveValue
-
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
-								player.setPosX(player.getPosX() - moveValue, false)
+								this.playerManager.movePlayer(this.player, 2)
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
 							{
-								player.setPosX(player.getPosX() + moveValue, false)
+								this.playerManager.movePlayer(this.player, 3)
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.W))
 							{
-								player.setPosY(player.getPosY() - moveValue, false)
+								this.playerManager.movePlayer(this.player, 0)
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S))
 							{
-								player.setPosY(player.getPosY() + moveValue, false)
+								this.playerManager.movePlayer(this.player, 1)
 							}
 							else
 							{
-								player.animate("stop")
+								//this.player.animate("stop")
 							}
-
-							// return player to previous position if collides with wall
-							if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
-							{
-								player.setPosX(curX, true)
-								player.setPosY(curY, true)
-							}
-
-							// Player dies if  he/she collides with explosion
-							if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
-							{
-								explosionManager.PlayerDied(player)
-							}
-
+							/*
 							// check if spacebar was pressed / second param is for debouncing
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10) && Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
 								if(player.getBombCount("Normal") > 0)
 								{
-									explosionManager.DropBomb(player, "Normal")
+									this.explosionManager.DropBomb(this.player, "Normal")
 								}
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)
 							{
 								if(player.getBombCount("Vertical") > 0)
 								{
-									explosionManager.DropBomb(player, "Vertical")
+									this.explosionManager.DropBomb(this.player, "Vertical")
 								}
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && this.Players[0] != null)
 							{
 								if(player.getBombCount("Horizontal") > 0)
 								{
-									explosionManager.DropBomb(player, "Horizontal")
+									this.explosionManager.DropBomb(this.player, "Horizontal")
 								}
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && this.Players[0] != null)
 							{
-								explosionManager.DropBomb(player, "Super")
+								this.explosionManager.DropBomb(this.player, "Super")
 							}
 
 							// update player
-							player.update()
-							layerManager.ReturnLayer("Player").newBoard(Players)
+							this.player.update()
+							this.layerManager.ReturnLayer("Player").newBoard(this.Players)
 
 							// update perks
-							perkManager.Update()
+							this.perkManager.Update()
+							*/
 					  	}
 }
 var GameOver = function(game) {} 
