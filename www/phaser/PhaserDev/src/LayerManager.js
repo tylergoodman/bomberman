@@ -94,20 +94,24 @@ function LayerManager(preferences)
 					j++
 				}
 
-				// Create the wall
-				var breakWall = new Wall(preferences, true, i, j, 
-					i*preferences.ImageSizeWidth, j*preferences.ImageSizeHeight)
+				// Dont generate blocks in bottom left and right corner of game
+				if(i > 2 && i < 12 || j < preferences.BoardRowSize - 1)
+				{
+					// Create the wall
+					var breakWall = new Wall(preferences, true, i, j, 
+						i*preferences.ImageSizeWidth, j*preferences.ImageSizeHeight)
 
-				// Scale the wall
-			    breakWall.getSprite().scale.setTo(
-			    	preferences.WallWidthRatio, preferences.WallHeightRatio)
+					// Scale the wall
+				    breakWall.getSprite().scale.setTo(
+				    	preferences.WallWidthRatio, preferences.WallHeightRatio)
 
-				// Add the wall to board
-				ReturnLayer("Wall").Add(breakWall, i, j)
+					// Add the wall to board
+					ReturnLayer("Wall").Add(breakWall, i, j)
+				}
 			}
 
 			// fills in first row with space
-			if(i < preferences.BoardColSize && i > 2)
+			if(i < preferences.BoardColSize && i > 2 && i < 12)
 			{
 				var breakWall = new Wall(preferences, true, i, 0, 
 					i*preferences.ImageSizeWidth, 0)
