@@ -20,11 +20,12 @@ app.use('/', serve_index(path.join(__dirname, '../www/'), {icons: true}));
 if ((i = process.argv.indexOf('-p')) !== -1)
 	port = Number(process.argv[i + 1]);
 
+var http_server = http.createServer(app);
 try {
-	http.createServer(app).listen(port);
+	http_server.listen(port);
 } catch (e) {
 	console.log('Port %d seems busy, starting http server on port 61337', port);
-	http.createServer(app).listen(61337);
+	http_server.listen(61337);
 }
 
 
