@@ -20,13 +20,8 @@ app.use('/', serve_index(path.join(__dirname, '../www/'), {icons: true}));
 if ((i = process.argv.indexOf('-p')) !== -1)
 	port = Number(process.argv[i + 1]);
 
-var http_server = http.createServer(app);
-try {
-	http_server.listen(port);
-} catch (e) {
-	console.log('Port %d seems busy, starting http server on port 61337', port);
-	http_server.listen(61337);
-}
+
+http.createServer(app).listen(port);
 
 
 var peer_server = new peer({port: 9000, path: '/tracker'});
