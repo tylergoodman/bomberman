@@ -35,7 +35,7 @@ input[type='text'] {
 @media screen and (min-width: 48em) {
 	#menu {
 		height: 100%;
-		display: block;
+		display: inline-block;
 	}
 	#lobby, #chat {
 		height: 50%;
@@ -65,11 +65,14 @@ input[type='text'] {
 	border-radius: 8px;
 }
 .castled {
-	border-left: 20px;
-	border-right: 20px;
-	border-top: 0;
-	border-bottom: 0;
+	border-style: solid;
+	border-width: 0 20px 0 20px;
+	// border-left: 20px;
+	// border-right: 20px;
+	// border-top: 0;
+	// border-bottom: 0;
 	border-image: data-uri("image/png;base64", "../img/border.png") 0 17 round;
+	-moz-border-image: data-uri("image/png;base64", "../img/border.png") 0 17 round;
 }
 
 #lobby {
