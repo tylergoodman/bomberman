@@ -1,6 +1,6 @@
 {"frames": {
 
-"newback1.png":
+"newback.png":
 {
 	"frame": {"x":2,"y":2,"w":40,"h":68},
 	"rotated": false,
@@ -291,10 +291,10 @@
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "bombermanAnimation.png",
+	"image": "sprite1Animation.png",
 	"format": "RGBA8888",
 	"size": {"w":127,"h":734},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:daaa623a6ad82648ff7912dd07f6633a:bf1f7847bef270128f22cdf53e5fc46b:139a9fb4dcd7f316e352a9c81ac00d4d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:cf8075b35d77d20f148261ec24ae5804:bf1f7847bef270128f22cdf53e5fc46b:02418293131e5c7ce3c083014978a5b9$"
 }
 }

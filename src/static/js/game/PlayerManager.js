@@ -113,7 +113,7 @@ function PlayerManager(preferences, layerManager, explosi)
 			}
 
 			// Create the player with the right location data
-			var player = new Player(preferences, id, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight)
+			var player = new Player(preferences, id, col, row, col*preferences.ImageSizeWidth+10, row*preferences.ImageSizeHeight+10)
 
 			// Add player to world
 			preferences.Players.push(player)

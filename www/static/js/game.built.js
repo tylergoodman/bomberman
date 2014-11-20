@@ -1273,7 +1273,7 @@ function PlayerManager(preferences, layerManager, explosi)
 			}
 
 			// Create the player with the right location data
-			var player = new Player(preferences, id, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight)
+			var player = new Player(preferences, id, col, row, col*preferences.ImageSizeWidth+10, row*preferences.ImageSizeHeight+10)
 
 			// Add player to world
 			preferences.Players.push(player)
@@ -1633,7 +1633,7 @@ var GameState = function(game) {
 GameState.prototype = {
 
   preload: function() 	{ 
-							this.game.load.atlasJSONHash('bombermanAnimation', './static/img/Animations/Bomberman/bombermanAnimation.png', './static/img/Animations/Bomberman/bombermanAnimation.json');
+							this.game.load.atlasJSONHash('bombermanAnimation', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
 							this.game.load.atlasJSONHash('explosionAnimation', './static/img/Animations/Explosion/explosionAnimation.png', './static/img/Animations/Explosion/explosionAnimation.json');
 						    this.game.load.image('bomberman', './static/img/bomberman.png')
 						    this.game.load.image('background', './static/img/background.png')
