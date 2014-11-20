@@ -549,7 +549,7 @@ function Wall (preferences, breakable, col, row, posX, posY) {
 ******************************************************************************/
 
 function Bomb (preferences, col, row, posX, posY, type) {
-	GameObject.call(this, preferences.World, col, row, posX, posY, 'bomb');
+	GameObject.call(this, preferences.World, col, row, posX, posY, 'bombAnimation');
 
 	// fuse time
 	this.fuse = 1.5
@@ -557,6 +557,11 @@ function Bomb (preferences, col, row, posX, posY, type) {
 
 	// Scale image
 	this.getSprite().scale.setTo(preferences.BombWidthRatio, preferences.BombHeightRatio)
+
+	// Add animation to sprite
+	this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('bomb', 1, 6, '', 0), false, true)
+
+
 /******************************************************************************
 							 Methods
 ******************************************************************************/
@@ -583,12 +588,8 @@ function Bomb (preferences, col, row, posX, posY, type) {
 	// Returns if Bomb should explode
 	this.isExploding = function()
 	{
-		if(fuse == 0)
-		{
-
-		}
-		else 
-			fuse--;
+		// play animation
+		this.Sprite.animations.play('explode', 20, false, false)	
 	}
 
 	this.getFuse = function()
@@ -630,7 +631,7 @@ function Explosion (preferences, col, row, posX, posY) {
 		preferences.ExplosionHeightRatio)
 
 	// Add animation to sprite
-	this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('explosion', 1, 5, '', 0), false, true)
+	this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('explosion', 1, 5, '.png', 0), false, true)
 
 	// play animation
 	this.Sprite.animations.play('explode', 5, false, false)	
@@ -858,8 +859,8 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	function BombExploded(bomb)
 	{
 		// Remove the bomb 
-		BombLayer.Remove(bomb)
-
+		//BombLayer.Remove(bomb)
+		bomb.isExploding();
 		// Add explosions based on the bomb type
 		switch(bomb.getType())
 		{
@@ -877,6 +878,9 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			default:
 				break;
 		}
+
+		// Remove the bomb after some time for animation to play through
+		RemoveBomb(bomb);
 	}
 
 	// Adds explosion images
@@ -971,9 +975,6 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			}
 		}
 
-		// Add explosion
-		AddExplosion(col,row)
-
 		// Special case when player is on the bomb
 		var player = PlayerLayer.getObjectAt(col, row)
 		
@@ -1041,8 +1042,6 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			PlayerDied(player)
 		}
 
-		// Add explosion
-		AddExplosion(col,row)
 	}
 
 	// Super Bomb that destroys all breakable walls
@@ -1123,8 +1122,20 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			PlayerDied(player)
 		}
 
-		// Add explosion
-		AddExplosion(col,row)
+	}
+
+	// Removes bomb after animation is done
+	function RemoveBomb(bomb)
+	{
+		if(bomb instanceof Bomb)
+		{
+			World.time.events.add(Phaser.Timer.SECOND * .5, 
+			function(bomb, BombLayer) {
+					// remove explosion from explosion layer
+					BombLayer.Remove(bomb)
+				}, 
+			this, bomb, BombLayer)
+		}
 	}
 
 
@@ -1635,11 +1646,12 @@ GameState.prototype = {
   preload: function() 	{ 
 							this.game.load.atlasJSONHash('bombermanAnimation', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
 							this.game.load.atlasJSONHash('explosionAnimation', './static/img/Animations/Explosion/explosionAnimation.png', './static/img/Animations/Explosion/explosionAnimation.json');
+							this.game.load.atlasJSONHash('bombAnimation', './static/img/Animations/Bomb/bombAnimation.png', './static/img/Animations/Bomb/bombAnimation.json');
 						    this.game.load.image('bomberman', './static/img/bomberman.png')
+						    this.game.load.image('bomb', './static/img/bomb.png')
 						    this.game.load.image('background', './static/img/background.png')
 						    this.game.load.image('unbreakableWall', './static/img/unbreakableWall.jpg')
 						    this.game.load.image('breakableWall', './static/img/breakableWall.png')
-						    this.game.load.image('bomb', './static/img/bomb.png')
 						    this.game.load.image('explosion', './static/img/explosion.png')
 						   	this.game.load.image('normalBombPerk', './static/img/normalBombPerk.png')
 						    this.game.load.image('horizontalBombPerk', './static/img/horizontalBombPerk.png')

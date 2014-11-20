@@ -46,8 +46,8 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	function BombExploded(bomb)
 	{
 		// Remove the bomb 
-		BombLayer.Remove(bomb)
-
+		//BombLayer.Remove(bomb)
+		bomb.isExploding();
 		// Add explosions based on the bomb type
 		switch(bomb.getType())
 		{
@@ -65,6 +65,9 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			default:
 				break;
 		}
+
+		// Remove the bomb after some time for animation to play through
+		RemoveBomb(bomb);
 	}
 
 	// Adds explosion images
@@ -159,9 +162,6 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			}
 		}
 
-		// Add explosion
-		AddExplosion(col,row)
-
 		// Special case when player is on the bomb
 		var player = PlayerLayer.getObjectAt(col, row)
 		
@@ -229,8 +229,6 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			PlayerDied(player)
 		}
 
-		// Add explosion
-		AddExplosion(col,row)
 	}
 
 	// Super Bomb that destroys all breakable walls
@@ -311,8 +309,20 @@ function ExplosionManager(preferences, layerManager, perkManager)
 			PlayerDied(player)
 		}
 
-		// Add explosion
-		AddExplosion(col,row)
+	}
+
+	// Removes bomb after animation is done
+	function RemoveBomb(bomb)
+	{
+		if(bomb instanceof Bomb)
+		{
+			World.time.events.add(Phaser.Timer.SECOND * .5, 
+			function(bomb, BombLayer) {
+					// remove explosion from explosion layer
+					BombLayer.Remove(bomb)
+				}, 
+			this, bomb, BombLayer)
+		}
 	}
 
 
