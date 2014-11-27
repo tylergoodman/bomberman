@@ -1559,12 +1559,18 @@ var ratio = 1;
 var Preloader = function(game) {} 
 
 Preloader.prototype = {
-  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')},
+  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')
+  						game.load.audio('intro', ['./static/audio/intro.mp3', './static/audio/intro.mp3']);
+					  },
   create:  function() {	
   						// background
 						var background = this.game.add.group();
 				   		background.z = 1;
 				   		bg = this.game.add.sprite(0,0,'background')
+
+				   		// intro music
+				   		this.introMusic = game.add.audio('intro');
+				   		this.introMusic.play();
 
 				   		// Scales background image
 				   		image = game.cache.getImage('background')
