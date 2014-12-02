@@ -811,7 +811,7 @@ function LayerManager(preferences)
 		layer.scaleObjects(preferences.ExplosionWidthRatio, preferences.ExplosionHeightRatio, preferences.ImageSizeWidth, preferences.ImageSizeHeight)
 	}
 }
-function ExplosionManager(preferences, layerManager, perkManager)
+function ExplosionManager(preferences, layerManager, perkManager, explosionAudio)
 {
 	var World = preferences.World
 	var BoardColSize = preferences.BoardColSize
@@ -820,6 +820,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	var WallLayer = layerManager.ReturnLayer("Wall")
 	var BombLayer = layerManager.ReturnLayer("Bomb")
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
+	var ExplosionAudio = explosionAudio
 
 	// Perk Manager to manage perks
 	var perkManager = perkManager
@@ -860,7 +861,11 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	{
 		// Remove the bomb 
 		//BombLayer.Remove(bomb)
-		bomb.isExploding();
+		bomb.isExploding()
+
+		// Play explosion audio
+		ExplosionAudio.play()
+
 		// Add explosions based on the bomb type
 		switch(bomb.getType())
 		{
@@ -1129,10 +1134,12 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	{
 		if(bomb instanceof Bomb)
 		{
+
 			World.time.events.add(Phaser.Timer.SECOND * .5, 
 			function(bomb, BombLayer) {
 					// remove explosion from explosion layer
 					BombLayer.Remove(bomb)
+					ExplosionAudio.stop()
 				}, 
 			this, bomb, BombLayer)
 		}
@@ -1399,11 +1406,17 @@ function Preferences(world, players)
 	}
 
 }
-function PerkManager(preferences, layerManager)
+function PerkManager(preferences, layerManager, perkAudio)
 {
+	// World
+	var World = preferences.World
+
 	// Layers 
 	var PerkLayer = layerManager.ReturnLayer("Perk")
 	var WallLayer = layerManager.ReturnLayer("Wall")
+
+	// Audio
+	var PerkAudio = perkAudio
 
 	// Array containing all the types of perks
 	// This should match whats in the Perk Class's constructor
@@ -1445,6 +1458,17 @@ function PerkManager(preferences, layerManager)
 				{
 					// Apply perk if user is on a perk
 					this.ApplyPerk(preferences.Players[i], PerkLayer.getObjectAt(col, row))
+
+					// Play Music
+					PerkAudio.play();
+
+					//Add stop PerkAudio event
+					World.time.events.add(Phaser.Timer.SECOND * .5, 
+					function(perkAudio) {
+							// stop audio
+							perkAudio.stop();
+						}, 
+					this, PerkAudio);
 				}
 			}
 		}
@@ -1668,11 +1692,19 @@ GameState.prototype = {
 						    this.game.load.image('horizontalBombPerk', './static/img/horizontalBombPerk.png')
 						    this.game.load.image('verticalBombPerk', './static/img/verticalBombPerk.png')
 						    game.load.audio('loop', ['./static/audio/bgMusic.mp3', './static/audio/bgMusic.mp3']);
+						    game.load.audio('explosion', ['./static/audio/explosion.wav', './static/audio/explosion.wav']);
+						    game.load.audio('powerup', ['./static/audio/powerup.wav', './static/audio/powerup.wav']);
 					  	},
   create:  function()	{	
   							// Play Background music
   							this.bgMusic = game.add.audio('loop', 1, true);
 				   			this.bgMusic.play();
+
+				   			// Explosion Sound Sprite
+				   			this.explosionMusic = game.add.audio('explosion', 1, true);
+
+				   			// Powerup Sound Sprite
+				   			this.powerUpMusic = game.add.audio('powerup', 1, true);
 
   							// Preferences
 							this.preferences = new Preferences(this.game, this.Players)
@@ -1692,10 +1724,10 @@ GameState.prototype = {
 					   		this.layerManager.SetUpWorld()
 
 					   		// have to setup Perk Manager before Explosion Manager
-					   		this.perkManager = new PerkManager(this.preferences, this.layerManager)
+					   		this.perkManager = new PerkManager(this.preferences, this.layerManager, this.powerUpMusic)
 
 					   		// Set up the world before adding it to explosion manager
-					   		this.explosionManager = new ExplosionManager(this.preferences, this.layerManager, this.perkManager)
+					   		this.explosionManager = new ExplosionManager(this.preferences, this.layerManager, this.perkManager, this.explosionMusic)
 
 					   		// Set up player manager to manage all the players
 					   		this.playerManager = new PlayerManager(this.preferences, this.layerManager, this.explosionManager)

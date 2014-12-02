@@ -1,8 +1,14 @@
-function PerkManager(preferences, layerManager)
+function PerkManager(preferences, layerManager, perkAudio)
 {
+	// World
+	var World = preferences.World
+
 	// Layers 
 	var PerkLayer = layerManager.ReturnLayer("Perk")
 	var WallLayer = layerManager.ReturnLayer("Wall")
+
+	// Audio
+	var PerkAudio = perkAudio
 
 	// Array containing all the types of perks
 	// This should match whats in the Perk Class's constructor
@@ -44,6 +50,17 @@ function PerkManager(preferences, layerManager)
 				{
 					// Apply perk if user is on a perk
 					this.ApplyPerk(preferences.Players[i], PerkLayer.getObjectAt(col, row))
+
+					// Play Music
+					PerkAudio.play();
+
+					//Add stop PerkAudio event
+					World.time.events.add(Phaser.Timer.SECOND * .5, 
+					function(perkAudio) {
+							// stop audio
+							perkAudio.stop();
+						}, 
+					this, PerkAudio);
 				}
 			}
 		}

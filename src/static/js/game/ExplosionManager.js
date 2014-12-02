@@ -1,4 +1,4 @@
-function ExplosionManager(preferences, layerManager, perkManager)
+function ExplosionManager(preferences, layerManager, perkManager, explosionAudio)
 {
 	var World = preferences.World
 	var BoardColSize = preferences.BoardColSize
@@ -7,6 +7,7 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	var WallLayer = layerManager.ReturnLayer("Wall")
 	var BombLayer = layerManager.ReturnLayer("Bomb")
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
+	var ExplosionAudio = explosionAudio
 
 	// Perk Manager to manage perks
 	var perkManager = perkManager
@@ -47,7 +48,11 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	{
 		// Remove the bomb 
 		//BombLayer.Remove(bomb)
-		bomb.isExploding();
+		bomb.isExploding()
+
+		// Play explosion audio
+		ExplosionAudio.play()
+
 		// Add explosions based on the bomb type
 		switch(bomb.getType())
 		{
@@ -316,10 +321,12 @@ function ExplosionManager(preferences, layerManager, perkManager)
 	{
 		if(bomb instanceof Bomb)
 		{
+
 			World.time.events.add(Phaser.Timer.SECOND * .5, 
 			function(bomb, BombLayer) {
 					// remove explosion from explosion layer
 					BombLayer.Remove(bomb)
+					ExplosionAudio.stop()
 				}, 
 			this, bomb, BombLayer)
 		}

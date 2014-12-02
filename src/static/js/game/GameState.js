@@ -26,11 +26,19 @@ GameState.prototype = {
 						    this.game.load.image('horizontalBombPerk', './static/img/horizontalBombPerk.png')
 						    this.game.load.image('verticalBombPerk', './static/img/verticalBombPerk.png')
 						    game.load.audio('loop', ['./static/audio/bgMusic.mp3', './static/audio/bgMusic.mp3']);
+						    game.load.audio('explosion', ['./static/audio/explosion.wav', './static/audio/explosion.wav']);
+						    game.load.audio('powerup', ['./static/audio/powerup.wav', './static/audio/powerup.wav']);
 					  	},
   create:  function()	{	
   							// Play Background music
   							this.bgMusic = game.add.audio('loop', 1, true);
 				   			this.bgMusic.play();
+
+				   			// Explosion Sound Sprite
+				   			this.explosionMusic = game.add.audio('explosion', 1, true);
+
+				   			// Powerup Sound Sprite
+				   			this.powerUpMusic = game.add.audio('powerup', 1, true);
 
   							// Preferences
 							this.preferences = new Preferences(this.game, this.Players)
@@ -50,10 +58,10 @@ GameState.prototype = {
 					   		this.layerManager.SetUpWorld()
 
 					   		// have to setup Perk Manager before Explosion Manager
-					   		this.perkManager = new PerkManager(this.preferences, this.layerManager)
+					   		this.perkManager = new PerkManager(this.preferences, this.layerManager, this.powerUpMusic)
 
 					   		// Set up the world before adding it to explosion manager
-					   		this.explosionManager = new ExplosionManager(this.preferences, this.layerManager, this.perkManager)
+					   		this.explosionManager = new ExplosionManager(this.preferences, this.layerManager, this.perkManager, this.explosionMusic)
 
 					   		// Set up player manager to manage all the players
 					   		this.playerManager = new PlayerManager(this.preferences, this.layerManager, this.explosionManager)
