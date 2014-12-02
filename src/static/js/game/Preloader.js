@@ -17,7 +17,7 @@ Preloader.prototype = {
 				   		bg = this.game.add.sprite(0,0,'background')
 
 				   		// intro music
-				   		this.introMusic = game.add.audio('intro');
+				   		this.introMusic = game.add.audio('intro', 1, true);
 				   		this.introMusic.play();
 
 				   		// Scales background image

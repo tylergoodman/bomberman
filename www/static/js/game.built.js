@@ -1569,7 +1569,7 @@ Preloader.prototype = {
 				   		bg = this.game.add.sprite(0,0,'background')
 
 				   		// intro music
-				   		this.introMusic = game.add.audio('intro');
+				   		this.introMusic = game.add.audio('intro', 1, true);
 				   		this.introMusic.play();
 
 				   		// Scales background image
@@ -1667,8 +1667,12 @@ GameState.prototype = {
 						   	this.game.load.image('normalBombPerk', './static/img/normalBombPerk.png')
 						    this.game.load.image('horizontalBombPerk', './static/img/horizontalBombPerk.png')
 						    this.game.load.image('verticalBombPerk', './static/img/verticalBombPerk.png')
+						    game.load.audio('loop', ['./static/audio/bgMusic.mp3', './static/audio/bgMusic.mp3']);
 					  	},
   create:  function()	{	
+  							// Play Background music
+  							this.bgMusic = game.add.audio('loop', 1, true);
+				   			this.bgMusic.play();
 
   							// Preferences
 							this.preferences = new Preferences(this.game, this.Players)
@@ -1764,11 +1768,17 @@ GameState.prototype = {
 							// update perks
 							this.perkManager.Update()
 					  	},
-	init: function(myId, peersID) {
+	init: function(myId, peersID) 
+						{
 					  		this.player = myId;
 					  		this.peers = peersID
 
-					  	}
+					  	},
+	shutdown: function() 
+						{
+					  		// stop playing music
+					  		this.bgMusic.stop();
+  						}
 }
 var GameOver = function(game) {} 
 
