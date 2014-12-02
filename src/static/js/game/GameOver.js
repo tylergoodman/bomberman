@@ -1,4 +1,7 @@
-var GameOver = function(game) {} 
+var GameOver = function(game) {
+								var image = null
+								var gameOverSprite = null
+							  } 
 
 GameOver.prototype = {
   preload: function() { 
@@ -9,10 +12,11 @@ GameOver.prototype = {
   						// background
 						var background = this.game.add.group();
 				   		background.z = 1;
-				   		var gameOverSprite = this.game.add.sprite(0,0,'gameover')
+				   		
+				   		gameOverSprite = this.game.add.sprite(0,0,'gameover')
 				   		background.add(gameOverSprite)
 
-				   		var image = game.cache.getImage('gameover')
+				   		image = game.cache.getImage('gameover')
 
 				   		var scaleWidth = document.getElementById('game').offsetWidth / image.width 
 				   	    var scaleHeight = document.getElementById('game').offsetHeight / image.height 
@@ -28,6 +32,20 @@ GameOver.prototype = {
 
 		if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))	
 			this.game.state.start('Preloader');
+
+		image = game.cache.getImage('gameover')
+
+   		this.game.width = document.getElementById('game').offsetWidth
+   		this.game.height = document.getElementById('game').offsetHeight
+
+   		this.game.scale.refresh()
+
+   		scaleWidth = document.getElementById('game').offsetWidth / image.width 
+   	    scaleHeight = document.getElementById('game').offsetHeight / image.height 
+	
+   		gameOverSprite.scale.setTo(scaleWidth, scaleHeight);
+
+    	game.scale.setScreenSize();
   },
 
   shutdown: function() {

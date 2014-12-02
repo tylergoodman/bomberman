@@ -139,16 +139,28 @@ GameState.prototype = {
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Vertical")
+								Bomberman.Network.send({
+									evt: 'bombDropped',
+									data: {PlayerID: this.player, Type : "Vertical"},
+								});
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Horizontal")
+								Bomberman.Network.send({
+									evt: 'bombDropped',
+									data: {PlayerID: this.player, Type : "Horizontal"},
+								});
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
+								Bomberman.Network.send({
+									evt: 'bombDropped',
+									data: {PlayerID: this.player, Type : "Super"},
+								});
 							}
 
 							// update perks

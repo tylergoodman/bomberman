@@ -1,10 +1,11 @@
-var bg = null
-var image = null
-var scaleWidth = null
-var scaleHeight = null
-var ratio = 1;
 
-var Preloader = function(game) {} 
+var Preloader = function(game) {
+	var bg = null
+	var image = null
+	var scaleWidth = null
+	var scaleHeight = null
+	var ratio = 1;
+} 
 
 Preloader.prototype = {
   preload: function() { this.load.image('background', './static/img/titlescreen.jpg')

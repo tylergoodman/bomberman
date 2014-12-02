@@ -1574,13 +1574,14 @@ MainMenu.prototype = {
 			this.game.state.start('Game');
   }
 }
-var bg = null
-var image = null
-var scaleWidth = null
-var scaleHeight = null
-var ratio = 1;
 
-var Preloader = function(game) {} 
+var Preloader = function(game) {
+	var bg = null
+	var image = null
+	var scaleWidth = null
+	var scaleHeight = null
+	var ratio = 1;
+} 
 
 Preloader.prototype = {
   preload: function() { this.load.image('background', './static/img/titlescreen.jpg')
@@ -1805,16 +1806,28 @@ GameState.prototype = {
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Vertical")
+								Bomberman.Network.send({
+									evt: 'bombDropped',
+									data: {PlayerID: this.player, Type : "Vertical"},
+								});
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Horizontal")
+								Bomberman.Network.send({
+									evt: 'bombDropped',
+									data: {PlayerID: this.player, Type : "Horizontal"},
+								});
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && this.Players[0] != null)
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
+								Bomberman.Network.send({
+									evt: 'bombDropped',
+									data: {PlayerID: this.player, Type : "Super"},
+								});
 							}
 
 							// update perks
@@ -1832,7 +1845,10 @@ GameState.prototype = {
 					  		this.bgMusic.stop();
   						}
 }
-var GameOver = function(game) {} 
+var GameOver = function(game) {
+								var image = null
+								var gameOverSprite = null
+							  } 
 
 GameOver.prototype = {
   preload: function() { 
@@ -1843,10 +1859,11 @@ GameOver.prototype = {
   						// background
 						var background = this.game.add.group();
 				   		background.z = 1;
-				   		var gameOverSprite = this.game.add.sprite(0,0,'gameover')
+				   		
+				   		gameOverSprite = this.game.add.sprite(0,0,'gameover')
 				   		background.add(gameOverSprite)
 
-				   		var image = game.cache.getImage('gameover')
+				   		image = game.cache.getImage('gameover')
 
 				   		var scaleWidth = document.getElementById('game').offsetWidth / image.width 
 				   	    var scaleHeight = document.getElementById('game').offsetHeight / image.height 
@@ -1862,6 +1879,20 @@ GameOver.prototype = {
 
 		if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))	
 			this.game.state.start('Preloader');
+
+		image = game.cache.getImage('gameover')
+
+   		this.game.width = document.getElementById('game').offsetWidth
+   		this.game.height = document.getElementById('game').offsetHeight
+
+   		this.game.scale.refresh()
+
+   		scaleWidth = document.getElementById('game').offsetWidth / image.width 
+   	    scaleHeight = document.getElementById('game').offsetHeight / image.height 
+	
+   		gameOverSprite.scale.setTo(scaleWidth, scaleHeight);
+
+    	game.scale.setScreenSize();
   },
 
   shutdown: function() {
