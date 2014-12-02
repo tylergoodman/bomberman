@@ -86,7 +86,8 @@
 			break;
 			// Player moved
 			case 'playerMoved':
-				game.state.states.Game.playerManager.movePlayer(data.PlayerID, data.Dir)
+				console.log(game.state.states.Game)
+				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir)
 				this.relay(connection, data);
 			break;
 
@@ -156,8 +157,8 @@
 			break;
 			// player moved
 			case 'playerMoved':
-				game.state.states.Game.playerManager.movePlayer(data.PlayerID, data.Dir)
-				console.log(game.state.states.Game.playerManager)
+				console.log(game.state.states.Game)
+				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir)
 			break;
 		}
 	}
