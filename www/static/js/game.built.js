@@ -1796,6 +1796,10 @@ GameState.prototype = {
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
 								this.explosionManager.DropBomb(this.player, "Normal")
+								Bomberman.Network.send({
+									evt: 'bombDropped',
+									data: {PlayerID: this.player, Type : "Normal"},
+								});
 							}
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)

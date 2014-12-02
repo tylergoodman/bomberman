@@ -86,8 +86,12 @@
 			break;
 			// Player moved
 			case 'playerMoved':
-				console.log(game.state.states.Game)
 				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir)
+				this.relay(connection, data);
+			break;
+			// bomb dropped
+			case 'bombDropped':
+				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type)
 				this.relay(connection, data);
 			break;
 
@@ -157,8 +161,11 @@
 			break;
 			// player moved
 			case 'playerMoved':
-				console.log(game.state.states.Game)
 				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir)
+			break;
+			// bomb dropped
+			case 'bombDropped':
+				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type)
 			break;
 		}
 	}
