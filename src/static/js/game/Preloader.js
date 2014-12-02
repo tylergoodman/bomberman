@@ -39,7 +39,6 @@ Preloader.prototype = {
 				   			bg.scale.setTo(ratio, ratio);
 				   	    }
 
-
 				   	  },
   update:  function() {
 
@@ -67,5 +66,11 @@ Preloader.prototype = {
 
 		//if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
 		//	this.game.state.start('Game');
+  },
+
+  shutdown: function() {
+  		
+  		// stop playing music
+  		this.introMusic.stop();
   }
 }

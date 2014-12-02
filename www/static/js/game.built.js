@@ -1591,7 +1591,6 @@ Preloader.prototype = {
 				   			bg.scale.setTo(ratio, ratio);
 				   	    }
 
-
 				   	  },
   update:  function() {
 
@@ -1619,6 +1618,12 @@ Preloader.prototype = {
 
 		//if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
 		//	this.game.state.start('Game');
+  },
+
+  shutdown: function() {
+  		
+  		// stop playing music
+  		this.introMusic.stop();
   }
 }
 var Lobby = function(game) {} 
@@ -1664,6 +1669,7 @@ GameState.prototype = {
 						    this.game.load.image('verticalBombPerk', './static/img/verticalBombPerk.png')
 					  	},
   create:  function()	{	
+
   							// Preferences
 							this.preferences = new Preferences(this.game, this.Players)
 

@@ -27,6 +27,7 @@ GameState.prototype = {
 						    this.game.load.image('verticalBombPerk', './static/img/verticalBombPerk.png')
 					  	},
   create:  function()	{	
+
   							// Preferences
 							this.preferences = new Preferences(this.game, this.Players)
 
