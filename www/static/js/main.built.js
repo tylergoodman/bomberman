@@ -372,6 +372,12 @@
 				peer.lobby.set('name', data.data);
 				this.relay(connection, data);
 			break;
+			// Player moved
+			case 'playerMoved':
+				game.state.states.Game.playerManager.movePlayer(data.PlayerID, data.Dir)
+				this.relay(connection, data);
+			break;
+
 		}
 	}
 	Network.client.handleData = function (connection, data) {
@@ -435,6 +441,11 @@
 
 				game.state.start('Game', true, false, Me.index, data);
 
+			break;
+			// player moved
+			case 'playerMoved':
+				game.state.states.Game.playerManager.movePlayer(data.PlayerID, data.Dir)
+				console.log(game.state.states.Game.playerManager)
 			break;
 		}
 	}
