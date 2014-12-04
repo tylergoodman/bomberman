@@ -119,8 +119,6 @@ function PlayerManager(preferences, layerManager, explosi)
 			preferences.Players.push(player)
 			layerManager.ReturnLayer("Player").Add(player)
 
-
-			console.log("worked")
 			// Return the index value that the player belongs to in the Players array
 			return preferences.Players.length-1
 

@@ -904,9 +904,27 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 				function(explosion, WallLayer) {
 						// remove explosion from explosion layer
 						ExplosionLayer.Remove(explosion)
+						/*
 						 // Let explosion animation play before ending the game
-						if(preferences.Players.length == 0)
-							this.game.state.start('GameOver');
+						if(preferences.Players.length <= 1)
+						{
+							if(preferences.Players.length == 1)
+							{
+								// last player in array is the winner
+								Bomberman.Network.send({
+									evt: 'gameOver',
+									data: {Winner : "haha"},
+								});
+							}
+							else
+							{
+								Bomberman.Network.send({
+									evt: 'gameOver',
+									data: {Winner : null},
+								});
+							}
+						}
+						*/
 					}, 
 				this, explosion, WallLayer)
 			}
@@ -923,9 +941,27 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			function(explosion, WallLayer) {
 					// remove explosion from explosion layer
 					ExplosionLayer.Remove(explosion)
-					 // Let explosion animation play before ending the game
-					if(preferences.Players.length == 0)
-						this.game.state.start('GameOver');
+					/*
+					// Let explosion animation play before ending the game
+					if(preferences.Players.length <= 1)
+					{
+						if(preferences.Players.length == 1)
+						{
+							// last player in array is the winner
+							Bomberman.Network.send({
+								evt: 'gameOver',
+								data: {Winner : "haha"},
+							});
+						}
+						else
+						{
+							Bomberman.Network.send({
+								evt: 'gameOver',
+								data: {Winner : null},
+							});
+						}
+					}
+					*/
 				}, 
 			this, explosion, WallLayer)
 		}
@@ -971,12 +1007,12 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 			if(playerLocOne instanceof Player)
 			{
-				PlayerDied(playerLocOne)
+				PlayerDiedEvent(playerLocOne.getName())
 			}
 
 			if(playerLocTwo instanceof Player)
 			{
-				PlayerDied(playerLocTwo)
+				PlayerDiedEvent(playerLocTwo.getName())
 			}
 		}
 
@@ -985,7 +1021,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 		
 		if(player instanceof Player)
 		{
-			PlayerDied(player)
+			PlayerDiedEvent(player.getName())
 		}
 	}
 
@@ -1013,7 +1049,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 			if(player instanceof Player)
 			{
-				PlayerDied(player)
+				PlayerDiedEvent(player.getName())
 			}
 		}
 
@@ -1035,7 +1071,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 			if(player instanceof Player)
 			{
-				PlayerDied(player)
+				PlayerDiedEvent(player.getName())
 			}
 		}
 
@@ -1044,7 +1080,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 		
 		if(player instanceof Player)
 		{
-			PlayerDied(player)
+			PlayerDiedEvent(player.getName())
 		}
 
 	}
@@ -1093,7 +1129,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 			if(player instanceof Player)
 			{
-				PlayerDied(player)
+				PlayerDiedEvent(player.getName())
 			}
 		}
 
@@ -1115,7 +1151,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 			if(player instanceof Player)
 			{
-				PlayerDied(player)
+				PlayerDiedEvent(player.getName())
 			}
 		}
 
@@ -1124,7 +1160,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 		
 		if(player instanceof Player)
 		{
-			PlayerDied(player)
+			PlayerDiedEvent(player.getName())
 		}
 
 	}
@@ -1134,7 +1170,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	{
 		if(bomb instanceof Bomb)
 		{
-
 			World.time.events.add(Phaser.Timer.SECOND * .5, 
 			function(bomb, BombLayer) {
 					// remove explosion from explosion layer
@@ -1149,31 +1184,48 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 /******************************************************************************
 					Player's Died Logic
 ******************************************************************************/
-	// Removes a dead player
-	this.PlayerDied = function(player)
+	function PlayerDiedEvent (playerId)
 	{
-		for(var i = 0; i < preferences.Players.length; i++)
-		{
-			if(player.getName() === preferences.Players[i].getName())
-			{
-				preferences.Players.splice(i,1);
-				PlayerLayer.Remove(player);
-			}
-		}
+		// send player died event
+		Bomberman.Network.send({
+			evt: 'playerDied',
+			data: {playerId : playerId},
+		});
+	}
+
+	// Removes a dead player
+	this.PlayerDied = function (playerId)
+	{
+		World.time.events.add(Phaser.Timer.SECOND * 1, 
+			function() {
+				for(var i = 0; i < preferences.Players.length; i++)
+				{
+					if(playerId === preferences.Players[i].getName())
+					{
+						PlayerLayer.Remove(preferences.Players[i]);
+						preferences.Players.splice(i,1);
+					}
+				}
+			}, 
+		this)
 	}
 
 	// Removes a dead player - private duplicate function to maintain
 	// code structure
-	function PlayerDied(player)
+	function PlayerDied(playerId)
 	{
-		for(var i = 0; i < preferences.Players.length; i++)
-		{
-			if(player.getName() === preferences.Players[i].getName())
-			{
-				preferences.Players.splice(i,1);
-				PlayerLayer.Remove(player);
-			}
-		}
+		World.time.events.add(Phaser.Timer.SECOND * 1, 
+			function() {
+				for(var i = 0; i < preferences.Players.length; i++)
+				{
+					if(playerId === preferences.Players[i].getName())
+					{
+						PlayerLayer.Remove(preferences.Players[i]);
+						preferences.Players.splice(i,1);
+					}
+				}
+			}, 
+		this)
 	}
 }
 function PlayerManager(preferences, layerManager, explosi)
@@ -1297,8 +1349,6 @@ function PlayerManager(preferences, layerManager, explosi)
 			preferences.Players.push(player)
 			layerManager.ReturnLayer("Player").Add(player)
 
-
-			console.log("worked")
 			// Return the index value that the player belongs to in the Players array
 			return preferences.Players.length-1
 
@@ -1735,6 +1785,7 @@ GameState.prototype = {
 
 					   		// Create peers
 					   		this.player = Bomberman.Me.index;
+					   		console.log(this.peers)
 							//this.player = game.state.states.Game.playerManager.newPlayer(Me.index)
 							for(var i = 0; i < this.peers.length; i++)
 							{
@@ -1756,6 +1807,9 @@ GameState.prototype = {
 							})
 				   		},
   update:  function() 	{
+
+  						if(this.Players[this.player] != null)
+  						{
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
 								this.playerManager.movePlayer(this.player, 2)
@@ -1803,7 +1857,7 @@ GameState.prototype = {
 								});
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10))
 							{
 								this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
@@ -1812,7 +1866,7 @@ GameState.prototype = {
 								});
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && this.Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10))
 							{
 								this.explosionManager.DropBomb(this.player, "Horizontal")
 								Bomberman.Network.send({
@@ -1821,7 +1875,7 @@ GameState.prototype = {
 								});
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && this.Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10))
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
 								Bomberman.Network.send({
@@ -1832,6 +1886,7 @@ GameState.prototype = {
 
 							// update perks
 							this.perkManager.Update()
+						}
 					  	},
 	init: function(myId, peersID) 
 						{
