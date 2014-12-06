@@ -89,9 +89,22 @@
 				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir)
 				this.relay(connection, data);
 			break;
-			// bomb dropped
+			// Bomb dropped
 			case 'bombDropped':
 				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type)
+				this.relay(connection, data);
+			break;
+			// player died
+			case 'playerDied':
+				game.state.states.Game.explosionManager.PlayerDied(data.data.playerId)
+				this.relay(connection, data);
+			break;
+			// Game over - All Player died
+			case 'gameOver':
+				console.log(data.data);
+				game.state.start('GameOver');
+				if(data.data.Winner == null)
+					console.log("Error ending the game - invalid player count");
 				this.relay(connection, data);
 			break;
 
@@ -166,6 +179,17 @@
 			// bomb dropped
 			case 'bombDropped':
 				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type)
+			break;
+			// player died
+			case 'playerDied':
+				game.state.states.Game.explosionManager.PlayerDied(data.data.playerId)
+			break;
+			// Game over - All Player died
+			case 'gameOver':
+				console.log(data.data);
+				game.state.start('GameOver');
+				if(data.data.Winner == null)
+					console.log("Error ending the game - invalid player count");
 			break;
 		}
 	}

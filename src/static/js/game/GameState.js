@@ -68,6 +68,7 @@ GameState.prototype = {
 
 					   		// Create peers
 					   		this.player = Bomberman.Me.index;
+					   		console.log(this.peers)
 							//this.player = game.state.states.Game.playerManager.newPlayer(Me.index)
 							for(var i = 0; i < this.peers.length; i++)
 							{
@@ -89,6 +90,9 @@ GameState.prototype = {
 							})
 				   		},
   update:  function() 	{
+
+  						if(this.Players[this.player] != null)
+  						{
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
 								this.playerManager.movePlayer(this.player, 2)
@@ -136,7 +140,7 @@ GameState.prototype = {
 								});
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10) && this.Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10))
 							{
 								this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
@@ -145,7 +149,7 @@ GameState.prototype = {
 								});
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10) && this.Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10))
 							{
 								this.explosionManager.DropBomb(this.player, "Horizontal")
 								Bomberman.Network.send({
@@ -154,7 +158,7 @@ GameState.prototype = {
 								});
 							}
 
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10) && this.Players[0] != null)
+							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10))
 							{
 								this.explosionManager.DropBomb(this.player, "Super")
 								Bomberman.Network.send({
@@ -165,6 +169,7 @@ GameState.prototype = {
 
 							// update perks
 							this.perkManager.Update()
+						}
 					  	},
 	init: function(myId, peersID) 
 						{
