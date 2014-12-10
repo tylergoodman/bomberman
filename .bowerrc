@@ -1,3 +1,6 @@
 {
-  "directory": "www/vendor"
+  "directory": "www/vendor",
+  "scripts": {
+    "postinstall": "./node_modules/.bin/bower-requirejs -c www/scripts/config.js"
+  }
 }
