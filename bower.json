@@ -1,0 +1,29 @@
+{
+  "name": "bomberman",
+  "version": "0.0.0",
+  "homepage": "https://github.com/tylergoodman/bomberman",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "www/js/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backbone": "~1.1.2",
+    "jquery": "~2.1.1",
+    "moment": "~2.8.4",
+    "peerjs-git": "~0.3.14",
+    "perfect-scrollbar": "~0.5.8",
+    "phaser": "~2.2.1",
+    "sprintf": "~1.0.2",
+    "sugar": "~1.4.1",
+    "underscore": "~1.7.0",
+    "requirejs": "~2.1.15",
+    "fontawesome": "~4.2.0",
+    "pure": "~0.5.0"
+  }
+}

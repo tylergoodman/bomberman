@@ -1,0 +1,33 @@
+doctype html
+html
+	head
+		meta(http-equiv="content-type")(content="text/html;charset=UTF-8")
+		title Bomberman
+		link(rel="stylesheet")(href="./stylesheets/main-min.css")
+		script(data-main="./scripts/main")(src="./vendor/requirejs/require.js")
+	body
+		div.page-wrap
+			div#menu
+				div#lobby
+					div#players
+					div.controls
+						button#lobby-disconnect.pure-button(hidden)
+							i.fa.fa-chain-broken
+							span Disconnect
+						button#lobby-join.pure-button
+							i.fa.fa-sign-in
+							span Join Lobby
+						button#lobby-toggle.pure-button
+							i.fa.fa-toggle-off
+							span Open Lobby
+					button#game-start.pure-button
+						i.fa.fa-play
+						span Start Game
+					div#modal-join
+						input(type="text")(placeholder="Peer's ID")
+						button.pure-button Join
+				div#chat
+					div.wrap
+						div#messages
+						div.input
+							input(type="text")(placeholder="heyyy")
