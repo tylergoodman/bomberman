@@ -1,10 +1,9 @@
 define [
 	'peerjs-git'
 	'backbone'
-	'modules/Player'
 	'modules/Lobby'
 	'modules/Logger'
-], (Peer, Backbone, Player, Lobby, Logger) ->
+], (Peer, Backbone, Lobby, Logger) ->
 	Me =
 		peer: new Peer
 			host: window.location.hostname

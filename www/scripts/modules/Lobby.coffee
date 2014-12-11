@@ -7,7 +7,7 @@ define [
 	'modules/Me'
 	'text!../../templates/person.html'
 	'perfect-scrollbar'
-], ($, Backbone, Logger, Chat, Network, template) ->
+], ($, Backbone, Logger, Chat, Network, Me, template) ->
 	Person = Backbone.Model.extend
 		defaults:
 			name: null
@@ -62,6 +62,8 @@ define [
 
 			@$persons.perfectScrollbar
 				suppressScrollX: true
+
+			@persons = {}
 
 			Chat.sendSysMessage 'Your lobby is closed.'
 
@@ -135,10 +137,30 @@ define [
 					evt: 'gs'
 					data: peers
 
-		addPerson: (person) ->
-			view = new PersonView
-				model: player
+
+		addPerson: (props) ->
+			if !props.name or props.name is Me.default_name
+				props.name = props.id
+
+			person = new Person props
+			view = new PersonView model: person
+
+			@persons[props.id] = person
 			@$persons.append view.el
+			this
+
+
+		removePerson: (id) ->
+			@persons[id].destroy();
+			delete @persons[id]
+			this
+
+
+		empty: ->
+			for id of @persons
+				@removePerson id
+			this
+
 
 		setConnected: ->
 			@$('#lobby-disconnect').prop 'hidden', false

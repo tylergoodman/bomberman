@@ -1,5 +1,5 @@
 (function() {
-  define(['peerjs-git', 'backbone', 'modules/Player', 'modules/Lobby', 'modules/Logger'], function(Peer, Backbone, Player, Lobby, Logger) {
+  define(['peerjs-git', 'backbone', 'modules/Lobby', 'modules/Logger'], function(Peer, Backbone, Lobby, Logger) {
     var Me;
     Me = {
       peer: new Peer({

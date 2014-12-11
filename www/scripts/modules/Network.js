@@ -1,11 +1,12 @@
 (function() {
-  define(['modules/Me', 'modules/Chat', 'modules/Logger'], function(Me, Chat, Logger) {
+  define(['modules/Me', 'modules/Chat', 'modules/Logger', 'modules/Lobby'], function(Me, Chat, Logger, Lobby) {
     return {
       mode: 0,
       max_peers: 4,
       setOpen: function() {
         this.host.open = true;
-        return this.mode = 1;
+        this.mode = 1;
+        return this;
       },
       setClosed: function() {
         this.host.open = false;
@@ -33,7 +34,10 @@
               this.host_connection = connection;
               for (id in data) {
                 name = data[id];
-                this.addPerson(id, name);
+                Lobby.addPerson({
+                  name: name,
+                  id: id
+                });
               }
               if (Me.name !== Me.default_name) {
                 return this.host_connection.send({
@@ -43,15 +47,18 @@
               }
               break;
             case 'nc':
-              peer = this.peers[data.orig];
-              return Logger.log('Name update: %s -> %s', peer.get('name', data.data));
+              peer = Lobby.persons[data.orig];
+              Logger.log('Name update: %s -> %s', peer.get('name'), data.data);
+              return peer.set('name', data.data);
             case 'np':
               Logger.log('New peer: %s', data.data);
-              return this.addPerson(data.data);
+              return Lobby.addPerson({
+                name: data.data.name,
+                id: data.data.id
+              });
             case 'dc':
               Logger.log('%s disconnected.');
-              this.peers[data.data].destroy();
-              return delete this.peers[data.data];
+              return Lobby.removePerson(data.data);
             case 'gs':
               return 'a';
             case 'move':
@@ -64,10 +71,11 @@
               return 'a';
           }
         },
-        addPerson: function(id, name) {
-          if (name != null) {
-            return asd;
+        disconnect: function() {
+          if (this.host_connection) {
+            this.host_connection.close();
           }
+          return Lobby.empty();
         }
       },
       host: {
@@ -83,9 +91,9 @@
               });
               return this.relay(connection, data);
             case 'nc':
-              peer = this.peers[connection.peer];
-              Logger.log('Name update: %s -> %s', peer.lobby.get('name', data.data));
-              peer.lobby.set('name', data.data);
+              peer = Lobby.persons[connection.peer];
+              Logger.log('Name update: %s -> %s', peer.get('name'), data.data);
+              peer.set('name', data.data);
               return this.relay(connection, data);
             case 'move':
               return this.relay(connection, data);
@@ -96,6 +104,69 @@
             case 'go':
               return this.relay(connection, data);
           }
+        },
+        relay: function(from, data) {
+          var connection, id, _ref;
+          data.orig = from.peer;
+          _ref = this.peers;
+          for (id in _ref) {
+            connection = _ref[id];
+            if (p !== from.peer) {
+              connection.send(data);
+            }
+          }
+          return this;
+        },
+        sendToAll: function(data) {
+          var connection, id, _ref;
+          _ref = this.peers;
+          for (id in _ref) {
+            connection = _ref[id];
+            connection.send(data);
+          }
+          return this;
+        },
+        removePerson: function(id) {
+          this.peers[id].connection.close();
+          delete this.peers[id];
+          Lobby.removePerson(id);
+          return this;
+        },
+        disconnectPerson: function(id) {
+          this.removePerson(id);
+          this.sendToAll({
+            evt: 'dc',
+            data: id
+          });
+          return this;
+        },
+        disconnect: function() {
+          var id;
+          for (id in this.peers) {
+            this.removePerson(id);
+          }
+          return this;
+        },
+        addPerson: function(connection) {
+          var data, id;
+          data = {};
+          for (id in this.peers) {
+            data[id] = Lobby.persons[id].get('name');
+          }
+          data[Me.peer.id] = Me.name;
+          connection.send({
+            evt: 'cnsc',
+            data: data
+          });
+          this.sendToAll({
+            evt: 'np',
+            data: connection.peer
+          });
+          this.peers[connection.peer] = connection;
+          Lobby.addPerson({
+            id: connection.peer
+          });
+          return this;
         }
       },
       getPeers: function() {
@@ -116,6 +187,59 @@
         } else {
           return console.log('No one to send to... ', data);
         }
+      },
+      handleConnection: function(connection) {
+        var self;
+        Logger.log('Received connection request from %s.', connection.peer);
+        if (!this.host.open) {
+          Logger.log('Refusing connection to %s: lobby is closed.', connection.peer);
+          connection.on('open', function() {
+            return this.close();
+          });
+        } else if (Object.keys(this.host.peers).length === this.host.max_peers) {
+          Logger.log('Refusing connection to %s: lobby is full.', connection.peer);
+          connection.on('open', function() {
+            return this.close();
+          });
+        } else {
+          self = this;
+          connection.on('open', function() {
+            Logger.log('Connection with %s established.', this.peer);
+            return self.host.addPerson(this);
+          });
+          connection.on('data', function(data) {
+            return self.host.handleData(this, data);
+          });
+          connection.on('close', function() {
+            Logger.log('%s disconnected.', this.peer);
+            return self.host.disconnectPerson(this.peer);
+          });
+          connection.on('error', function(err) {
+            Logger.warn('Connection to %s errored!', this.peer, err);
+            return self.host.disconnectPerson(this.peer);
+          });
+        }
+        return this;
+      },
+      connectTo: function(id) {
+        var connection, self;
+        Logger.log('Requesting connection to %s', id);
+        connection = Me.peer.connect(id);
+        self = this;
+        connection.on('open', function() {
+          Logger.log('Connection to host %s established', this.peer);
+          return Lobby.setConnected();
+        });
+        connection.on('data', function(data) {
+          return self.client.handleData(this, data);
+        });
+        connection.on('close', function() {
+          return Logger.log('Connection to host %s closed.', this.peer);
+        });
+        connection.on('error', function(err) {
+          return Logger.warn('Connection to host %s errored!', this.peer, err);
+        });
+        return this;
       }
     };
   });

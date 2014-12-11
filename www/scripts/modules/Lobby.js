@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'backbone', 'modules/Logger', 'modules/Chat', 'modules/Network', 'modules/Me', 'text!../../templates/person.html', 'perfect-scrollbar'], function($, Backbone, Logger, Chat, Network, template) {
+  define(['jquery', 'backbone', 'modules/Logger', 'modules/Chat', 'modules/Network', 'modules/Me', 'text!../../templates/person.html', 'perfect-scrollbar'], function($, Backbone, Logger, Chat, Network, Me, template) {
     var Lobby, Person, PersonView;
     Person = Backbone.Model.extend({
       defaults: {
@@ -59,6 +59,7 @@
         this.$persons.perfectScrollbar({
           suppressScrollX: true
         });
+        this.persons = {};
         return Chat.sendSysMessage('Your lobby is closed.');
       },
       events: {
@@ -129,12 +130,30 @@
           });
         }
       },
-      addPerson: function(person) {
-        var view;
+      addPerson: function(props) {
+        var person, view;
+        if (!props.name || props.name === Me.default_name) {
+          props.name = props.id;
+        }
+        person = new Person(props);
         view = new PersonView({
-          model: player
+          model: person
         });
-        return this.$persons.append(view.el);
+        this.persons[props.id] = person;
+        this.$persons.append(view.el);
+        return this;
+      },
+      removePerson: function(id) {
+        this.persons[id].destroy();
+        delete this.persons[id];
+        return this;
+      },
+      empty: function() {
+        var id;
+        for (id in this.persons) {
+          this.removePerson(id);
+        }
+        return this;
       },
       setConnected: function() {
         this.$('#lobby-disconnect').prop('hidden', false);
