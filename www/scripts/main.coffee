@@ -1,4 +1,5 @@
 define (require) ->
-	chat = require('modules/Chat')
+	Chat = require('modules/Chat')
 	# console.log 'asdf'
 	# this
+	# console.log Chat

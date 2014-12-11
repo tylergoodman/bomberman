@@ -1,7 +1,7 @@
 (function() {
   define(function(require) {
-    var chat;
-    return chat = require('modules/Chat');
+    var Chat;
+    return Chat = require('modules/Chat');
   });
 
 }).call(this);

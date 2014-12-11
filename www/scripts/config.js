@@ -13,7 +13,9 @@ require.config({
     requirejs: "../vendor/requirejs/require",
     sprintf: "../vendor/sprintf/src/sprintf",
     sugar: "../vendor/sugar/release/sugar.min",
-    underscore: "../vendor/underscore/underscore"
+    underscore: "../vendor/underscore/underscore",
+    "requirejs-text": "../vendor/requirejs-text/text",
+    text: "../vendor/text/text"
   },
   packages: [
 

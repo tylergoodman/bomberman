@@ -24,6 +24,8 @@
     "underscore": "~1.7.0",
     "requirejs": "~2.1.15",
     "fontawesome": "~4.2.0",
-    "pure": "~0.5.0"
+    "pure": "~0.5.0",
+    "text": "git@github.com:requirejs/text.git#~2.0.12",
+    "requirejs-text": "~2.0.12"
   }
 }
