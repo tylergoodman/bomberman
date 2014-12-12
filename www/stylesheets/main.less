@@ -1,5 +1,6 @@
 @import "../vendor/fontawesome/css/font-awesome.min.css";
 @import (inline) "../vendor/pure/pure-min.css";
+// @import (inline) "../vendor/pure/grids-responsive-min.css";
 @import (inline) "../vendor/perfect-scrollbar/min/perfect-scrollbar.min.css";
 
 * {
@@ -108,7 +109,7 @@ button > i + span {
 	}
 }
 
-#players {
+#persons {
 	flex-grow: 1;
 
 	overflow: hidden;
@@ -118,10 +119,10 @@ button > i + span {
 		.round-border;
 		margin-top: .5em;
 		border-top-left-radius: 0;
-		padding-right: @lobby-padding / 3;
-		padding-left: @lobby-padding / 3;
-		padding-bottom: @lobby-padding / 3;
-		padding-top: @lobby-padding / 3 * 2;
+		padding-right: (@lobby-padding / 3);
+		padding-left: (@lobby-padding / 3);
+		padding-bottom: (@lobby-padding / 3);
+		padding-top: (@lobby-padding / 3 * 2);
 
 		position: relative;
 
@@ -129,8 +130,9 @@ button > i + span {
 			.gray;
 			position: absolute;
 			top: -.5em;
-			padding-left: @lobby-padding / 3;
-			padding-right: @lobby-padding / 3;
+			padding-left: (@lobby-padding / 3);
+			padding-right: (@lobby-padding / 3);
+			line-height: 1;
 		}
 
 		&-row {
@@ -163,7 +165,7 @@ button > i + span {
 	.gray;
 	&:extend(.castled);
 	position: relative;
-	padding: @lobby-padding / 3;
+	padding: (@lobby-padding / 3);
 
 	.wrap {
 		width: 100%;
@@ -200,8 +202,8 @@ button > i + span {
 	// margin-bottom: @lobby-padding / 3;
 
 	.message {
-		padding-left: @lobby-padding / 3;
-		padding-right: @lobby-padding / 3;
+		padding-left: (@lobby-padding / 3);
+		padding-right: (@lobby-padding / 3);
 		padding-bottom: 3px;
 		padding-top: 3px;
 		.highlight-and-shadow;

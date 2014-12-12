@@ -24,7 +24,11 @@ if ((i = process.argv.indexOf('-p')) !== -1)
 http.createServer(app).listen(port);
 
 
-var peer_server = new peer({port: 9000, path: '/tracker'});
+var peer_server = new peer({
+	port: 9000,
+	path: '/tracker',
+	proxied: true,
+});
 peer_server.on('connection', function (id) {
 	console.log('new peer: ' + id);
 });

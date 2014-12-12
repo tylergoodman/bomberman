@@ -7,7 +7,6 @@ require.config({
     fontawesome: "../vendor/fontawesome/fonts/*",
     jquery: "../vendor/jquery/dist/jquery",
     moment: "../vendor/moment/moment",
-    "peerjs-git": "../vendor/peerjs-git/dist/peer",
     "perfect-scrollbar": "../vendor/perfect-scrollbar/src/perfect-scrollbar",
     phaser: "../vendor/phaser/build/phaser",
     requirejs: "../vendor/requirejs/require",
@@ -15,7 +14,8 @@ require.config({
     sugar: "../vendor/sugar/release/sugar.min",
     underscore: "../vendor/underscore/underscore",
     "requirejs-text": "../vendor/requirejs-text/text",
-    text: "../vendor/text/text"
+    text: "../vendor/text/text",
+    peerjs: "../vendor/peerjs/peer"
   },
   packages: [
 

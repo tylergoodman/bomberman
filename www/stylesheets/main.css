@@ -104,55 +104,56 @@ button > i + span {
       -ms-flex-positive: 0;
           flex-grow: 0;
 }
-#players {
+#persons {
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
   overflow: hidden;
   position: relative;
 }
-#players .person {
+#persons .person {
   border: solid 1px #626375;
   border-radius: 8px;
   margin-top: .5em;
   border-top-left-radius: 0;
-  padding-right: 15px / 3;
-  padding-left: 15px / 3;
-  padding-bottom: 15px / 3;
-  padding-top: 15px / 3 * 2;
+  padding-right: 5px;
+  padding-left: 5px;
+  padding-bottom: 5px;
+  padding-top: 10px;
   position: relative;
 }
-#players .person-name {
+#persons .person-name {
   background-color: #848796;
   position: absolute;
   top: -0.5em;
-  padding-left: 15px / 3;
-  padding-right: 15px / 3;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 1;
 }
-#players .person-row {
+#persons .person-row {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
   padding-top: 2px;
 }
-#players .person-row-key {
+#persons .person-row-key {
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
 }
-#players .person-row-value {
+#persons .person-row-value {
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
 }
-#players .person + .person {
+#persons .person + .person {
   margin-top: 1em;
 }
 /*chat*/
 #chat {
   background-color: #848796;
   position: relative;
-  padding: 15px / 3;
+  padding: 5px;
 }
 #chat .wrap {
   width: 100%;
@@ -188,8 +189,8 @@ button > i + span {
           flex-grow: 1;
 }
 #messages .message {
-  padding-left: 15px / 3;
-  padding-right: 15px / 3;
+  padding-left: 5px;
+  padding-right: 5px;
   padding-bottom: 3px;
   padding-top: 3px;
   box-shadow: 0px 1px 0px #a0a2ad inset, 0px -1px 0px #535561 inset;

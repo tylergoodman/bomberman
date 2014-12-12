@@ -16,7 +16,6 @@
     "backbone": "~1.1.2",
     "jquery": "~2.1.1",
     "moment": "~2.8.4",
-    "peerjs-git": "~0.3.14",
     "perfect-scrollbar": "~0.5.8",
     "phaser": "~2.2.1",
     "sprintf": "~1.0.2",
@@ -26,6 +25,7 @@
     "fontawesome": "~4.2.0",
     "pure": "~0.5.0",
     "text": "git@github.com:requirejs/text.git#~2.0.12",
-    "requirejs-text": "~2.0.12"
+    "requirejs-text": "~2.0.12",
+    "peerjs": "~0.3.14"
   }
 }

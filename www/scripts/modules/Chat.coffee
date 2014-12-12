@@ -1,14 +1,19 @@
-define [
-	'jquery'
-	'backbone'
-	'sprintf'
-	'modules/Me'
-	'modules/Network'
-	'text!../../templates/message.html'
-	'perfect-scrollbar'
-], ($, Backbone, sprintf, Me, Network, template) ->
-	# console.log template
-	new (Backbone.View.extend
+define (require, exports) ->
+	# console.log 'chat'
+
+	$ = require 'jquery'
+	require 'perfect-scrollbar'
+	Backbone = require 'backbone'
+	sprintf =  require 'sprintf'
+	moment = require 'moment'
+	Me = require 'modules/Me'
+	Network = require 'modules/Network'
+	template = require 'text!../../templates/message.html'
+
+	# console.log '\tMe:', Me
+	# console.log '\tNetwork:', Network
+
+	exports = new (Backbone.View.extend
 		el: '#chat'
 		template: _.template template
 
@@ -16,16 +21,15 @@ define [
 		num_messages: 0
 
 		initialize: ->
-			@$input = @$ '.input input'
 			@$messages = @$ '#messages'
 			@$messages.perfectScrollbar
 				suppressScrollX: true
 
-			@sendSysMessage 'Welcome to Bomberking!'
 
 		events:
 			'keyup .input input': (e) ->
-				text = @$input.val()
+				$input = $ '.input input'
+				text = $input.val()
 				if e.keyCode is 13 and text
 					@makeMessage
 						name: Me.name
@@ -33,22 +37,17 @@ define [
 					Network.send
 						evt: 'msg'
 						data: text
-					@$input.val ''
+					$input.val ''
 
 		makeMessage: (data) ->
-			data.time = sprintf '[%s]', moment().format 'h:mm:ss'
+			data.time = sprintf.sprintf '[%s]', moment().format 'h:mm:ss'
 			$message = @template data
 			@addMessage $message
 
-		sendSysMessage: (string) ->
+		# called by Logger
+		sendMessage: (string, warning = false) ->
 			$message = $ '<div/>', 
-				class: 'message system'
-				text: string
-			@addMessage $message
-
-		sendSysWarning: (string) ->
-			$message = $ '<div/>', 
-				class: 'message warning'
+				class: 'message ' + (if warning then 'warning' else 'system')
 				text: string
 			@addMessage $message
 

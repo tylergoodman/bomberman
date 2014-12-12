@@ -1,22 +1,30 @@
 (function() {
-  define(['jquery', 'backbone', 'sprintf', 'modules/Me', 'modules/Network', 'text!../../templates/message.html', 'perfect-scrollbar'], function($, Backbone, sprintf, Me, Network, template) {
-    return new (Backbone.View.extend({
+  define(function(require, exports) {
+    var $, Backbone, Me, Network, moment, sprintf, template;
+    $ = require('jquery');
+    require('perfect-scrollbar');
+    Backbone = require('backbone');
+    sprintf = require('sprintf');
+    moment = require('moment');
+    Me = require('modules/Me');
+    Network = require('modules/Network');
+    template = require('text!../../templates/message.html');
+    return exports = new (Backbone.View.extend({
       el: '#chat',
       template: _.template(template),
       max_messages: 100,
       num_messages: 0,
       initialize: function() {
-        this.$input = this.$('.input input');
         this.$messages = this.$('#messages');
-        this.$messages.perfectScrollbar({
+        return this.$messages.perfectScrollbar({
           suppressScrollX: true
         });
-        return this.sendSysMessage('Welcome to Bomberking!');
       },
       events: {
         'keyup .input input': function(e) {
-          var text;
-          text = this.$input.val();
+          var $input, text;
+          $input = $('.input input');
+          text = $input.val();
           if (e.keyCode === 13 && text) {
             this.makeMessage({
               name: Me.name,
@@ -26,28 +34,23 @@
               evt: 'msg',
               data: text
             });
-            return this.$input.val('');
+            return $input.val('');
           }
         }
       },
       makeMessage: function(data) {
         var $message;
-        data.time = sprintf('[%s]', moment().format('h:mm:ss'));
+        data.time = sprintf.sprintf('[%s]', moment().format('h:mm:ss'));
         $message = this.template(data);
         return this.addMessage($message);
       },
-      sendSysMessage: function(string) {
+      sendMessage: function(string, warning) {
         var $message;
+        if (warning == null) {
+          warning = false;
+        }
         $message = $('<div/>', {
-          "class": 'message system',
-          text: string
-        });
-        return this.addMessage($message);
-      },
-      sendSysWarning: function(string) {
-        var $message;
-        $message = $('<div/>', {
-          "class": 'message warning',
+          "class": 'message ' + (warning ? 'warning' : 'system'),
           text: string
         });
         return this.addMessage($message);

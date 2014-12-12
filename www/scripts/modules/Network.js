@@ -1,6 +1,11 @@
 (function() {
-  define(['modules/Me', 'modules/Chat', 'modules/Logger', 'modules/Lobby'], function(Me, Chat, Logger, Lobby) {
-    return {
+  define(function(require, exports) {
+    var Chat, Lobby, Logger, Me;
+    Me = require('modules/Me');
+    Chat = require('modules/Chat');
+    Logger = require('modules/Logger');
+    Lobby = require('modules/Lobby');
+    return exports = {
       mode: 0,
       max_peers: 4,
       setOpen: function() {

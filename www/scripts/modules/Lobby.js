@@ -1,6 +1,14 @@
 (function() {
-  define(['jquery', 'backbone', 'modules/Logger', 'modules/Chat', 'modules/Network', 'modules/Me', 'text!../../templates/person.html', 'perfect-scrollbar'], function($, Backbone, Logger, Chat, Network, Me, template) {
-    var Lobby, Person, PersonView;
+  define(function(require, exports) {
+    var $, Backbone, Chat, Logger, Me, Network, Person, PersonView, template;
+    $ = require('jquery');
+    require('perfect-scrollbar');
+    Backbone = require('backbone');
+    Logger = require('modules/Logger');
+    Chat = require('modules/Chat');
+    Network = require('modules/Network');
+    Me = require('modules/Me');
+    template = require('text!../../templates/person.html');
     Person = Backbone.Model.extend({
       defaults: {
         name: null,
@@ -14,17 +22,14 @@
       initialize: function() {
         this.listenTo(this.model, 'change', this.update);
         this.listenTo(this.model, 'destroy', this.remove);
-        this.render();
-        this.$header = this.$('.person-name');
-        this.$name = this.$('.name');
-        return this.$id = this.$('.id');
+        return this.render();
       },
       events: {
         'keyup .name': function(e) {
           var name;
-          if (e.keyCode === 13) {
-            name = this.$name.val();
-            this.$model.set('name', name);
+          name = this.$('.name').val();
+          if (e.keyCode === 13 && name !== '') {
+            this.model.set('name', name);
             Logger.log('Changed name to %s.', name);
             return Network.send({
               evt: 'nc',
@@ -33,7 +38,7 @@
           }
         },
         'mouseover .id': function(e) {
-          return this.$id.select();
+          return this.$('.id').select();
         },
         'destroy': function() {
           return this.remove();
@@ -45,35 +50,34 @@
         return this;
       },
       update: function() {
-        this.header.text(this.model.get('name' || this.model.get('id')));
-        this.name.val(this.model.get('name'));
-        return this.id.val(this.model.get('id'));
+        this.$('.person-name').text(this.model.get('name'));
+        this.$('.name').val(this.model.get('name'));
+        return this.$('.id').val(this.model.get('id'));
       }
     });
-    return Lobby = new (Backbone.View.extend({
+    return exports = new (Backbone.View.extend({
       el: '#lobby',
       initialize: function() {
-        this.$toggle = this.$('#lobby-toggle');
-        this.$join = this.$('#lobby-join');
         this.$persons = this.$('#persons');
         this.$persons.perfectScrollbar({
           suppressScrollX: true
         });
-        this.persons = {};
-        return Chat.sendSysMessage('Your lobby is closed.');
+        return this.persons = {};
       },
       events: {
         'click #lobby-toggle': function() {
+          var toggle;
+          toggle = this.$('#lobby-toggle');
           if (Network.isOpen()) {
-            this.$toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-            this.$toggle.find('span').text('Open Lobby');
-            this.$join.prop('disabled', false);
+            toggle.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+            toggle.find('span').text('Open Lobby');
+            this.$('#lobby-join').prop('disabled', false);
             Network.setClosed();
             return Chat.sendSysMessage('Your lobby is now closed.');
           } else {
-            this.$toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-            this.$toggle.find('span').text('Close Lobby');
-            this.$join.prop('disabled', true);
+            toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+            toggle.find('span').text('Close Lobby');
+            this.$('#lobby-join').prop('disabled', true);
             Network.setOpen();
             return Chat.sendSysMessage('Your lobby is now open');
           }
