@@ -1,9 +1,11 @@
-<div class="person">
-  <span class="person-name"><%= name %></span>
-  <div class="person-row">
-    <span class="person-row person-row-key">ID: </span><input class="person-row person-row-value id" type="text" readonly value="<%= id %>">
+<script type="text/template" id="template-Person">
+  <div class="person">
+    <span class="person-name"><%= name %></span>
+    <div class="person-row">
+      <span class="person-row person-row-key">ID: </span><input class="person-row person-row-value id" type="text" readonly value="<%= id %>">
+    </div>
+    <div class="person-row">
+      <span class="person-row person-row-key">NAME: </span><input class="person-row person-row-value name" type="text" maxlength="50" <% if (!editable) { %> readonly <% } %> value="<%= name %>">
+    </div>
   </div>
-  <div class="person-row">
-    <span class="person-row person-row-key">NAME: </span><input class="person-row person-row-value name" type="text" maxlength="50" <% if (!editable) { %> readonly <% } %> value="<%= name %>">
-  </div>
-</div>
+</script>

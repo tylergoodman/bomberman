@@ -4,7 +4,6 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8">
     <title>Bomberman</title>
     <link rel="stylesheet" href="stylesheets/main-min.css">
-    <script data-main="scripts/config" src="vendor/requirejs/require.js"></script>
   </head>
   <body>
     <div class="page-wrap">
@@ -31,6 +30,22 @@
           </div>
         </div>
       </div>
+    </div><script type="text/template" id="template-Message">
+  <div class="message">
+    <span class="time"><%= time %></span>&nbsp<span class="name"><%= name %>:</span>&nbsp<span class="text"><%= text %></span>
+  </div>
+</script><script type="text/template" id="template-Person">
+  <div class="person">
+    <span class="person-name"><%= name %></span>
+    <div class="person-row">
+      <span class="person-row person-row-key">ID: </span><input class="person-row person-row-value id" type="text" readonly value="<%= id %>">
     </div>
+    <div class="person-row">
+      <span class="person-row person-row-key">NAME: </span><input class="person-row person-row-value name" type="text" maxlength="50" <% if (!editable) { %> readonly <% } %> value="<%= name %>">
+    </div>
+  </div>
+</script>
+    <script src="scripts/libs-min.js"></script>
+    <script src="scripts/main-built.js"></script>
   </body>
 </html>

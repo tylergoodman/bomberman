@@ -1,12 +1,15 @@
-(function() {
-  define(function(require) {
-    var Chat, Lobby, Logger, Me, Network;
-    Chat = require('modules/Chat');
-    Lobby = require('modules/Lobby');
-    Me = require('modules/Me');
-    Network = require('modules/Network');
-    Logger = require('modules/Logger').init(Chat.sendMessage, Chat);
-    return Chat.sendMessage('Welcome to Bomberking!');
-  });
+(function () {
 
-}).call(this);
+@@include('modules/Chat.js')
+@@include('modules/Lobby.js')
+@@include('modules/Logger.js')
+@@include('modules/Me.js')
+@@include('modules/Network.js')
+
+
+	// $('window').on('unload', function () {
+	// 	if (app.me.peer && !app.me.peer.destroyed)
+	// 		app.me.peer.destroy();
+	// });
+
+})();
