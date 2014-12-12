@@ -31,6 +31,9 @@ PersonView = Backbone.View.extend
 	render: () ->
 		@$el = $ @template @model.attributes
 		@el = @$el.get 0
+		# console.log @$el, @$el.children ':last'
+		if @model.get('editable') is false
+			@$el.children(':last').prop 'hidden', true
 		this
 
 	update: () ->
@@ -64,7 +67,7 @@ Lobby = new (Backbone.View.extend
 				@$('#lobby-join').prop 'disabled', false
 
 				Network.setClosed();
-				Chat.sendSysMessage 'Your lobby is now closed.'
+				Chat.sendMessage 'Your lobby is now closed.'
 			else
 				toggle
 					.find 'i'
@@ -76,7 +79,7 @@ Lobby = new (Backbone.View.extend
 				@$('#lobby-join').prop 'disabled', true
 
 				Network.setOpen()
-				Chat.sendSysMessage 'Your lobby is now open'
+				Chat.sendMessage 'Your lobby is now open'
 		'click #lobby-join': () ->
 			$modal = $ '#modal-join'
 			$modal.addClass 'active'
@@ -123,7 +126,7 @@ Lobby = new (Backbone.View.extend
 
 
 	addPerson: (props) ->
-		if !props.name or props.name is Me.default_name
+		if !props.name or props.name is Me.default_name and not props.editable
 			props.name = props.id
 
 		person = new Person props

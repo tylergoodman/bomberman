@@ -7,9 +7,10 @@ Chat = new (Backbone.View.extend({
   num_messages: 0,
   initialize: function() {
     this.$messages = this.$('#messages');
-    return this.$messages.perfectScrollbar({
+    this.$messages.perfectScrollbar({
       suppressScrollX: true
     });
+    return this.sendMessage('Welcome to Bomberking!');
   },
   events: {
     'keyup .input input': function(e) {
@@ -31,7 +32,7 @@ Chat = new (Backbone.View.extend({
   },
   makeMessage: function(data) {
     var $message;
-    data.time = sprintf.sprintf('[%s]', moment().format('h:mm:ss'));
+    data.time = sprintf('[%s]', moment().format('h:mm:ss'));
     $message = this.template(data);
     return this.addMessage($message);
   },

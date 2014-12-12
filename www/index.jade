@@ -10,21 +10,21 @@ html(lang="en")
 				div#lobby
 					div#persons
 					div.controls
-						button#lobby-disconnect.pure-button(hidden)
+						button#lobby-disconnect.pure-button(hidden)(autocomplete="off")
 							i.fa.fa-chain-broken
 							span Disconnect
-						button#lobby-join.pure-button
+						button#lobby-join.pure-button(autocomplete="off")
 							i.fa.fa-sign-in
 							span Join Lobby
-						button#lobby-toggle.pure-button
+						button#lobby-toggle.pure-button(autocomplete="off")
 							i.fa.fa-toggle-off
 							span Open Lobby
-					button#game-start.pure-button
+					button#game-start.pure-button(autocomplete="off")
 						i.fa.fa-play
 						span Start Game
 					div#modal-join
-						input(type="text")(placeholder="Peer's ID")
-						button.pure-button Join
+						input(type="text")(placeholder="Peer's ID")(autocomplete="off")
+						button.pure-button(autocomplete="off") Join
 				div#chat
 					div.wrap
 						div#messages

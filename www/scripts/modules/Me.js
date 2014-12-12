@@ -7,7 +7,7 @@ Me = {
     port: 9000,
     debug: 2,
     logFunction: function() {
-      return Logger.log(Array.prototype.slice).call(arguments).join(' ');
+      return console.log(Array.prototype.slice.call(arguments).join(' '));
     }
   }),
   default_name: 'Me',
@@ -30,6 +30,6 @@ Me.peer.on('close', function() {
   return Logger.log('Disconnected from server');
 });
 
-Me.peer.on('error', function() {
+Me.peer.on('error', function(err) {
   return Logger.warn('Disconnected from server: %s', err);
 });

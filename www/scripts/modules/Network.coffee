@@ -3,16 +3,16 @@ Network =
 	mode: 0
 	max_peers: 4
 
-	setOpen: ->
+	setOpen: () ->
 		@host.open = true
 		@mode = 1;
 		this
-	setClosed: ->
+	setClosed: () ->
 		@host.open = false
 		@mode = 0
 		if Object.keys(@host.peers).length
 			@host.disconnect()
-	isOpen: ->
+	isOpen: () ->
 		@host.open
 
 
@@ -33,7 +33,7 @@ Network =
 					Logger.log 'Connection success to %s!', connection.peer
 					@host_connection = connection
 
-					for id, name of data
+					for id, name of data.data
 						Lobby.addPerson
 							name: name
 							id: id
@@ -88,7 +88,7 @@ Network =
 				# chat message
 				when 'msg'
 					Chat.makeMessage
-						name: @peers[connection.peer].lobby.get 'name'
+						name: Lobby.persons[connection.peer].get 'name'
 						text: data.data
 					@relay connection, data
 
@@ -113,7 +113,7 @@ Network =
 		relay: (from, data) ->
 			data.orig = from.peer
 			for id, connection of @peers
-				if p isnt from.peer
+				if from.peer isnt id
 					connection.send data
 			this
 		sendToAll: (data) ->
@@ -169,7 +169,7 @@ Network =
 
 	send: (data) ->
 		if @client.host_connection
-			@cient.host_connection.send data
+			@client.host_connection.send data
 		else if Object.keys(@host.peers).length
 			@host.sendToAll
 				evt: data.evt
@@ -210,7 +210,7 @@ Network =
 		connection = Me.peer.connect id
 		self = @
 		connection.on 'open', () ->
-			Logger.log 'Connection to host %s established', @peer
+			Logger.log 'Connection to host %s established.', @peer
 			Lobby.setConnected()
 		connection.on 'data', (data) ->
 			self.client.handleData @, data

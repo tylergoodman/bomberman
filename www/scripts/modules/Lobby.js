@@ -39,6 +39,9 @@ PersonView = Backbone.View.extend({
   render: function() {
     this.$el = $(this.template(this.model.attributes));
     this.el = this.$el.get(0);
+    if (this.model.get('editable') === false) {
+      this.$el.children(':last').prop('hidden', true);
+    }
     return this;
   },
   update: function() {
@@ -66,13 +69,13 @@ Lobby = new (Backbone.View.extend({
         toggle.find('span').text('Open Lobby');
         this.$('#lobby-join').prop('disabled', false);
         Network.setClosed();
-        return Chat.sendSysMessage('Your lobby is now closed.');
+        return Chat.sendMessage('Your lobby is now closed.');
       } else {
         toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
         toggle.find('span').text('Close Lobby');
         this.$('#lobby-join').prop('disabled', true);
         Network.setOpen();
-        return Chat.sendSysMessage('Your lobby is now open');
+        return Chat.sendMessage('Your lobby is now open');
       }
     },
     'click #lobby-join': function() {
@@ -129,7 +132,7 @@ Lobby = new (Backbone.View.extend({
   },
   addPerson: function(props) {
     var person, view;
-    if (!props.name || props.name === Me.default_name) {
+    if (!props.name || props.name === Me.default_name && !props.editable) {
       props.name = props.id;
     }
     person = new Person(props);

@@ -9,9 +9,10 @@ Chat = new (Backbone.View.extend({
   num_messages: 0,
   initialize: function() {
     this.$messages = this.$('#messages');
-    return this.$messages.perfectScrollbar({
+    this.$messages.perfectScrollbar({
       suppressScrollX: true
     });
+    return this.sendMessage('Welcome to Bomberking!');
   },
   events: {
     'keyup .input input': function(e) {
@@ -33,7 +34,7 @@ Chat = new (Backbone.View.extend({
   },
   makeMessage: function(data) {
     var $message;
-    data.time = sprintf.sprintf('[%s]', moment().format('h:mm:ss'));
+    data.time = sprintf('[%s]', moment().format('h:mm:ss'));
     $message = this.template(data);
     return this.addMessage($message);
   },
@@ -99,6 +100,9 @@ PersonView = Backbone.View.extend({
   render: function() {
     this.$el = $(this.template(this.model.attributes));
     this.el = this.$el.get(0);
+    if (this.model.get('editable') === false) {
+      this.$el.children(':last').prop('hidden', true);
+    }
     return this;
   },
   update: function() {
@@ -126,13 +130,13 @@ Lobby = new (Backbone.View.extend({
         toggle.find('span').text('Open Lobby');
         this.$('#lobby-join').prop('disabled', false);
         Network.setClosed();
-        return Chat.sendSysMessage('Your lobby is now closed.');
+        return Chat.sendMessage('Your lobby is now closed.');
       } else {
         toggle.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
         toggle.find('span').text('Close Lobby');
         this.$('#lobby-join').prop('disabled', true);
         Network.setOpen();
-        return Chat.sendSysMessage('Your lobby is now open');
+        return Chat.sendMessage('Your lobby is now open');
       }
     },
     'click #lobby-join': function() {
@@ -189,7 +193,7 @@ Lobby = new (Backbone.View.extend({
   },
   addPerson: function(props) {
     var person, view;
-    if (!props.name || props.name === Me.default_name) {
+    if (!props.name || props.name === Me.default_name && !props.editable) {
       props.name = props.id;
     }
     person = new Person(props);
@@ -249,7 +253,7 @@ Me = {
     port: 9000,
     debug: 2,
     logFunction: function() {
-      return Logger.log(Array.prototype.slice).call(arguments).join(' ');
+      return console.log(Array.prototype.slice.call(arguments).join(' '));
     }
   }),
   default_name: 'Me',
@@ -272,7 +276,7 @@ Me.peer.on('close', function() {
   return Logger.log('Disconnected from server');
 });
 
-Me.peer.on('error', function() {
+Me.peer.on('error', function(err) {
   return Logger.warn('Disconnected from server: %s', err);
 });
 
@@ -300,7 +304,7 @@ Network = {
     host_connection: null,
     peers: {},
     handleData: function(connection, data) {
-      var id, name, peer;
+      var id, name, peer, _ref;
       switch (data.evt) {
         case 'msg':
           return Chat.makeMessage({
@@ -310,8 +314,9 @@ Network = {
         case 'cnsc':
           Logger.log('Connection success to %s!', connection.peer);
           this.host_connection = connection;
-          for (id in data) {
-            name = data[id];
+          _ref = data.data;
+          for (id in _ref) {
+            name = _ref[id];
             Lobby.addPerson({
               name: name,
               id: id
@@ -364,7 +369,7 @@ Network = {
       switch (data.evt) {
         case 'msg':
           Chat.makeMessage({
-            name: this.peers[connection.peer].lobby.get('name'),
+            name: Lobby.persons[connection.peer].get('name'),
             text: data.data
           });
           return this.relay(connection, data);
@@ -389,7 +394,7 @@ Network = {
       _ref = this.peers;
       for (id in _ref) {
         connection = _ref[id];
-        if (p !== from.peer) {
+        if (from.peer !== id) {
           connection.send(data);
         }
       }
@@ -455,7 +460,7 @@ Network = {
   },
   send: function(data) {
     if (this.client.host_connection) {
-      return this.cient.host_connection.send(data);
+      return this.client.host_connection.send(data);
     } else if (Object.keys(this.host.peers).length) {
       return this.host.sendToAll({
         evt: data.evt,
@@ -505,7 +510,7 @@ Network = {
     connection = Me.peer.connect(id);
     self = this;
     connection.on('open', function() {
-      Logger.log('Connection to host %s established', this.peer);
+      Logger.log('Connection to host %s established.', this.peer);
       return Lobby.setConnected();
     });
     connection.on('data', function(data) {

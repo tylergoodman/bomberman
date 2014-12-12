@@ -4,10 +4,8 @@ Me =
 		path: 'tracker'
 		port: 9000
 		debug: 2
-		logFunction: ->
-			Logger.log Array::slice
-				.call arguments
-				.join ' '
+		logFunction: () ->
+			console.log Array.prototype.slice.call(arguments).join ' '
 	default_name: 'Me'
 	name: 'Me'
 
@@ -21,8 +19,8 @@ Me.peer.on 'open', (id) ->
 Me.peer.on 'connection', (connection) ->
 	Network.handleConnection connection
 
-Me.peer.on 'close', ->
+Me.peer.on 'close', () ->
 	Logger.log 'Disconnected from server'
 
-Me.peer.on 'error', ->
+Me.peer.on 'error', (err) ->
 	Logger.warn 'Disconnected from server: %s', err

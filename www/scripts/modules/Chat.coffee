@@ -9,6 +9,7 @@ Chat = new (Backbone.View.extend
 		@$messages = @$ '#messages'
 		@$messages.perfectScrollbar
 			suppressScrollX: true
+		@sendMessage 'Welcome to Bomberking!'
 
 
 	events:
@@ -25,7 +26,7 @@ Chat = new (Backbone.View.extend
 				$input.val ''
 
 	makeMessage: (data) ->
-		data.time = sprintf.sprintf '[%s]', moment().format 'h:mm:ss'
+		data.time = sprintf '[%s]', moment().format 'h:mm:ss'
 		$message = @template data
 		@addMessage $message
 

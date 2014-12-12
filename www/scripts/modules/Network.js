@@ -22,7 +22,7 @@ Network = {
     host_connection: null,
     peers: {},
     handleData: function(connection, data) {
-      var id, name, peer;
+      var id, name, peer, _ref;
       switch (data.evt) {
         case 'msg':
           return Chat.makeMessage({
@@ -32,8 +32,9 @@ Network = {
         case 'cnsc':
           Logger.log('Connection success to %s!', connection.peer);
           this.host_connection = connection;
-          for (id in data) {
-            name = data[id];
+          _ref = data.data;
+          for (id in _ref) {
+            name = _ref[id];
             Lobby.addPerson({
               name: name,
               id: id
@@ -86,7 +87,7 @@ Network = {
       switch (data.evt) {
         case 'msg':
           Chat.makeMessage({
-            name: this.peers[connection.peer].lobby.get('name'),
+            name: Lobby.persons[connection.peer].get('name'),
             text: data.data
           });
           return this.relay(connection, data);
@@ -111,7 +112,7 @@ Network = {
       _ref = this.peers;
       for (id in _ref) {
         connection = _ref[id];
-        if (p !== from.peer) {
+        if (from.peer !== id) {
           connection.send(data);
         }
       }
@@ -177,7 +178,7 @@ Network = {
   },
   send: function(data) {
     if (this.client.host_connection) {
-      return this.cient.host_connection.send(data);
+      return this.client.host_connection.send(data);
     } else if (Object.keys(this.host.peers).length) {
       return this.host.sendToAll({
         evt: data.evt,
@@ -227,7 +228,7 @@ Network = {
     connection = Me.peer.connect(id);
     self = this;
     connection.on('open', function() {
-      Logger.log('Connection to host %s established', this.peer);
+      Logger.log('Connection to host %s established.', this.peer);
       return Lobby.setConnected();
     });
     connection.on('data', function(data) {
