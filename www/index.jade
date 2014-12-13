@@ -5,9 +5,9 @@ html(lang="en")
 		title Bomberman
 		link(rel="stylesheet")(href="stylesheets/main-min.css")
 	body
-		div.page-wrap
-			div#menu
-				div#lobby
+		div.page-wrap.pure-g
+			div#menu.pure-u-1.pure-u-md-1-3.pure-u-lg-1-5
+				div#lobby.pure-u-1-2.pure-u-md-1
 					div#persons
 					div.controls
 						button#lobby-disconnect.pure-button(hidden)(autocomplete="off")
@@ -25,11 +25,12 @@ html(lang="en")
 					div#modal-join
 						input(type="text")(placeholder="Peer's ID")(autocomplete="off")
 						button.pure-button(autocomplete="off") Join
-				div#chat
+				div#chat.pure-u-1-2.pure-u-md-1
 					div.wrap
 						div#messages
 						div.input
-							input(type="text")(placeholder="heyyy")
+							input(type="text")(placeholder="Type here to chat.")
+			div#game.pure-u-1.pure-u-md-2-3.pure-u-lg-4-5
 		include templates/message.html
 		include templates/person.html
 		script(src="scripts/libs-min.js")

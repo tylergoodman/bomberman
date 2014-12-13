@@ -5,11 +5,12 @@
 @@include('modules/Logger.js')
 @@include('modules/Me.js')
 @@include('modules/Network.js')
+@@include('modules/Game.js')
 
 
-	// $('window').on('unload', function () {
-	// 	if (app.me.peer && !app.me.peer.destroyed)
-	// 		app.me.peer.destroy();
-	// });
+	$('window').on('unload', function () {
+		if (!Me.peer.destroyed)
+			Me.peer.destroy();
+	});
 
 })();
