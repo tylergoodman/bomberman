@@ -89,19 +89,20 @@
 			break;
 			// Player moved
 			case 'playerMoved':
-				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir);
+				game.state.states.Game.playerManager.MovePlayer(data.data.PlayerID, data.data.Dir);
 				//this.relay(connection, data);
 				this.sendToAll(data);
 			break;
 			// Bomb dropped
 			case 'bombDropped':
 				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type);
-				this.relay(connection, data);
+				this.sendToAll(data);
 			break;
 			// player died
 			case 'playerDied':
 				game.state.states.Game.explosionManager.PlayerDied(data.data.playerId);
-				this.relay(connection, data);
+				console.log("worked")
+				this.sendToAll(data);
 			break;
 			// Game over - All Player died
 			case 'gameOver':
@@ -109,7 +110,7 @@
 				game.state.start('GameOver');
 				if(data.data.Winner == null)
 					console.log("Error ending the game - invalid player count");
-				this.relay(connection, data);
+				this.sendToAll(data);
 			break;
 
 		}
@@ -170,14 +171,12 @@
 			// start game
 			case 'gs':
 				var data = data.data;
-				
 				Me.index = data.indexOf(Me.peer.id);
-
 				game.state.start('Game', true, false, Me.index, data);
 			break;
 			// player moved
 			case 'playerMoved':
-				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir)
+				game.state.states.Game.playerManager.MovePlayer(data.data.PlayerID, data.data.Dir)
 			break;
 			// bomb dropped
 			case 'bombDropped':

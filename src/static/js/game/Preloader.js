@@ -40,6 +40,8 @@ Preloader.prototype = {
 				   			bg.scale.setTo(ratio, ratio);
 				   	    }
 
+				   	    // fix out of focus
+				   	     game.stage.disableVisibilityChange = true;
 				   	  },
   update:  function() {
 

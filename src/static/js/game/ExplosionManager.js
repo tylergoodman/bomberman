@@ -21,24 +21,18 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			// Get player from Players array in preference
 			var player = preferences.Players[playerId]
 
-			// Verify player has enough normal bombs
-			if(player.getBombCount(type) > 0)
+			// Verify there isnt a bomb already there
+			if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
 			{
-				// Verify there isnt a bomb already there
-				if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
-				{
-					// Create bomb
-					var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
-						player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
+				// Create bomb
+				var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
+					player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
 
-					// Add bomb to layer
-					BombLayer.Add(bomb)
+				// Add bomb to layer
+				BombLayer.Add(bomb)
 
-					// Add the bomb event - last parm is the callback function's args
-					World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
-
-					player.setBombCount(type, player.getBombCount(type) - 1)
-				}
+				// Add the bomb event - last parm is the callback function's args
+				World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
 			}
 		}
 	}
@@ -86,14 +80,15 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 				var explosion = new Explosion(preferences, col, row, col * preferences.ImageSizeWidth, row * preferences.ImageSizeHeight)
 				// Add it to layer
 				ExplosionLayer.Add(explosion)
+
 				//Add remove explosion event
-				World.time.events.add(Phaser.Timer.SECOND * .5, 
+				World.time.events.add(Phaser.Timer.SECOND, 
 				function(explosion, WallLayer) {
 						// remove explosion from explosion layer
 						ExplosionLayer.Remove(explosion)
-						/*
-						 // Let explosion animation play before ending the game
-						if(preferences.Players.length <= 1)
+
+						// Only the host can decide if game is over
+						if(preferences.Players.length <= 1 && Network.host.open)
 						{
 							if(preferences.Players.length == 1)
 							{
@@ -111,7 +106,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 								});
 							}
 						}
-						*/
 					}, 
 				this, explosion, WallLayer)
 			}

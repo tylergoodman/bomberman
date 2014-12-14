@@ -834,24 +834,18 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			// Get player from Players array in preference
 			var player = preferences.Players[playerId]
 
-			// Verify player has enough normal bombs
-			if(player.getBombCount(type) > 0)
+			// Verify there isnt a bomb already there
+			if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
 			{
-				// Verify there isnt a bomb already there
-				if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
-				{
-					// Create bomb
-					var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
-						player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
+				// Create bomb
+				var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
+					player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
 
-					// Add bomb to layer
-					BombLayer.Add(bomb)
+				// Add bomb to layer
+				BombLayer.Add(bomb)
 
-					// Add the bomb event - last parm is the callback function's args
-					World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
-
-					player.setBombCount(type, player.getBombCount(type) - 1)
-				}
+				// Add the bomb event - last parm is the callback function's args
+				World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
 			}
 		}
 	}
@@ -899,14 +893,15 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 				var explosion = new Explosion(preferences, col, row, col * preferences.ImageSizeWidth, row * preferences.ImageSizeHeight)
 				// Add it to layer
 				ExplosionLayer.Add(explosion)
+
 				//Add remove explosion event
-				World.time.events.add(Phaser.Timer.SECOND * .5, 
+				World.time.events.add(Phaser.Timer.SECOND, 
 				function(explosion, WallLayer) {
 						// remove explosion from explosion layer
 						ExplosionLayer.Remove(explosion)
-						/*
-						 // Let explosion animation play before ending the game
-						if(preferences.Players.length <= 1)
+
+						// Only the host can decide if game is over
+						if(preferences.Players.length <= 1 && Network.host.open)
 						{
 							if(preferences.Players.length == 1)
 							{
@@ -924,7 +919,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 								});
 							}
 						}
-						*/
 					}, 
 				this, explosion, WallLayer)
 			}
@@ -1228,7 +1222,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 		this)
 	}
 }
-function PlayerManager(preferences, layerManager, explosi)
+function PlayerManager(preferences, layerManager, explosionManager)
 {
 	var playerID = ["Player 1", "Player 2", "Player 3", "Player 4"]
 
@@ -1257,7 +1251,7 @@ function PlayerManager(preferences, layerManager, explosi)
 					2 - Left
 					3 - Right
 	*/
-	this.movePlayer = function(id, direction)
+	this.MovePlayer = function(id, direction)
 	{
 		if(id <= 3 && id >= 0 && direction <= 3 && direction >= 0)
 		{
@@ -1297,15 +1291,36 @@ function PlayerManager(preferences, layerManager, explosi)
 					player.setPosY(curY, true)
 				}
 
-				// Player dies if he/she collides with explosion
-				if(layerManager.ReturnLayer("Explosion").collisionWith(player) && !player.GhostMode)
+				// checks to see if any players died - host only
+				if(Bomberman.Network.host.open)
 				{
-					explosionManager.PlayerDied(this.player)
+					this.explosionCheck()
 				}
 
 				// Update player data and layermanager
 				player.update()
 				layerManager.ReturnLayer("Player").newBoard(preferences.Players)
+			}
+		}
+	}
+
+	// Checks if any players died from an explosion
+	this.explosionCheck = function()
+	{
+		var playerLayer = layerManager.ReturnLayer("Player");
+		var explosionLayer = layerManager.ReturnLayer("Explosion");
+		for(var i = 0; i < preferences.BoardColSize; i++)
+		{
+			for(var j = 0; j < preferences.BoardRowSize; j++)
+			{
+				if((playerLayer.getObjectAt(i,j) instanceof Player) &&
+					(explosionLayer.getObjectAt(i,j) instanceof Explosion))
+				{
+					Bomberman.Network.send({
+						evt: 'playerDied',
+						data: {playerId: playerLayer.getObjectAt(i,j).Name},
+					});
+				}
 			}
 		}
 	}
@@ -1666,6 +1681,8 @@ Preloader.prototype = {
 				   			bg.scale.setTo(ratio, ratio);
 				   	    }
 
+				   	    // fix out of focus
+				   	     game.stage.disableVisibilityChange = true;
 				   	  },
   update:  function() {
 
@@ -1792,9 +1809,6 @@ GameState.prototype = {
 								this.playerManager.newPlayer(this.peers[i])
 							}
 
-							// Player
-							//this.player = this.playerManager.newPlayer()
-
 							// Reference to this object
 							var self = this
 
@@ -1850,7 +1864,7 @@ GameState.prototype = {
 							// check if spacebar was pressed / second param is for debouncing
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Normal")
+								//this.explosionManager.DropBomb(this.player, "Normal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Normal"},
@@ -1859,7 +1873,7 @@ GameState.prototype = {
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Vertical")
+								//this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Vertical"},
@@ -1868,7 +1882,7 @@ GameState.prototype = {
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Horizontal")
+								//this.explosionManager.DropBomb(this.player, "Horizontal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Horizontal"},
@@ -1877,7 +1891,7 @@ GameState.prototype = {
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Super")
+								//this.explosionManager.DropBomb(this.player, "Super")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Super"},

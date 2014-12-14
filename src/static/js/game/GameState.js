@@ -75,9 +75,6 @@ GameState.prototype = {
 								this.playerManager.newPlayer(this.peers[i])
 							}
 
-							// Player
-							//this.player = this.playerManager.newPlayer()
-
 							// Reference to this object
 							var self = this
 
@@ -133,7 +130,7 @@ GameState.prototype = {
 							// check if spacebar was pressed / second param is for debouncing
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Normal")
+								//this.explosionManager.DropBomb(this.player, "Normal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Normal"},
@@ -142,7 +139,7 @@ GameState.prototype = {
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.C, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Vertical")
+								//this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Vertical"},
@@ -151,7 +148,7 @@ GameState.prototype = {
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Horizontal")
+								//this.explosionManager.DropBomb(this.player, "Horizontal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Horizontal"},
@@ -160,7 +157,7 @@ GameState.prototype = {
 
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.M, 10))
 							{
-								this.explosionManager.DropBomb(this.player, "Super")
+								//this.explosionManager.DropBomb(this.player, "Super")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
 									data: {PlayerID: this.player, Type : "Super"},
