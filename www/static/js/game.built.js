@@ -1812,7 +1812,7 @@ GameState.prototype = {
   						{
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
-								this.playerManager.movePlayer(this.player, 2)
+								//this.playerManager.movePlayer(this.player, 2)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
 									data: {PlayerID: this.player, Dir: 2},
@@ -1820,7 +1820,7 @@ GameState.prototype = {
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
 							{
-								this.playerManager.movePlayer(this.player, 3)
+								//this.playerManager.movePlayer(this.player, 3)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
 									data: {PlayerID: this.player, Dir: 3},
@@ -1828,7 +1828,7 @@ GameState.prototype = {
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.W))
 							{
-								this.playerManager.movePlayer(this.player, 0)
+								//this.playerManager.movePlayer(this.player, 0)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
 									data: {PlayerID: this.player, Dir: 0},
@@ -1836,7 +1836,7 @@ GameState.prototype = {
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S))
 							{
-								this.playerManager.movePlayer(this.player, 1)
+								//this.playerManager.movePlayer(this.player, 1)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
 									data: {PlayerID: this.player, Dir: 1},

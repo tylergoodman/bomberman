@@ -136,7 +136,7 @@
 				game.state.start('Game', true, false, Me.index, peers);
 				// console.log(peers);
 
-				Network.send({
+				Network.host.sendToAll({
 					evt: 'gs',
 					data: peers,
 				});

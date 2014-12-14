@@ -44,11 +44,14 @@
 		}
 		else if (Object.keys(this.host.peers).length) {
 			// console.log('sending to all clients');
+			/*
 			this.host.sendToAll({
 				evt: data.evt,
 				orig: Me.peer.id,
 				data: data.data,
 			});
+			*/
+			this.host.handleData(null, data);
 		}
 		else {
 			console.log('No one to send %s to...', data);
@@ -86,17 +89,18 @@
 			break;
 			// Player moved
 			case 'playerMoved':
-				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir)
-				this.relay(connection, data);
+				game.state.states.Game.playerManager.movePlayer(data.data.PlayerID, data.data.Dir);
+				//this.relay(connection, data);
+				this.sendToAll(data);
 			break;
 			// Bomb dropped
 			case 'bombDropped':
-				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type)
+				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type);
 				this.relay(connection, data);
 			break;
 			// player died
 			case 'playerDied':
-				game.state.states.Game.explosionManager.PlayerDied(data.data.playerId)
+				game.state.states.Game.explosionManager.PlayerDied(data.data.playerId);
 				this.relay(connection, data);
 			break;
 			// Game over - All Player died
@@ -165,12 +169,11 @@
 			break;
 			// start game
 			case 'gs':
-				var data = data.data
+				var data = data.data;
 				
-				Me.index = data.indexOf(Me.peer.id)
+				Me.index = data.indexOf(Me.peer.id);
 
 				game.state.start('Game', true, false, Me.index, data);
-
 			break;
 			// player moved
 			case 'playerMoved':
