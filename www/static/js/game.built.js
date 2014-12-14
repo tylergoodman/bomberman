@@ -899,26 +899,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 				function(explosion, WallLayer) {
 						// remove explosion from explosion layer
 						ExplosionLayer.Remove(explosion)
-
-						// Only the host can decide if game is over
-						if(preferences.Players.length <= 1 && Network.host.open)
-						{
-							if(preferences.Players.length == 1)
-							{
-								// last player in array is the winner
-								Bomberman.Network.send({
-									evt: 'gameOver',
-									data: {Winner : "haha"},
-								});
-							}
-							else
-							{
-								Bomberman.Network.send({
-									evt: 'gameOver',
-									data: {Winner : null},
-								});
-							}
-						}
 					}, 
 				this, explosion, WallLayer)
 			}
@@ -1291,10 +1271,11 @@ function PlayerManager(preferences, layerManager, explosionManager)
 					player.setPosY(curY, true)
 				}
 
-				// checks to see if any players died - host only
+				//host only
 				if(Bomberman.Network.host.open)
-				{
-					this.explosionCheck()
+				{ 
+					// Checks to see if any players died 
+					explosionCheck()
 				}
 
 				// Update player data and layermanager
@@ -1305,7 +1286,7 @@ function PlayerManager(preferences, layerManager, explosionManager)
 	}
 
 	// Checks if any players died from an explosion
-	this.explosionCheck = function()
+	function explosionCheck()
 	{
 		var playerLayer = layerManager.ReturnLayer("Player");
 		var explosionLayer = layerManager.ReturnLayer("Explosion");
@@ -1321,6 +1302,28 @@ function PlayerManager(preferences, layerManager, explosionManager)
 						data: {playerId: playerLayer.getObjectAt(i,j).Name},
 					});
 				}
+			}
+		}
+	}
+	this.gameOverCheck = function()
+	{
+		// Only the host can decide if game is over
+		if(preferences.Players.length <= 1)
+		{
+			if(preferences.Players.length == 1)
+			{
+				// last player in array is the winner
+				Bomberman.Network.send({
+					evt: 'gameOver',
+					data: {Winner : "haha"},
+				});
+			}
+			else
+			{
+				Bomberman.Network.send({
+					evt: 'gameOver',
+					data: {Winner : null},
+				});
 			}
 		}
 	}
@@ -1900,6 +1903,9 @@ GameState.prototype = {
 
 							// update perks
 							this.perkManager.Update()
+
+							// Check to see if game is over
+							this.playerManager.gameOverCheck()
 						}
 					  	},
 	init: function(myId, peersID) 

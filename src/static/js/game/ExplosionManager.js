@@ -86,26 +86,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 				function(explosion, WallLayer) {
 						// remove explosion from explosion layer
 						ExplosionLayer.Remove(explosion)
-
-						// Only the host can decide if game is over
-						if(preferences.Players.length <= 1 && Network.host.open)
-						{
-							if(preferences.Players.length == 1)
-							{
-								// last player in array is the winner
-								Bomberman.Network.send({
-									evt: 'gameOver',
-									data: {Winner : "haha"},
-								});
-							}
-							else
-							{
-								Bomberman.Network.send({
-									evt: 'gameOver',
-									data: {Winner : null},
-								});
-							}
-						}
 					}, 
 				this, explosion, WallLayer)
 			}

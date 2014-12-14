@@ -166,6 +166,9 @@ GameState.prototype = {
 
 							// update perks
 							this.perkManager.Update()
+
+							// Check to see if game is over
+							this.playerManager.gameOverCheck()
 						}
 					  	},
 	init: function(myId, peersID) 
