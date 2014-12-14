@@ -204,7 +204,6 @@
 
 				Me.index = peers.indexOf(Me.peer.id);
 				game.state.start('Game', true, false, Me.index, peers);
-				// console.log(peers);
 
 				Network.host.sendToAll({
 					evt: 'gs',
@@ -322,7 +321,6 @@
 				return this.host.peers;
 			return this.client.peers;
 		},
-
 	}
 
 	Network.send = function (data) {
@@ -332,13 +330,6 @@
 		}
 		else if (Object.keys(this.host.peers).length) {
 			// console.log('sending to all clients');
-			/*
-			this.host.sendToAll({
-				evt: data.evt,
-				orig: Me.peer.id,
-				data: data.data,
-			});
-			*/
 			this.host.handleData(null, data);
 		}
 		else {
@@ -378,7 +369,6 @@
 			// Player moved
 			case 'playerMoved':
 				game.state.states.Game.playerManager.MovePlayer(data.data.PlayerID, data.data.Dir);
-				//this.relay(connection, data);
 				this.sendToAll(data);
 			break;
 			// Bomb dropped
@@ -389,15 +379,21 @@
 			// player died
 			case 'playerDied':
 				game.state.states.Game.explosionManager.PlayerDied(data.data.playerId);
-				console.log("worked")
 				this.sendToAll(data);
 			break;
-			// Game over - All Player died
+			// Game over - All Players died
 			case 'gameOver':
-				console.log(data.data);
-				game.state.start('GameOver');
+				var peers = game.state.states.Game.peers
+				var winnerIndex = peers.indexOf(data.data.Winner);
+				console.log(peers)
+				console.log(winnerIndex)
 				if(data.data.Winner == null)
+				{
 					console.log("Error ending the game - invalid player count");
+					game.state.start('GameOver', true, false, 1);
+				}
+				else
+					game.state.start('GameOver', true, false, winnerIndex);
 				this.sendToAll(data);
 			break;
 
@@ -476,9 +472,12 @@
 			break;
 			// Game over - All Player died
 			case 'gameOver':
-				console.log(data.data);
-				game.state.start('GameOver');
-				if(data.data.Winner == null)
+				var peers = game.state.states.Game.peers
+				var winnerIndex = peers.indexOf(data.data.Winner);
+				console.log(peers)
+				console.log(winnerIndex)
+				game.state.start('GameOver', true, false, winnerIndex);
+				if(data == null)
 					console.log("Error ending the game - invalid player count");
 			break;
 		}
@@ -501,7 +500,6 @@
 		for (var id in this.peers)
 			this.peers[id].destroy();
 	}
-
 
 	Network.host.relay = function (from, data) {
 		var data = {

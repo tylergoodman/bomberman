@@ -134,7 +134,6 @@
 
 				Me.index = peers.indexOf(Me.peer.id);
 				game.state.start('Game', true, false, Me.index, peers);
-				// console.log(peers);
 
 				Network.host.sendToAll({
 					evt: 'gs',

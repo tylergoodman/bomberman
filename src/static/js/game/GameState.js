@@ -66,9 +66,6 @@ GameState.prototype = {
 					   		// Set up player manager to manage all the players
 					   		this.playerManager = new PlayerManager(this.preferences, this.layerManager, this.explosionManager)
 
-					   		// Create peers
-					   		this.player = Bomberman.Me.index;
-					   		console.log(this.peers)
 							//this.player = game.state.states.Game.playerManager.newPlayer(Me.index)
 							for(var i = 0; i < this.peers.length; i++)
 							{

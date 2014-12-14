@@ -101,6 +101,7 @@ function PlayerManager(preferences, layerManager, explosionManager)
 			}
 		}
 	}
+
 	this.gameOverCheck = function()
 	{
 		// Only the host can decide if game is over
@@ -111,7 +112,7 @@ function PlayerManager(preferences, layerManager, explosionManager)
 				// last player in array is the winner
 				Bomberman.Network.send({
 					evt: 'gameOver',
-					data: {Winner : "haha"},
+					data: {Winner : preferences.Players[0].Name},
 				});
 			}
 			else
