@@ -37,6 +37,7 @@ Network =
 						Lobby.addPerson
 							name: name
 							id: id
+						Bomberman.addPlayer id
 					if Me.name isnt Me.default_name
 						@host_connection.send
 							evt: 'nc'
@@ -54,6 +55,7 @@ Network =
 					Lobby.addPerson
 						name: data.data.name
 						id: data.data.id
+					Bomberman.addPlayer data.data.id
 
 				# person disconnected
 				when 'dc'
@@ -62,7 +64,8 @@ Network =
 
 				# game start
 				when 'gs'
-					'a'
+					Bomberman.setPlayerPositions data.data
+					Bomberman.start()
 				when 'move'
 					'a'
 				when 'bombDrop'

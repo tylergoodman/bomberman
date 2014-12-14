@@ -112,17 +112,15 @@ Lobby = new (Backbone.View.extend
 			Network.client.disconnect()
 		'click #game-start': (e) ->
 			@$(e.currentTarget).prop 'disabled', true
-			peers = Object.keys Network.getPeers()
-			peers.push(Me.peer.id)
-			peers = peers.randomize()
 
-			Me.index = peers.indexOf Me.peer.id
 			#game start...
-			console.log 'game start'
+			positions = Bomberman.setPlayerPositions()
+			console.log positions
 
 			Network.send
 				evt: 'gs'
-				data: peers
+				data: positions
+			Bomberman.start()
 
 
 	addPerson: (props) ->

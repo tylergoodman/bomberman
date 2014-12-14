@@ -117,17 +117,15 @@ Lobby = new (Backbone.View.extend({
       return Network.client.disconnect();
     },
     'click #game-start': function(e) {
-      var peers;
+      var positions;
       this.$(e.currentTarget).prop('disabled', true);
-      peers = Object.keys(Network.getPeers());
-      peers.push(Me.peer.id);
-      peers = peers.randomize();
-      Me.index = peers.indexOf(Me.peer.id);
-      console.log('game start');
-      return Network.send({
+      positions = Bomberman.setPlayerPositions();
+      console.log(positions);
+      Network.send({
         evt: 'gs',
-        data: peers
+        data: positions
       });
+      return Bomberman.start();
     }
   },
   addPerson: function(props) {

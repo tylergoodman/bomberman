@@ -39,6 +39,7 @@ Network = {
               name: name,
               id: id
             });
+            Bomberman.addPlayer(id);
           }
           if (Me.name !== Me.default_name) {
             return this.host_connection.send({
@@ -53,15 +54,17 @@ Network = {
           return peer.set('name', data.data);
         case 'np':
           Logger.log('New peer: %s', data.data);
-          return Lobby.addPerson({
+          Lobby.addPerson({
             name: data.data.name,
             id: data.data.id
           });
+          return Bomberman.addPlayer(data.data.id);
         case 'dc':
           Logger.log('%s disconnected.');
           return Lobby.removePerson(data.data);
         case 'gs':
-          return 'a';
+          Bomberman.setPlayerPositions(data.data);
+          return Bomberman.start();
         case 'move':
           return 'a';
         case 'bombDrop':

@@ -15,6 +15,7 @@ Me.peer.on 'open', (id) ->
 		name: Me.name
 		id: id
 		editable: true
+	Bomberman.addPlayer id, true
 
 Me.peer.on 'connection', (connection) ->
 	Network.handleConnection connection

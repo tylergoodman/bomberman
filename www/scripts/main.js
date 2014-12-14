@@ -8,7 +8,7 @@
 @@include('modules/Game.js')
 
 
-	$('window').on('unload', function () {
+	$(window).on('unload', function () {
 		if (!Me.peer.destroyed)
 			Me.peer.destroy();
 	});

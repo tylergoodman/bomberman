@@ -15,11 +15,12 @@ Me = {
 };
 
 Me.peer.on('open', function(id) {
-  return Lobby.addPerson({
+  Lobby.addPerson({
     name: Me.name,
     id: id,
     editable: true
   });
+  return Bomberman.addPlayer(id, true);
 });
 
 Me.peer.on('connection', function(connection) {
