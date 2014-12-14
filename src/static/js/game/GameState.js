@@ -84,15 +84,15 @@ GameState.prototype = {
 							})
 				   		},
   update:  function() 	{
-
-  						if(this.Players[this.player] != null)
+  						if(this.playerManager.PlayerExists(this.playerID))
   						{
+  							//this.player = this.playerManager.(this.playerID, this.peers)
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
 								//this.playerManager.movePlayer(this.player, 2)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 2},
+									data: {PlayerID: this.playerID, Dir: 2},
 								});
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
@@ -100,7 +100,7 @@ GameState.prototype = {
 								//this.playerManager.movePlayer(this.player, 3)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 3},
+									data: {PlayerID: this.playerID, Dir: 3},
 								});
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.W))
@@ -108,7 +108,7 @@ GameState.prototype = {
 								//this.playerManager.movePlayer(this.player, 0)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 0},
+									data: {PlayerID: this.playerID, Dir: 0},
 								});
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S))
@@ -116,7 +116,7 @@ GameState.prototype = {
 								//this.playerManager.movePlayer(this.player, 1)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 1},
+									data: {PlayerID: this.playerID, Dir: 1},
 								});
 							}
 							else
@@ -130,7 +130,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Normal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Normal"},
+									data: {PlayerID: this.playerID, Type : "Normal"},
 								});
 							}
 
@@ -139,7 +139,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Vertical"},
+									data: {PlayerID: this.playerID, Type : "Vertical"},
 								});
 							}
 
@@ -148,7 +148,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Horizontal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Horizontal"},
+									data: {PlayerID: this.playerID, Type : "Horizontal"},
 								});
 							}
 
@@ -157,7 +157,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Super")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Super"},
+									data: {PlayerID: this.playerID, Type : "Super"},
 								});
 							}
 
@@ -170,9 +170,8 @@ GameState.prototype = {
 					  	},
 	init: function(myId, peersID) 
 						{
-					  		this.player = myId;
+					  		this.playerID = myId;
 					  		this.peers = peersID
-
 					  	},
 	shutdown: function() 
 						{

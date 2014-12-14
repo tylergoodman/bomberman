@@ -17,6 +17,30 @@ function PlayerManager(preferences, layerManager, explosionManager)
 		}
 	}
 
+	// returns the index that the player referenced by id is currently at
+	this.getIndexFromId = function(id)
+	{
+		var Players = preferences.Players;
+		 // Associate Id to player - indexof didnt work
+  		for(var i = 0; i < Players.length; i++)
+  		{
+  			if(Players[i].getName() === id)
+  				return i;
+  		}
+	}
+
+	// Checks to see if a player still exists
+	this.PlayerExists = function(id)
+	{
+		var Players = preferences.Players;
+		for(var i = 0; i < Players.length; i++)
+		{
+			if (Players[i].getName() === id)
+				return true
+		}
+		return false
+	}
+
 	/* Moves a player to the new location
 	 	id : 0 - Player 1
 			 1 - Player 2
@@ -29,10 +53,10 @@ function PlayerManager(preferences, layerManager, explosionManager)
 	*/
 	this.MovePlayer = function(id, direction)
 	{
-		if(id <= 3 && id >= 0 && direction <= 3 && direction >= 0)
+		if(direction <= 3 && direction >= 0)
 		{
 			// Get data from preference
-			var player = preferences.Players[id]
+			var player = preferences.Players[this.getIndexFromId(id)]
 			var moveValue = preferences.MoveValue
 			
 			if(player instanceof Player)

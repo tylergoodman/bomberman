@@ -86,7 +86,8 @@
 			break;
 			// Bomb dropped
 			case 'bombDropped':
-				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type);
+				var playerIndex = game.state.states.Game.playerManager.getIndexFromId(data.data.PlayerID)
+				game.state.states.Game.explosionManager.DropBomb(playerIndex, data.data.Type);
 				this.sendToAll(data);
 			break;
 			// player died
@@ -167,9 +168,7 @@
 			break;
 			// start game
 			case 'gs':
-				var data = data.data;
-				Me.index = data.indexOf(Me.peer.id);
-				game.state.start('Game', true, false, Me.index, data);
+				game.state.start('Game', true, false, Me.peer.id, data.data);
 			break;
 			// player moved
 			case 'playerMoved':
@@ -177,7 +176,8 @@
 			break;
 			// bomb dropped
 			case 'bombDropped':
-				game.state.states.Game.explosionManager.DropBomb(data.data.PlayerID, data.data.Type)
+				var playerIndex = game.state.states.Game.playerManager.getIndexFromId(data.data.PlayerID)
+				game.state.states.Game.explosionManager.DropBomb(playerIndex, data.data.Type);
 			break;
 			// player died
 			case 'playerDied':

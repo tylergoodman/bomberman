@@ -13,13 +13,13 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	var perkManager = perkManager
 
 	// Process Bomb dropped 
-	this.DropBomb = function (playerId, type)
+	this.DropBomb = function (playerIndex, type)
 	{
 		// Verify that player exist
-		if(preferences.Players[playerId] instanceof Player)
+		if(preferences.Players[playerIndex] instanceof Player)
 		{
 			// Get player from Players array in preference
-			var player = preferences.Players[playerId]
+			var player = preferences.Players[playerIndex]
 
 			// Verify there isnt a bomb already there
 			if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))

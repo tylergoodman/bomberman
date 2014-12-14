@@ -132,8 +132,8 @@
 				peers.push(Me.peer.id);
 				peers = peers.randomize();
 
-				Me.index = peers.indexOf(Me.peer.id);
-				game.state.start('Game', true, false, Me.index, peers);
+				//Me.index = peers.indexOf(Me.peer.id);
+				game.state.start('Game', true, false, Me.peer.id, peers);
 
 				Network.host.sendToAll({
 					evt: 'gs',

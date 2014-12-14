@@ -826,13 +826,13 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	var perkManager = perkManager
 
 	// Process Bomb dropped 
-	this.DropBomb = function (playerId, type)
+	this.DropBomb = function (playerIndex, type)
 	{
 		// Verify that player exist
-		if(preferences.Players[playerId] instanceof Player)
+		if(preferences.Players[playerIndex] instanceof Player)
 		{
 			// Get player from Players array in preference
-			var player = preferences.Players[playerId]
+			var player = preferences.Players[playerIndex]
 
 			// Verify there isnt a bomb already there
 			if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
@@ -1221,6 +1221,30 @@ function PlayerManager(preferences, layerManager, explosionManager)
 		}
 	}
 
+	// returns the index that the player referenced by id is currently at
+	this.getIndexFromId = function(id)
+	{
+		var Players = preferences.Players;
+		 // Associate Id to player - indexof didnt work
+  		for(var i = 0; i < Players.length; i++)
+  		{
+  			if(Players[i].getName() === id)
+  				return i;
+  		}
+	}
+
+	// Checks to see if a player still exists
+	this.PlayerExists = function(id)
+	{
+		var Players = preferences.Players;
+		for(var i = 0; i < Players.length; i++)
+		{
+			if (Players[i].getName() === id)
+				return true
+		}
+		return false
+	}
+
 	/* Moves a player to the new location
 	 	id : 0 - Player 1
 			 1 - Player 2
@@ -1233,10 +1257,10 @@ function PlayerManager(preferences, layerManager, explosionManager)
 	*/
 	this.MovePlayer = function(id, direction)
 	{
-		if(id <= 3 && id >= 0 && direction <= 3 && direction >= 0)
+		if(direction <= 3 && direction >= 0)
 		{
 			// Get data from preference
-			var player = preferences.Players[id]
+			var player = preferences.Players[this.getIndexFromId(id)]
 			var moveValue = preferences.MoveValue
 			
 			if(player instanceof Player)
@@ -1822,15 +1846,15 @@ GameState.prototype = {
 							})
 				   		},
   update:  function() 	{
-
-  						if(this.Players[this.player] != null)
+  						if(this.playerManager.PlayerExists(this.playerID))
   						{
+  							//this.player = this.playerManager.(this.playerID, this.peers)
 							if (this.game.input.keyboard.isDown(Phaser.Keyboard.A))
 							{
 								//this.playerManager.movePlayer(this.player, 2)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 2},
+									data: {PlayerID: this.playerID, Dir: 2},
 								});
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D))
@@ -1838,7 +1862,7 @@ GameState.prototype = {
 								//this.playerManager.movePlayer(this.player, 3)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 3},
+									data: {PlayerID: this.playerID, Dir: 3},
 								});
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.W))
@@ -1846,7 +1870,7 @@ GameState.prototype = {
 								//this.playerManager.movePlayer(this.player, 0)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 0},
+									data: {PlayerID: this.playerID, Dir: 0},
 								});
 							}
 							else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S))
@@ -1854,7 +1878,7 @@ GameState.prototype = {
 								//this.playerManager.movePlayer(this.player, 1)
 								Bomberman.Network.send({
 									evt: 'playerMoved',
-									data: {PlayerID: this.player, Dir: 1},
+									data: {PlayerID: this.playerID, Dir: 1},
 								});
 							}
 							else
@@ -1868,7 +1892,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Normal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Normal"},
+									data: {PlayerID: this.playerID, Type : "Normal"},
 								});
 							}
 
@@ -1877,7 +1901,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Vertical"},
+									data: {PlayerID: this.playerID, Type : "Vertical"},
 								});
 							}
 
@@ -1886,7 +1910,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Horizontal")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Horizontal"},
+									data: {PlayerID: this.playerID, Type : "Horizontal"},
 								});
 							}
 
@@ -1895,7 +1919,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Super")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.player, Type : "Super"},
+									data: {PlayerID: this.playerID, Type : "Super"},
 								});
 							}
 
@@ -1908,9 +1932,8 @@ GameState.prototype = {
 					  	},
 	init: function(myId, peersID) 
 						{
-					  		this.player = myId;
+					  		this.playerID = myId;
 					  		this.peers = peersID
-
 					  	},
 	shutdown: function() 
 						{
