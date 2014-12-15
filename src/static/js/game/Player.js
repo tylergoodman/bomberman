@@ -4,9 +4,24 @@
 ******************************************************************************/
 
 function Player (preferences, name, col, row, posX, posY) {
+	var spriteImage = 'sprite1'
 
-	GameObject.call(this, preferences.World, col, row, posX, posY, 'bombermanAnimation')
+	if(col == preferences.BoardColSize - 1 &&
+		row == 0)
+	{
+		spriteImage = 'sprite2'
+	}
+	else if(col == 0 && row == preferences.BoardRowSize - 1)
+	{
+		spriteImage = 'sprite3'
+	}
+	else if(col == preferences.BoardColSize - 1 &&
+	row == preferences.BoardRowSize - 1)
+	{
+		spriteImage = 'sprite4'
+	}
 
+	GameObject.call(this, preferences.World, col, row, posX, posY, spriteImage)
 	// Set up Object's properties
 	this.Name = name
 	this.NormalBombCount = 20
@@ -26,10 +41,15 @@ function Player (preferences, name, col, row, posX, posY) {
 ******************************************************************************/
 
 	// animations
-	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('bomb', 1, 6, '', 0), false, true)
+	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1, 8, '', 0), 30, true);
 
 /******************************************************************************
 							 Methods

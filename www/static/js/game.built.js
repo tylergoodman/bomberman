@@ -282,9 +282,24 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 ******************************************************************************/
 
 function Player (preferences, name, col, row, posX, posY) {
+	var spriteImage = 'sprite1'
 
-	GameObject.call(this, preferences.World, col, row, posX, posY, 'bombermanAnimation')
+	if(col == preferences.BoardColSize - 1 &&
+		row == 0)
+	{
+		spriteImage = 'sprite2'
+	}
+	else if(col == 0 && row == preferences.BoardRowSize - 1)
+	{
+		spriteImage = 'sprite3'
+	}
+	else if(col == preferences.BoardColSize - 1 &&
+	row == preferences.BoardRowSize - 1)
+	{
+		spriteImage = 'sprite4'
+	}
 
+	GameObject.call(this, preferences.World, col, row, posX, posY, spriteImage)
 	// Set up Object's properties
 	this.Name = name
 	this.NormalBombCount = 20
@@ -304,10 +319,15 @@ function Player (preferences, name, col, row, posX, posY) {
 ******************************************************************************/
 
 	// animations
-	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('bomb', 1, 6, '', 0), false, true)
+	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1, 8, '', 0), 30, true);
 
 /******************************************************************************
 							 Methods
@@ -821,9 +841,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	var BombLayer = layerManager.ReturnLayer("Bomb")
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
 	var ExplosionAudio = explosionAudio
-
-	// Perk Manager to manage perks
-	var perkManager = perkManager
 
 	// Process Bomb dropped 
 	this.DropBomb = function (playerIndex, type)
@@ -1498,6 +1515,18 @@ function Preferences(world, players)
 		this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
 	}
 
+	// returns the index that the player referenced by id is currently at
+	this.getIndexFromId = function(id)
+	{
+		var Players = this.Players;
+		 // Associate Id to player - indexof didnt work
+  		for(var i = 0; i < Players.length; i++)
+  		{
+  			if(Players[i].getName() === id)
+  				return i;
+  		}
+	}
+
 }
 function PerkManager(preferences, layerManager, perkAudio)
 {
@@ -1527,16 +1556,28 @@ function PerkManager(preferences, layerManager, perkAudio)
 			var col = wall.getCol(), row = wall.getRow()
 			WallLayer.Remove(wall)
 			if( Math.floor((Math.random() * 100) + 1) <= 15)
-				PerkLayer.Add(this.RandomPerk(col, row))
+			{
+				var type = this.RandomPerk()
+				Bomberman.Network.send({
+					evt: 'perkDropped',
+					data: {Col: col, Row: row, Type : type},
+				});
+			}
 			return true
 		}	
 	}
 
-	// Returns a random perk
-	this.RandomPerk = function(col, row)
+	// Adds a perk to the perk layer
+	this.AddPerk = function (col, row, type)
 	{
-		var randomType = PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
-		return new Perk(preferences, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight, randomType)
+		var perk = new Perk(preferences, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight, type)
+		PerkLayer.Add(perk)
+	}
+
+	// Returns a random perk type
+	this.RandomPerk = function()
+	{
+		return PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
 	}
 
 	// Check if a player is on a perk
@@ -1550,29 +1591,36 @@ function PerkManager(preferences, layerManager, perkAudio)
 				if(PerkLayer.getObjectAt(col, row) instanceof Perk)
 				{
 					// Apply perk if user is on a perk
-					this.ApplyPerk(preferences.Players[i], PerkLayer.getObjectAt(col, row))
-
-					// Play Music
-					PerkAudio.play();
-
-					//Add stop PerkAudio event
-					World.time.events.add(Phaser.Timer.SECOND * .5, 
-					function(perkAudio) {
-							// stop audio
-							perkAudio.stop();
-						}, 
-					this, PerkAudio);
+					var playerId = preferences.Players[i].getName()
+					Bomberman.Network.send({
+						evt: 'applyPerk',
+						data: {PlayerID: playerId, Col: col, Row: row},
+					});
 				}
 			}
 		}
 	}
 
 	// Apply Perks to Players that are on top of it
-	this.ApplyPerk = function(player, perk)
+	this.ApplyPerk = function(playerId, col, row)
 	{
+		// get player and perk
+		var player = preferences.Players[preferences.getIndexFromId(playerId)];
+		var perk = PerkLayer.getObjectAt(col, row);
+
+		// Play Music
+		PerkAudio.play();
+
+		//Add stop PerkAudio event
+		World.time.events.add(Phaser.Timer.SECOND * .5, 
+		function(perkAudio) {
+				// stop audio
+				perkAudio.stop();
+			}, 
+		this, PerkAudio);
 
 		// remove perk
-		PerkLayer.Remove(perk)
+		PerkLayer.Remove(perk);
 
 		// Apply perk to player
 		switch(perk.getType())
@@ -1656,7 +1704,7 @@ function Perk (preferences, col, row, posX, posY, type) {
 var MainMenu = function(game) {} 
 
 MainMenu.prototype = {
-  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')},
+  preload: function() { this.load.image('background', './static/img/titlescreen.png')},
   create:  function() {	// background
 						var background = this.game.add.group();
 				   		background.z = 1;
@@ -1677,7 +1725,7 @@ var Preloader = function(game) {
 } 
 
 Preloader.prototype = {
-  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')
+  preload: function() { this.load.image('background', './static/img/titlescreen.png')
   						game.load.audio('intro', ['./static/audio/intro.mp3', './static/audio/intro.mp3']);
 					  },
   create:  function() {	
@@ -1775,7 +1823,10 @@ var GameState = function(game) {
 GameState.prototype = {
 
   preload: function() 	{ 
-							this.game.load.atlasJSONHash('bombermanAnimation', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
+							this.game.load.atlasJSONHash('sprite1', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
+							this.game.load.atlasJSONHash('sprite2', './static/img/Animations/Sprite2/sprite2.png', './static/img/Animations/Sprite2/sprite2.json');
+							this.game.load.atlasJSONHash('sprite3', './static/img/Animations/Sprite3/sprite3.png', './static/img/Animations/Sprite3/sprite3.json');
+							this.game.load.atlasJSONHash('sprite4', './static/img/Animations/Sprite4/sprite4.png', './static/img/Animations/Sprite4/sprite4.json');
 							this.game.load.atlasJSONHash('explosionAnimation', './static/img/Animations/Explosion/explosionAnimation.png', './static/img/Animations/Explosion/explosionAnimation.json');
 							this.game.load.atlasJSONHash('bombAnimation', './static/img/Animations/Bomb/bombAnimation.png', './static/img/Animations/Bomb/bombAnimation.json');
 						    this.game.load.image('bomberman', './static/img/bomberman.png')
@@ -1924,8 +1975,11 @@ GameState.prototype = {
 							}
 
 							// update perks
-							this.perkManager.Update()
-
+							//host only
+							if(Bomberman.Network.host.open)
+							{ 
+								this.perkManager.Update()
+							}
 							// Check to see if game is over
 							this.playerManager.gameOverCheck()
 						}

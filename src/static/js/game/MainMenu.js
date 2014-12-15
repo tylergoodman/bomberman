@@ -1,7 +1,7 @@
 var MainMenu = function(game) {} 
 
 MainMenu.prototype = {
-  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')},
+  preload: function() { this.load.image('background', './static/img/titlescreen.png')},
   create:  function() {	// background
 						var background = this.game.add.group();
 				   		background.z = 1;

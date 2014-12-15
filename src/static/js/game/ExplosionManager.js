@@ -9,9 +9,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
 	var ExplosionAudio = explosionAudio
 
-	// Perk Manager to manage perks
-	var perkManager = perkManager
-
 	// Process Bomb dropped 
 	this.DropBomb = function (playerIndex, type)
 	{

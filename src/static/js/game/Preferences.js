@@ -98,4 +98,16 @@ function Preferences(world, players)
 		this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
 	}
 
+	// returns the index that the player referenced by id is currently at
+	this.getIndexFromId = function(id)
+	{
+		var Players = this.Players;
+		 // Associate Id to player - indexof didnt work
+  		for(var i = 0; i < Players.length; i++)
+  		{
+  			if(Players[i].getName() === id)
+  				return i;
+  		}
+	}
+
 }
