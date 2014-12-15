@@ -37,7 +37,8 @@ function PerkManager(preferences, layerManager, perkAudio)
 				}
 			}
 			return true
-		}	
+		}
+		return false	
 	}
 
 	// Adds a perk to the perk layer

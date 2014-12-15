@@ -958,6 +958,116 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	{
 		var col = bomb.getCol()
 		var row = bomb.getRow()
+
+		// right side of the horizontal explosion 
+		for(var i = 0; i <= bombRadius; i++)
+		{
+			var wallOne = WallLayer.getObjectAt(col+i, row)
+			var playerLocOne = PlayerLayer.getObjectAt(col+i, row)
+
+			// remove wall if breakable and stop there
+			// else if wall isnt breakable, stop there
+			if(wallOne instanceof Wall)
+			{
+				if(perkManager.RemoveWall(wallOne))
+					AddExplosion(col+i, row)	
+				break;
+			}
+
+			// Check if you can add explosion at where wall one is suppose to be
+			// This is to add an explosion even though the wall is gone
+			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
+				AddExplosion(col+i, row)
+
+			if(playerLocOne instanceof Player)
+			{
+				PlayerDiedEvent(playerLocOne.getName())
+			}
+		}
+
+		//left side of the horizontal explosion 
+		for(var i = 0; i >= bombRadius * -1; i--)
+		{
+			var wallOne = WallLayer.getObjectAt(col+i, row)
+			var playerLocOne = PlayerLayer.getObjectAt(col+i, row)
+
+			// remove wall if breakable and stop there
+			// else if wall isnt breakable, stop there
+			if(wallOne instanceof Wall)
+			{
+				if(perkManager.RemoveWall(wallOne))
+					AddExplosion(col+i, row)
+				break;	
+			}
+
+			// Check if you can add explosion at where wall one is suppose to be
+			// This is to add an explosion even though the wall is gone
+			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
+				AddExplosion(col+i, row)
+
+			if(playerLocOne instanceof Player)
+			{
+				PlayerDiedEvent(playerLocOne.getName())
+			}
+		}
+
+		// top side of the vertrical explosion 
+		for(var i = 0; i <= bombRadius; i++)
+		{
+			var wallTwo = WallLayer.getObjectAt(col, row+i)
+			var playerLocTwo = PlayerLayer.getObjectAt(col,row+i)
+
+
+			// remove wall if breakable and stop there
+			// else if wall isnt breakable, stop there
+			if(wallTwo instanceof Wall)
+			{
+				if(perkManager.RemoveWall(wallTwo))
+					AddExplosion(col, row+i)
+				break;
+			}
+
+			// Check if you can add explosion at where wall two is suppose to be
+			// This is to add an explosion even though the wall is gone
+			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
+				AddExplosion(col, row+i)
+
+			if(playerLocTwo instanceof Player)
+			{
+				PlayerDiedEvent(playerLocTwo.getName())
+			}
+
+		}
+
+		// bottom side of the vertrical explosion 
+		for(var i = 0; i >= bombRadius * -1; i--)
+		{
+			var wallTwo = WallLayer.getObjectAt(col, row+i)
+			var playerLocTwo = PlayerLayer.getObjectAt(col,row+i)
+
+
+			// remove wall if breakable and stop there
+			// else if wall isnt breakable, stop there
+			if(wallTwo instanceof Wall)
+			{
+				if(perkManager.RemoveWall(wallTwo))
+					AddExplosion(col, row+i)
+				break;
+			}
+
+			// Check if you can add explosion at where wall two is suppose to be
+			// This is to add an explosion even though the wall is gone
+			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
+				AddExplosion(col, row+i)
+
+			if(playerLocTwo instanceof Player)
+			{
+				PlayerDiedEvent(playerLocTwo.getName())
+			}
+
+		}
+
+/*
 		// Remove walls
 	    for(var i = -1*bombRadius; i <= bombRadius; i++)
 		{
@@ -991,19 +1101,15 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 			if(playerLocOne instanceof Player)
 			{
-				console.log(playerLocOne)
-				console.log(i)
 				PlayerDiedEvent(playerLocOne.getName())
 			}
 
 			if(playerLocTwo instanceof Player)
 			{
-				console.log(playerLocTwo)
-								console.log(i)
 				PlayerDiedEvent(playerLocTwo.getName())
 			}
 		}
-
+*/
 		// Special case when player is on the bomb
 		var player = PlayerLayer.getObjectAt(col, row)
 		
@@ -1646,7 +1752,8 @@ function PerkManager(preferences, layerManager, perkAudio)
 				}
 			}
 			return true
-		}	
+		}
+		return false	
 	}
 
 	// Adds a perk to the perk layer
