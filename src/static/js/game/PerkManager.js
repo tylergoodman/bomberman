@@ -101,9 +101,6 @@ function PerkManager(preferences, layerManager, perkAudio)
 					player.BombRadius = Math.floor(preferences.BoardColSize / 2);
 				else if (player.BombRadius > preferences.BoardRowSize / 2)
 					player.BombRadius = Math.floor(preferences.BoardRowSize / 2);
-				console.log(preferences.BoardColSize)
-				console.log(preferences.BoardRowSize)
-				console.log(player.BombRadius)
 				break;
 			case "HorizontalBombPerk" :
 				player.SpecialBombType = "Horizontal"

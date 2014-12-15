@@ -303,15 +303,13 @@ function Player (preferences, name, col, row, posX, posY) {
 
 	// Set up Object's properties
 	this.Name = name
-	this.NormalBombCount = 20
-	this.VerticalBombCount = 20
-	this.HorizontalBombCount = 20
-	this.SuperBombCount = 1
+	this.BombRadius = 1
 	this.GhostMode = false
 	this.CurrentAnimation = null
 	this.PreviousAnimation = null
 	this.AnimationChanged = false
 	this.MovedRecently = false
+	this.SpecialBombType = null;
 
 	// Scale Player
 	this.getSprite().scale.setTo(preferences.PlayerWidthRatio, preferences.PlayerHeightRatio)
@@ -334,6 +332,14 @@ function Player (preferences, name, col, row, posX, posY) {
 	this.getName = function () {
 		return this.Name
 	}
+
+	// No longer part of design. left just in case
+	/*
+
+	this.NormalBombCount = 20
+	this.VerticalBombCount = 20
+	this.HorizontalBombCount = 20
+	this.SuperBombCount = 1
 
 	// BombCount Get/Set
 	this.getBombCount = function (type) {
@@ -362,7 +368,7 @@ function Player (preferences, name, col, row, posX, posY) {
 			return 0
 		// Returns 0 to avoid null errors in code
 	}
-
+	
 	this.setBombCount = function (type, value) {
 		switch(type)
 		{
@@ -383,7 +389,7 @@ function Player (preferences, name, col, row, posX, posY) {
 				break;
 		}
 	}
-
+	*/
 /******************************************************************************
 							 update
 ******************************************************************************/
@@ -840,7 +846,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	var ExplosionAudio = explosionAudio
 
 	// Process Bomb dropped 
-	this.DropBomb = function (playerIndex, type)
+	this.DropBomb = function (playerIndex, typeOfBomb)
 	{
 		// Verify that player exist
 		if(preferences.Players[playerIndex] instanceof Player)
@@ -851,21 +857,31 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			// Verify there isnt a bomb already there
 			if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
 			{
-				// Create bomb
-				var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
-					player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
+				var type = typeOfBomb == "Normal" ? "Normal" : 
+				(player.SpecialBombType != null ? player.SpecialBombType : null)
 
-				// Add bomb to layer
-				BombLayer.Add(bomb)
+				if(typeOfBomb == "Super")
+				{
+					type = "Super"
+				}
+				if(type != null)
+				{
+					// Create bomb
+					var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
+						player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
 
-				// Add the bomb event - last parm is the callback function's args
-				World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
+					// Add bomb to layer
+					BombLayer.Add(bomb)
+
+					// Add the bomb event - last parm is the callback function's args
+					World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb, player.BombRadius)
+				}
 			}
 		}
 	}
 
 	// Bomb exploded Event
-	function BombExploded(bomb)
+	function BombExploded(bomb, bombRadius)
 	{
 		// Remove the bomb 
 		//BombLayer.Remove(bomb)
@@ -878,7 +894,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 		switch(bomb.getType())
 		{
 			case "Normal":
-				NormalBombExplosion(bomb)
+				NormalBombExplosion(bomb, bombRadius)
 				break;
 			case "Vertical":
 				VerticalBombExplosion(bomb)
@@ -938,13 +954,12 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 						Different Types of Bombs
 	******************************************************************************/
 
-	function NormalBombExplosion(bomb)
+	function NormalBombExplosion(bomb, bombRadius)
 	{
 		var col = bomb.getCol()
 		var row = bomb.getRow()
-
 		// Remove walls
-	    for(var i = -1; i <= 1; i += 2)
+	    for(var i = -1*bombRadius; i <= bombRadius; i++)
 		{
 			var wallOne = WallLayer.getObjectAt(col+i, row)
 			var wallTwo = WallLayer.getObjectAt(col, row+i)
@@ -959,6 +974,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			}
 
 			// Check if you can add explosion at where wall one is suppose to be
+			// This is to add an explosion even though the wall is gone
 			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
 				AddExplosion(col+i, row)
 
@@ -969,16 +985,21 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			}
 
 			// Check if you can add explosion at where wall two is suppose to be
+			// This is to add an explosion even though the wall is gone
 			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
 				AddExplosion(col, row+i)
 
 			if(playerLocOne instanceof Player)
 			{
+				console.log(playerLocOne)
+				console.log(i)
 				PlayerDiedEvent(playerLocOne.getName())
 			}
 
 			if(playerLocTwo instanceof Player)
 			{
+				console.log(playerLocTwo)
+								console.log(i)
 				PlayerDiedEvent(playerLocTwo.getName())
 			}
 		}
@@ -1153,17 +1174,21 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 ******************************************************************************/
 	function PlayerDiedEvent (playerId)
 	{
-		// send player died event
-		Bomberman.Network.send({
-			evt: 'playerDied',
-			data: {playerId : playerId},
-		});
+		if(Bomberman.Network.host.open)
+		{ 
+			// send player died event
+			Bomberman.Network.send({
+				evt: 'playerDied',
+				data: {playerId : playerId},
+			});
+		}
 	}
 
 	// Removes a dead player
 	this.PlayerDied = function (playerId)
 	{
-		World.time.events.add(Phaser.Timer.SECOND * 1, 
+		// only host can kill someone
+		World.time.events.add(Phaser.Timer.SECOND * 0.5, 
 			function() {
 				for(var i = 0; i < preferences.Players.length; i++)
 				{
@@ -1620,13 +1645,17 @@ function PerkManager(preferences, layerManager, perkAudio)
 		switch(perk.getType())
 		{
 			case "NormalBombPerk" :
-				player.setBombCount("Normal", player.getBombCount("Normal") + 3)
+				player.BombRadius = player.BombRadius + 1;
+				if(player.BombRadius > preferences.BoardColSize / 2)
+					player.BombRadius = Math.floor(preferences.BoardColSize / 2);
+				else if (player.BombRadius > preferences.BoardRowSize / 2)
+					player.BombRadius = Math.floor(preferences.BoardRowSize / 2);
 				break;
 			case "HorizontalBombPerk" :
-				player.setBombCount("Horizontal", player.getBombCount("Horizontal") + 3)
+				player.SpecialBombType = "Horizontal"
 				break;
 			case "VerticalBombPerk" :
-				player.setBombCount("Vertical", player.getBombCount("Vertical") + 3)
+				player.SpecialBombType = "Vertical"
 				break;
 			default:
 				console.log("Invalid perk type to add")
@@ -1788,19 +1817,70 @@ Preloader.prototype = {
   		this.introMusic.stop();
   }
 }
-var Lobby = function(game) {} 
+var Instruction = function(game) 	{
+								this.playerID = null;
+								this.peers = null;
+								var bg = null
+								var image = null
+								var scaleWidth = null
+								var scaleHeight = null
+								var ratio = 1;
+							} 
 
-Lobby.prototype = {
-  preload: function() { this.load.image('lobby', './static/img/lobby.jpg')},
+Instruction.prototype = {
+  preload: function() { this.load.image('instruction', './static/img/instructionscreen.png')},
   create:  function() {	// background
 						var background = this.game.add.group();
 				   		background.z = 1;
-				   		background.add(this.game.add.sprite(0,0,'lobby'))},
+				   		bg = this.game.add.sprite(0,0,'instruction')
+
+				   		// Scales background image
+				   		image = game.cache.getImage('instruction')
+
+				   		scaleWidth = document.getElementById('game').offsetWidth / image.width 
+				   	    scaleHeight = document.getElementById('game').offsetHeight / image.height 
+
+				   		background.add(bg)
+
+				   		if(scaleWidth > scaleHeight)
+				   	    {
+				   	    	ratio = scaleWidth;
+				   			bg.scale.setTo(ratio, ratio);
+				   	    }
+				   	    else 
+				   	    {
+				   	    	ratio = scaleHeight;
+				   			bg.scale.setTo(ratio, ratio);
+				   	    }
+
+				   		// Start the game after 5 seconds
+				   		game.time.events.add(Phaser.Timer.SECOND * 4, 
+								function() {this.game.state.start('Game', true, false, this.playerID, this.peers)}, 
+							this)
+				   	},
   update:  function() {
 
-		if(this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR, 10))
-			this.game.state.start('Game');
-  }
+  		image = game.cache.getImage('instruction')
+
+   		this.game.width = document.getElementById('game').offsetWidth
+   		this.game.height = document.getElementById('game').offsetHeight
+
+   		this.game.scale.refresh()
+
+   		scaleWidth = document.getElementById('game').offsetWidth / image.width 
+   	    scaleHeight = document.getElementById('game').offsetHeight / image.height 
+			
+   		bg.scale.setTo(scaleWidth, scaleHeight);
+
+    	game.scale.setScreenSize();
+
+  },
+
+  init: function(myId, peersID) 
+					{
+				  		this.playerID = myId;
+				  		this.peers = peersID;
+				  	}
 }   
 var GameState = function(game) {
 	this.player = null
@@ -1937,7 +2017,7 @@ GameState.prototype = {
 								this.playerManager.stopAnimation(this.playerID)
 							}
 							
-							// check if spacebar was pressed / second param is for debouncing
+							// check if f was pressed / second param is for debouncing
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
 								//this.explosionManager.DropBomb(this.player, "Normal")
@@ -1952,16 +2032,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.playerID, Type : "Vertical"},
-								});
-							}
-
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10))
-							{
-								//this.explosionManager.DropBomb(this.player, "Horizontal")
-								Bomberman.Network.send({
-									evt: 'bombDropped',
-									data: {PlayerID: this.playerID, Type : "Horizontal"},
+									data: {PlayerID: this.playerID, Type : "Special"},
 								});
 							}
 
@@ -1988,7 +2059,7 @@ GameState.prototype = {
 	init: function(myId, peersID) 
 						{
 					  		this.playerID = myId;
-					  		this.peers = peersID
+					  		this.peers = peersID;
 					  	},
 	shutdown: function() 
 						{
@@ -2086,6 +2157,7 @@ GameOver.prototype = {
 }
 var game = new Phaser.Game("100", "100", Phaser.AUTO, 'game')
 game.state.add('Preloader', Preloader)
+game.state.add('Instruction', Instruction)
 game.state.add('Game', GameState)
 game.state.add('GameOver', GameOver)
 game.state.start('Preloader')

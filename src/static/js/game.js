@@ -13,7 +13,7 @@
 @@include('./game/Perk.js')
 @@include('./game/MainMenu.js')
 @@include('./game/Preloader.js')
-@@include('./game/Lobby.js')   
+@@include('./game/Instruction.js')   
 @@include('./game/GameState.js')
 @@include('./game/GameOver.js')
 @@include('./game/main.js')

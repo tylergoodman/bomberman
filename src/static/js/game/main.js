@@ -1,5 +1,6 @@
 var game = new Phaser.Game("100", "100", Phaser.AUTO, 'game')
 game.state.add('Preloader', Preloader)
+game.state.add('Instruction', Instruction)
 game.state.add('Game', GameState)
 game.state.add('GameOver', GameOver)
 game.state.start('Preloader')

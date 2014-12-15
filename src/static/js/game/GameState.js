@@ -175,7 +175,7 @@ GameState.prototype = {
 	init: function(myId, peersID) 
 						{
 					  		this.playerID = myId;
-					  		this.peers = peersID
+					  		this.peers = peersID;
 					  	},
 	shutdown: function() 
 						{

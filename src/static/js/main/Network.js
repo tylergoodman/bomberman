@@ -108,8 +108,6 @@
 			case 'gameOver':
 				var peers = game.state.states.Game.peers
 				var winnerIndex = peers.indexOf(data.data.Winner);
-				console.log(peers)
-				console.log(winnerIndex)
 				if(data.data.Winner == null)
 				{
 					console.log("Error ending the game - invalid player count");
@@ -177,7 +175,7 @@
 			break;
 			// start game
 			case 'gs':
-				game.state.start('Game', true, false, Me.peer.id, data.data);
+				game.state.start('Instruction', true, false, Me.peer.id, data.data);
 			break;
 			// player moved
 			case 'playerMoved':
@@ -203,8 +201,6 @@
 			case 'gameOver':
 				var peers = game.state.states.Game.peers
 				var winnerIndex = peers.indexOf(data.data.Winner);
-				console.log(peers)
-				console.log(winnerIndex)
 				game.state.start('GameOver', true, false, winnerIndex);
 				if(data == null)
 					console.log("Error ending the game - invalid player count");
