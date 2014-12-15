@@ -14,6 +14,7 @@ GameState.prototype = {
 
   preload: function() 	{ 
 							this.game.load.atlasJSONHash('sprite1', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
+							this.game.load.atlasJSONHash('sprite2', './static/img/Animations/Sprite2/sprite2.png', './static/img/Animations/Sprite2/sprite2.json');
 							this.game.load.atlasJSONHash('explosionAnimation', './static/img/Animations/Explosion/explosionAnimation.png', './static/img/Animations/Explosion/explosionAnimation.json');
 							this.game.load.atlasJSONHash('bombAnimation', './static/img/Animations/Bomb/bombAnimation.png', './static/img/Animations/Bomb/bombAnimation.json');
 						    this.game.load.image('bomberman', './static/img/bomberman.png')

@@ -282,9 +282,24 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 ******************************************************************************/
 
 function Player (preferences, name, col, row, posX, posY) {
+	var spriteImage = 'sprite1'
 
-	GameObject.call(this, preferences.World, col, row, posX, posY, 'sprite1')
+	if(col == preferences.BoardColSize - 1 &&
+		row == 0)
+	{
+		spriteImage = 'sprite1'
+	}
+	else if(col == 0 && row == preferences.BoardRowSize - 1)
+	{
+		spriteImage = 'sprite1'
+	}
+	else if(col == preferences.BoardColSize - 1 &&
+	row == preferences.BoardRowSize - 1)
+	{
+		spriteImage = 'sprite1'
+	}
 
+	GameObject.call(this, preferences.World, col, row, posX, posY, spriteImage)
 	// Set up Object's properties
 	this.Name = name
 	this.NormalBombCount = 20
@@ -304,10 +319,15 @@ function Player (preferences, name, col, row, posX, posY) {
 ******************************************************************************/
 
 	// animations
-	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
-	this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
+	//this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('bomb', 1, 6, '', 0), false, true)
+	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '', 0), 30, true);
+	this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('back', 1, 8, '', 0), 30, true);
 
 /******************************************************************************
 							 Methods
@@ -1776,6 +1796,7 @@ GameState.prototype = {
 
   preload: function() 	{ 
 							this.game.load.atlasJSONHash('sprite1', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
+							this.game.load.atlasJSONHash('sprite2', './static/img/Animations/Sprite2/sprite2.png', './static/img/Animations/Sprite2/sprite2.json');
 							this.game.load.atlasJSONHash('explosionAnimation', './static/img/Animations/Explosion/explosionAnimation.png', './static/img/Animations/Explosion/explosionAnimation.json');
 							this.game.load.atlasJSONHash('bombAnimation', './static/img/Animations/Bomb/bombAnimation.png', './static/img/Animations/Bomb/bombAnimation.json');
 						    this.game.load.image('bomberman', './static/img/bomberman.png')
