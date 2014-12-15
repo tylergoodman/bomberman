@@ -96,13 +96,17 @@ function PerkManager(preferences, layerManager, perkAudio)
 		switch(perk.getType())
 		{
 			case "NormalBombPerk" :
-				player.setBombCount("Normal", player.getBombCount("Normal") + 3)
+				player.BombRadius = player.BombRadius + 1;
+				if(player.BombRadius > preferences.BoardColSize)
+					player.BombRadius = preferences.BoardColSize;
+				else if (player.BombRadius > preferences.BoardRowSize)
+					player.BombRadius = preferences.BoardRowSize;
 				break;
 			case "HorizontalBombPerk" :
-				player.setBombCount("Horizontal", player.getBombCount("Horizontal") + 3)
+				player.SpecialBombType = "Horizontal"
 				break;
 			case "VerticalBombPerk" :
-				player.setBombCount("Vertical", player.getBombCount("Vertical") + 3)
+				player.SpecialBombType = "Vertical"
 				break;
 			default:
 				console.log("Invalid perk type to add")

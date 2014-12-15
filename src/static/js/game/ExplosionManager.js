@@ -10,7 +10,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	var ExplosionAudio = explosionAudio
 
 	// Process Bomb dropped 
-	this.DropBomb = function (playerIndex, type)
+	this.DropBomb = function (playerIndex, typeOfBomb)
 	{
 		// Verify that player exist
 		if(preferences.Players[playerIndex] instanceof Player)
@@ -21,21 +21,31 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			// Verify there isnt a bomb already there
 			if(!(BombLayer.getObjectAt(player.getCol(), player.getRow()) instanceof Bomb))
 			{
-				// Create bomb
-				var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
-					player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
+				var type = typeOfBomb == "Normal" ? "Normal" : 
+				(player.SpecialBombType != null ? player.SpecialBombType : null)
 
-				// Add bomb to layer
-				BombLayer.Add(bomb)
+				if(typeOfBomb == "Super")
+				{
+					type = "Super"
+				}
+				if(type != null)
+				{
+					// Create bomb
+					var bomb = new Bomb(preferences, player.getCol(), player.getRow(), 
+						player.getCol() * preferences.ImageSizeWidth, player.getRow() * preferences.ImageSizeHeight, type)
 
-				// Add the bomb event - last parm is the callback function's args
-				World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb)
+					// Add bomb to layer
+					BombLayer.Add(bomb)
+
+					// Add the bomb event - last parm is the callback function's args
+					World.time.events.add(Phaser.Timer.SECOND * bomb.getFuse(), BombExploded, this, bomb, player.BombRadius)
+				}
 			}
 		}
 	}
 
 	// Bomb exploded Event
-	function BombExploded(bomb)
+	function BombExploded(bomb, bombRadius)
 	{
 		// Remove the bomb 
 		//BombLayer.Remove(bomb)
@@ -48,7 +58,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 		switch(bomb.getType())
 		{
 			case "Normal":
-				NormalBombExplosion(bomb)
+				NormalBombExplosion(bomb, bombRadius)
 				break;
 			case "Vertical":
 				VerticalBombExplosion(bomb)
@@ -108,13 +118,13 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 						Different Types of Bombs
 	******************************************************************************/
 
-	function NormalBombExplosion(bomb)
+	function NormalBombExplosion(bomb, bombRadius)
 	{
 		var col = bomb.getCol()
 		var row = bomb.getRow()
 
 		// Remove walls
-	    for(var i = -1; i <= 1; i += 2)
+	    for(var i = -1*bombRadius; i <= bombRadius; i++)
 		{
 			var wallOne = WallLayer.getObjectAt(col+i, row)
 			var wallTwo = WallLayer.getObjectAt(col, row+i)
@@ -129,6 +139,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			}
 
 			// Check if you can add explosion at where wall one is suppose to be
+			// This is to add an explosion even though the wall is gone
 			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
 				AddExplosion(col+i, row)
 
@@ -139,6 +150,7 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			}
 
 			// Check if you can add explosion at where wall two is suppose to be
+			// This is to add an explosion even though the wall is gone
 			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
 				AddExplosion(col, row+i)
 

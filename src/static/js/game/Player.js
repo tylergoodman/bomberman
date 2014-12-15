@@ -25,15 +25,13 @@ function Player (preferences, name, col, row, posX, posY) {
 
 	// Set up Object's properties
 	this.Name = name
-	this.NormalBombCount = 20
-	this.VerticalBombCount = 20
-	this.HorizontalBombCount = 20
-	this.SuperBombCount = 1
+	this.BombRadius = 1
 	this.GhostMode = false
 	this.CurrentAnimation = null
 	this.PreviousAnimation = null
 	this.AnimationChanged = false
 	this.MovedRecently = false
+	this.SpecialBombType = null;
 
 	// Scale Player
 	this.getSprite().scale.setTo(preferences.PlayerWidthRatio, preferences.PlayerHeightRatio)
@@ -56,6 +54,14 @@ function Player (preferences, name, col, row, posX, posY) {
 	this.getName = function () {
 		return this.Name
 	}
+
+	// No longer part of design. left just in case
+	/*
+
+	this.NormalBombCount = 20
+	this.VerticalBombCount = 20
+	this.HorizontalBombCount = 20
+	this.SuperBombCount = 1
 
 	// BombCount Get/Set
 	this.getBombCount = function (type) {
@@ -84,7 +90,7 @@ function Player (preferences, name, col, row, posX, posY) {
 			return 0
 		// Returns 0 to avoid null errors in code
 	}
-
+	
 	this.setBombCount = function (type, value) {
 		switch(type)
 		{
@@ -105,7 +111,7 @@ function Player (preferences, name, col, row, posX, posY) {
 				break;
 		}
 	}
-
+	*/
 /******************************************************************************
 							 update
 ******************************************************************************/

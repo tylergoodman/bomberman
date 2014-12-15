@@ -133,7 +133,7 @@ GameState.prototype = {
 								this.playerManager.stopAnimation(this.playerID)
 							}
 							
-							// check if spacebar was pressed / second param is for debouncing
+							// check if f was pressed / second param is for debouncing
 							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.F, 10))
 							{
 								//this.explosionManager.DropBomb(this.player, "Normal")
@@ -148,16 +148,7 @@ GameState.prototype = {
 								//this.explosionManager.DropBomb(this.player, "Vertical")
 								Bomberman.Network.send({
 									evt: 'bombDropped',
-									data: {PlayerID: this.playerID, Type : "Vertical"},
-								});
-							}
-
-							if(this.game.input.keyboard.justPressed(Phaser.Keyboard.V, 10))
-							{
-								//this.explosionManager.DropBomb(this.player, "Horizontal")
-								Bomberman.Network.send({
-									evt: 'bombDropped',
-									data: {PlayerID: this.playerID, Type : "Horizontal"},
+									data: {PlayerID: this.playerID, Type : "Special"},
 								});
 							}
 
