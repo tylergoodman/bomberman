@@ -85,6 +85,12 @@ GameState.prototype = {
 								// Update all layers
 							  	self.layerManager.ScaleLayers()
 							})
+
+							// This event will periodically stop
+							// a users animation if they stopped moving 
+							this.preferences.World.time.events.loop(Phaser.Timer.SECOND * .5, 
+								this.playerManager.UpdateAnimations, 
+							this)
 				   		},
   update:  function() 	{
   						if(this.playerManager.PlayerExists(this.playerID))
@@ -124,7 +130,7 @@ GameState.prototype = {
 							}
 							else
 							{
-								this.playerManager.stopAnimation(this.player)
+								this.playerManager.stopAnimation(this.playerID)
 							}
 							
 							// check if spacebar was pressed / second param is for debouncing
@@ -170,7 +176,8 @@ GameState.prototype = {
 							{ 
 								this.perkManager.Update()
 							}
-							// Check to see if game is over
+
+							// Check to see if game is over - has to be outside host check
 							this.playerManager.gameOverCheck()
 						}
 					  	},

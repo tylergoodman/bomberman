@@ -22,6 +22,7 @@ function Player (preferences, name, col, row, posX, posY) {
 	}
 
 	GameObject.call(this, preferences.World, col, row, posX, posY, spriteImage)
+
 	// Set up Object's properties
 	this.Name = name
 	this.NormalBombCount = 20
@@ -32,6 +33,7 @@ function Player (preferences, name, col, row, posX, posY) {
 	this.CurrentAnimation = null
 	this.PreviousAnimation = null
 	this.AnimationChanged = false
+	this.MovedRecently = false
 
 	// Scale Player
 	this.getSprite().scale.setTo(preferences.PlayerWidthRatio, preferences.PlayerHeightRatio)
@@ -41,11 +43,6 @@ function Player (preferences, name, col, row, posX, posY) {
 ******************************************************************************/
 
 	// animations
-	//this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('bomb', 1, 6, '', 0), false, true)
 	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '', 0), 30, true);
 	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '', 0), 30, true);
 	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '', 0), 30, true);

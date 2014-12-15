@@ -99,27 +99,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			function(explosion, WallLayer) {
 					// remove explosion from explosion layer
 					ExplosionLayer.Remove(explosion)
-					/*
-					// Let explosion animation play before ending the game
-					if(preferences.Players.length <= 1)
-					{
-						if(preferences.Players.length == 1)
-						{
-							// last player in array is the winner
-							Bomberman.Network.send({
-								evt: 'gameOver',
-								data: {Winner : "haha"},
-							});
-						}
-						else
-						{
-							Bomberman.Network.send({
-								evt: 'gameOver',
-								data: {Winner : null},
-							});
-						}
-					}
-					*/
 				}, 
 			this, explosion, WallLayer)
 		}

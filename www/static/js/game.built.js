@@ -300,6 +300,7 @@ function Player (preferences, name, col, row, posX, posY) {
 	}
 
 	GameObject.call(this, preferences.World, col, row, posX, posY, spriteImage)
+
 	// Set up Object's properties
 	this.Name = name
 	this.NormalBombCount = 20
@@ -310,6 +311,7 @@ function Player (preferences, name, col, row, posX, posY) {
 	this.CurrentAnimation = null
 	this.PreviousAnimation = null
 	this.AnimationChanged = false
+	this.MovedRecently = false
 
 	// Scale Player
 	this.getSprite().scale.setTo(preferences.PlayerWidthRatio, preferences.PlayerHeightRatio)
@@ -319,11 +321,6 @@ function Player (preferences, name, col, row, posX, posY) {
 ******************************************************************************/
 
 	// animations
-	//this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('newleft', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('newright', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('newfront', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('back', Phaser.Animation.generateFrameNames('newback', 1, 8, '.png', 0), 30, true);
-	//this.Sprite.animations.add('explode', Phaser.Animation.generateFrameNames('bomb', 1, 6, '', 0), false, true)
 	this.Sprite.animations.add('left', Phaser.Animation.generateFrameNames('left', 1, 8, '', 0), 30, true);
 	this.Sprite.animations.add('right', Phaser.Animation.generateFrameNames('right', 1, 8, '', 0), 30, true);
 	this.Sprite.animations.add('front', Phaser.Animation.generateFrameNames('front', 1, 8, '', 0), 30, true);
@@ -932,27 +929,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 			function(explosion, WallLayer) {
 					// remove explosion from explosion layer
 					ExplosionLayer.Remove(explosion)
-					/*
-					// Let explosion animation play before ending the game
-					if(preferences.Players.length <= 1)
-					{
-						if(preferences.Players.length == 1)
-						{
-							// last player in array is the winner
-							Bomberman.Network.send({
-								evt: 'gameOver',
-								data: {Winner : "haha"},
-							});
-						}
-						else
-						{
-							Bomberman.Network.send({
-								evt: 'gameOver',
-								data: {Winner : null},
-							});
-						}
-					}
-					*/
 				}, 
 			this, explosion, WallLayer)
 		}
@@ -1226,14 +1202,29 @@ function PlayerManager(preferences, layerManager, explosionManager)
 	// Stops a player's animation
 	this.stopAnimation = function(id)
 	{
-		(id <= 3 && id >= 0)
+		var playerId = this.getIndexFromId(id);
+
+		(playerId <= 3 && playerId >= 0)
 		{
 			// Get player from preference
-			var player = preferences.Players[id]
+			var player = preferences.Players[playerId]
 			
 			if(player instanceof Player)
 			{	
 				player.animate("stop")
+			}
+		}
+	}
+
+	// This will pause animations if a player has not moved in the past .5 second
+	this.UpdateAnimations = function()
+	{
+		for(var i = 0; i < preferences.Players.length; i++)
+		{
+			if(preferences.Players[i].MovedRecently)
+			{
+				this.playerManager.stopAnimation(preferences.Players[i].getName());
+				preferences.Players[i].MovedRecently = false;
 			}
 		}
 	}
@@ -1304,6 +1295,9 @@ function PlayerManager(preferences, layerManager, explosionManager)
 						console.log("invalid move command")
 						break;
 				}
+
+				// Set the moved recently flag
+				player.MovedRecently = true
 
 				// return player to previous position if collides with wall
 				if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
@@ -1895,6 +1889,12 @@ GameState.prototype = {
 								// Update all layers
 							  	self.layerManager.ScaleLayers()
 							})
+
+							// This event will periodically stop
+							// a users animation if they stopped moving 
+							this.preferences.World.time.events.loop(Phaser.Timer.SECOND * .5, 
+								this.playerManager.UpdateAnimations, 
+							this)
 				   		},
   update:  function() 	{
   						if(this.playerManager.PlayerExists(this.playerID))
@@ -1934,7 +1934,7 @@ GameState.prototype = {
 							}
 							else
 							{
-								this.playerManager.stopAnimation(this.player)
+								this.playerManager.stopAnimation(this.playerID)
 							}
 							
 							// check if spacebar was pressed / second param is for debouncing
@@ -1980,7 +1980,8 @@ GameState.prototype = {
 							{ 
 								this.perkManager.Update()
 							}
-							// Check to see if game is over
+
+							// Check to see if game is over - has to be outside host check
 							this.playerManager.gameOverCheck()
 						}
 					  	},

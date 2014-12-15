@@ -5,14 +5,29 @@ function PlayerManager(preferences, layerManager, explosionManager)
 	// Stops a player's animation
 	this.stopAnimation = function(id)
 	{
-		(id <= 3 && id >= 0)
+		var playerId = this.getIndexFromId(id);
+
+		(playerId <= 3 && playerId >= 0)
 		{
 			// Get player from preference
-			var player = preferences.Players[id]
+			var player = preferences.Players[playerId]
 			
 			if(player instanceof Player)
 			{	
 				player.animate("stop")
+			}
+		}
+	}
+
+	// This will pause animations if a player has not moved in the past .5 second
+	this.UpdateAnimations = function()
+	{
+		for(var i = 0; i < preferences.Players.length; i++)
+		{
+			if(preferences.Players[i].MovedRecently)
+			{
+				this.playerManager.stopAnimation(preferences.Players[i].getName());
+				preferences.Players[i].MovedRecently = false;
 			}
 		}
 	}
@@ -83,6 +98,9 @@ function PlayerManager(preferences, layerManager, explosionManager)
 						console.log("invalid move command")
 						break;
 				}
+
+				// Set the moved recently flag
+				player.MovedRecently = true
 
 				// return player to previous position if collides with wall
 				if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
