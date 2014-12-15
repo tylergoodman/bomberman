@@ -43,8 +43,11 @@ function PerkManager(preferences, layerManager, perkAudio)
 	// Adds a perk to the perk layer
 	this.AddPerk = function (col, row, type)
 	{
-		var perk = new Perk(preferences, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight, type)
-		PerkLayer.Add(perk)
+		if(!(PerkLayer.getObjectAt(col,row) instanceof Perk))
+		{
+			var perk = new Perk(preferences, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight, type)
+			PerkLayer.Add(perk)
+		}
 	}
 
 	// Returns a random perk type
