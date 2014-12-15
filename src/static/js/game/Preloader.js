@@ -8,7 +8,7 @@ var Preloader = function(game) {
 } 
 
 Preloader.prototype = {
-  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')
+  preload: function() { this.load.image('background', './static/img/titlescreen.png')
   						game.load.audio('intro', ['./static/audio/intro.mp3', './static/audio/intro.mp3']);
 					  },
   create:  function() {	

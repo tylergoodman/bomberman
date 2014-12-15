@@ -5,7 +5,7 @@
 
 function Player (preferences, name, col, row, posX, posY) {
 
-	GameObject.call(this, preferences.World, col, row, posX, posY, 'bombermanAnimation')
+	GameObject.call(this, preferences.World, col, row, posX, posY, 'sprite1')
 
 	// Set up Object's properties
 	this.Name = name

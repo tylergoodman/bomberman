@@ -283,7 +283,7 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 
 function Player (preferences, name, col, row, posX, posY) {
 
-	GameObject.call(this, preferences.World, col, row, posX, posY, 'bombermanAnimation')
+	GameObject.call(this, preferences.World, col, row, posX, posY, 'sprite1')
 
 	// Set up Object's properties
 	this.Name = name
@@ -1656,7 +1656,7 @@ function Perk (preferences, col, row, posX, posY, type) {
 var MainMenu = function(game) {} 
 
 MainMenu.prototype = {
-  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')},
+  preload: function() { this.load.image('background', './static/img/titlescreen.png')},
   create:  function() {	// background
 						var background = this.game.add.group();
 				   		background.z = 1;
@@ -1677,7 +1677,7 @@ var Preloader = function(game) {
 } 
 
 Preloader.prototype = {
-  preload: function() { this.load.image('background', './static/img/titlescreen.jpg')
+  preload: function() { this.load.image('background', './static/img/titlescreen.png')
   						game.load.audio('intro', ['./static/audio/intro.mp3', './static/audio/intro.mp3']);
 					  },
   create:  function() {	
@@ -1775,7 +1775,7 @@ var GameState = function(game) {
 GameState.prototype = {
 
   preload: function() 	{ 
-							this.game.load.atlasJSONHash('bombermanAnimation', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
+							this.game.load.atlasJSONHash('sprite1', './static/img/Animations/Bomberman/sprite1Animation.png', './static/img/Animations/Bomberman/sprite1Animation.json');
 							this.game.load.atlasJSONHash('explosionAnimation', './static/img/Animations/Explosion/explosionAnimation.png', './static/img/Animations/Explosion/explosionAnimation.json');
 							this.game.load.atlasJSONHash('bombAnimation', './static/img/Animations/Bomb/bombAnimation.png', './static/img/Animations/Bomb/bombAnimation.json');
 						    this.game.load.image('bomberman', './static/img/bomberman.png')
