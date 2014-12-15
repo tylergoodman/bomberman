@@ -9,16 +9,16 @@ function Player (preferences, name, col, row, posX, posY) {
 	if(col == preferences.BoardColSize - 1 &&
 		row == 0)
 	{
-		spriteImage = 'sprite1'
+		spriteImage = 'sprite2'
 	}
 	else if(col == 0 && row == preferences.BoardRowSize - 1)
 	{
-		spriteImage = 'sprite1'
+		spriteImage = 'sprite3'
 	}
 	else if(col == preferences.BoardColSize - 1 &&
 	row == preferences.BoardRowSize - 1)
 	{
-		spriteImage = 'sprite1'
+		spriteImage = 'sprite4'
 	}
 
 	GameObject.call(this, preferences.World, col, row, posX, posY, spriteImage)
