@@ -151,6 +151,64 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 		return false;
 	}
 
+	/* INCOMPLETE */
+	// Check if player (objectA) is within exception zone
+	// if so, player will be forced into square
+	this.withinCollisionException = function(objectA)
+	{
+								console.log("function")
+		var exception = 10
+		for(var i = 0; i < ColSize; i++)
+		{
+			for(var j = 0; j  < RowSize; j++)
+			{
+				var  objectB = Board[i][j];
+				if(objectB instanceof Type)
+				{
+					if(collision(objectA, objectB))
+					{
+						console.log("worked")
+						if(objectA.getRow() < objectB.getRow())
+						{
+							if(objectA.getCol() > objectB.getCol())
+							{
+								if(objectB.getPosX() + objectB.getWidth() > objectA.getPosX())
+								{
+									if(objectB.getPosX() + objectB.getWidth() - objectA.getPosX() <= exception)
+										return {newX: objectB.getPosX() + objectB.getWidth() + 1, newY: objectA.getPosY() + 1}
+								}
+								else if (objectB.getPosX() + objectB.getWidth() < objectA.getPosX())
+								{
+									if(objectA.getPosY() + objectA.getHeight() - objectB.getPosY() <= exception)
+										return {newX: objectA.getPosX() - 1, newY: objectB.getPosY() - 1}
+								}
+							}
+							else if(objectA.getCol() < BobjectB.getCol())
+							{
+									
+							}
+						}
+						else if(objectA.getRow() > objectB.getRow())
+						{
+							if(objectA.getCol() > objectB.getCol())
+							{
+
+							}
+							else if(objectA.getCol() < objectB.getCol())
+							{
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return null
+
+	}
+
+
 	// Scales each item in the layer by a value
 	this.scaleObjects = function(scaleX, scaleY, imageSizeWidth, ImageSizeHeight)
 	{
@@ -182,7 +240,6 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 		   objectA.getPosY() < objectB.getPosY() + objectB.getHeight() &&
 		   objectA.getHeight() + objectA.getPosY() > objectB.getPosY())
 	}
-
 /******************************************************************************
 						End of Methods
 ******************************************************************************/

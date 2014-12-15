@@ -237,6 +237,64 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 		return false;
 	}
 
+	/* INCOMPLETE */
+	// Check if player (objectA) is within exception zone
+	// if so, player will be forced into square
+	this.withinCollisionException = function(objectA)
+	{
+								console.log("function")
+		var exception = 10
+		for(var i = 0; i < ColSize; i++)
+		{
+			for(var j = 0; j  < RowSize; j++)
+			{
+				var  objectB = Board[i][j];
+				if(objectB instanceof Type)
+				{
+					if(collision(objectA, objectB))
+					{
+						console.log("worked")
+						if(objectA.getRow() < objectB.getRow())
+						{
+							if(objectA.getCol() > objectB.getCol())
+							{
+								if(objectB.getPosX() + objectB.getWidth() > objectA.getPosX())
+								{
+									if(objectB.getPosX() + objectB.getWidth() - objectA.getPosX() <= exception)
+										return {newX: objectB.getPosX() + objectB.getWidth() + 1, newY: objectA.getPosY() + 1}
+								}
+								else if (objectB.getPosX() + objectB.getWidth() < objectA.getPosX())
+								{
+									if(objectA.getPosY() + objectA.getHeight() - objectB.getPosY() <= exception)
+										return {newX: objectA.getPosX() - 1, newY: objectB.getPosY() - 1}
+								}
+							}
+							else if(objectA.getCol() < BobjectB.getCol())
+							{
+									
+							}
+						}
+						else if(objectA.getRow() > objectB.getRow())
+						{
+							if(objectA.getCol() > objectB.getCol())
+							{
+
+							}
+							else if(objectA.getCol() < objectB.getCol())
+							{
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return null
+
+	}
+
+
 	// Scales each item in the layer by a value
 	this.scaleObjects = function(scaleX, scaleY, imageSizeWidth, ImageSizeHeight)
 	{
@@ -268,7 +326,6 @@ function Layer (world, name, sizeOfCol, sizeOfRow, type, level) {
 		   objectA.getPosY() < objectB.getPosY() + objectB.getHeight() &&
 		   objectA.getHeight() + objectA.getPosY() > objectB.getPosY())
 	}
-
 /******************************************************************************
 						End of Methods
 ******************************************************************************/
@@ -1067,49 +1124,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 		}
 
-/*
-		// Remove walls
-	    for(var i = -1*bombRadius; i <= bombRadius; i++)
-		{
-			var wallOne = WallLayer.getObjectAt(col+i, row)
-			var wallTwo = WallLayer.getObjectAt(col, row+i)
-
-			var playerLocOne = PlayerLayer.getObjectAt(col+i, row)
-			var playerLocTwo = PlayerLayer.getObjectAt(col,row+i)
-
-			if(wallOne instanceof Wall)
-			{
-				if(perkManager.RemoveWall(wallOne))
-					AddExplosion(col+i, row)	
-			}
-
-			// Check if you can add explosion at where wall one is suppose to be
-			// This is to add an explosion even though the wall is gone
-			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
-				AddExplosion(col+i, row)
-
-			if(wallTwo instanceof Wall)
-			{
-				if(perkManager.RemoveWall(wallTwo))
-					AddExplosion(col, row+i)
-			}
-
-			// Check if you can add explosion at where wall two is suppose to be
-			// This is to add an explosion even though the wall is gone
-			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
-				AddExplosion(col, row+i)
-
-			if(playerLocOne instanceof Player)
-			{
-				PlayerDiedEvent(playerLocOne.getName())
-			}
-
-			if(playerLocTwo instanceof Player)
-			{
-				PlayerDiedEvent(playerLocTwo.getName())
-			}
-		}
-*/
 		// Special case when player is on the bomb
 		var player = PlayerLayer.getObjectAt(col, row)
 		
@@ -1488,6 +1502,15 @@ function PlayerManager(preferences, layerManager, explosionManager)
 
 				// Set the moved recently flag
 				player.MovedRecently = true
+
+				/* Attempted close collision issue
+				var withinException = layerManager.ReturnLayer("Wall").withinCollisionException(player)
+				if(withinException != null)
+				{
+					player.setPosX(withinException.newX, true)
+					player.setPosY(withinException.newY, true)	
+				}
+				*/
 
 				// return player to previous position if collides with wall
 				if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)

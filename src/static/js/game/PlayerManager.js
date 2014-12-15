@@ -161,6 +161,15 @@ function PlayerManager(preferences, layerManager, explosionManager)
 				// Set the moved recently flag
 				player.MovedRecently = true
 
+				/* Attempted close collision issue
+				var withinException = layerManager.ReturnLayer("Wall").withinCollisionException(player)
+				if(withinException != null)
+				{
+					player.setPosX(withinException.newX, true)
+					player.setPosY(withinException.newY, true)	
+				}
+				*/
+
 				// return player to previous position if collides with wall
 				if(layerManager.ReturnLayer("Wall").collisionWith(player) && !player.GhostMode)
 				{

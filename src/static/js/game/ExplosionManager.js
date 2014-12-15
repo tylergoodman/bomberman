@@ -231,49 +231,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 		}
 
-/*
-		// Remove walls
-	    for(var i = -1*bombRadius; i <= bombRadius; i++)
-		{
-			var wallOne = WallLayer.getObjectAt(col+i, row)
-			var wallTwo = WallLayer.getObjectAt(col, row+i)
-
-			var playerLocOne = PlayerLayer.getObjectAt(col+i, row)
-			var playerLocTwo = PlayerLayer.getObjectAt(col,row+i)
-
-			if(wallOne instanceof Wall)
-			{
-				if(perkManager.RemoveWall(wallOne))
-					AddExplosion(col+i, row)	
-			}
-
-			// Check if you can add explosion at where wall one is suppose to be
-			// This is to add an explosion even though the wall is gone
-			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
-				AddExplosion(col+i, row)
-
-			if(wallTwo instanceof Wall)
-			{
-				if(perkManager.RemoveWall(wallTwo))
-					AddExplosion(col, row+i)
-			}
-
-			// Check if you can add explosion at where wall two is suppose to be
-			// This is to add an explosion even though the wall is gone
-			if(col+i >=0 && col+i < BoardColSize && row >=0 && row < BoardRowSize)
-				AddExplosion(col, row+i)
-
-			if(playerLocOne instanceof Player)
-			{
-				PlayerDiedEvent(playerLocOne.getName())
-			}
-
-			if(playerLocTwo instanceof Player)
-			{
-				PlayerDiedEvent(playerLocTwo.getName())
-			}
-		}
-*/
 		// Special case when player is on the bomb
 		var player = PlayerLayer.getObjectAt(col, row)
 		
