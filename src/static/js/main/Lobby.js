@@ -152,13 +152,10 @@
 		setConnected: function () {
 			this.$('#lobby-disconnect').prop('hidden', false);
 			this.$('#lobby-join').prop('hidden', true);
-			this.$('#game-start').prop('disabled', true);
 		},
 		setDisconnected: function () {
-			console.log('adf');
 			this.$('#lobby-disconnect').prop('hidden', true);
 			this.$('#lobby-join').prop('hidden', false);
-			this.$('#game-start').prop('disabled', false);
 		},
 
 

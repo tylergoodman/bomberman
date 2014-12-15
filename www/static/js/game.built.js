@@ -1576,11 +1576,14 @@ function PerkManager(preferences, layerManager, perkAudio)
 			WallLayer.Remove(wall)
 			if( Math.floor((Math.random() * 100) + 1) <= 15)
 			{
-				var type = this.RandomPerk()
-				Bomberman.Network.send({
-					evt: 'perkDropped',
-					data: {Col: col, Row: row, Type : type},
-				});
+				if(!(PerkLayer.getObjectAt(col, rol) instanceof Perk))
+				{
+					var type = this.RandomPerkType()
+					Bomberman.Network.send({
+						evt: 'perkDropped',
+						data: {Col: col, Row: row, Type : type},
+					});
+				}
 			}
 			return true
 		}	
@@ -1594,7 +1597,7 @@ function PerkManager(preferences, layerManager, perkAudio)
 	}
 
 	// Returns a random perk type
-	this.RandomPerk = function()
+	this.RandomPerkType = function()
 	{
 		return PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
 	}
@@ -2058,6 +2061,18 @@ GameState.prototype = {
 					  	},
 	init: function(myId, peersID) 
 						{
+							// Reset all variables every init
+							this.player = null
+							this.peers = null
+							this.layerManager = null
+							this.playerManager = null
+							this.explosionManager = null
+							this.perkManager = null
+							this.preferences = null
+							// Array to keep track of players
+							this.Players = []
+
+							
 					  		this.playerID = myId;
 					  		this.peers = peersID;
 					  	},

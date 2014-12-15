@@ -222,13 +222,10 @@
 		setConnected: function () {
 			this.$('#lobby-disconnect').prop('hidden', false);
 			this.$('#lobby-join').prop('hidden', true);
-			this.$('#game-start').prop('disabled', true);
 		},
 		setDisconnected: function () {
-			console.log('adf');
 			this.$('#lobby-disconnect').prop('hidden', true);
 			this.$('#lobby-join').prop('hidden', false);
-			this.$('#game-start').prop('disabled', false);
 		},
 
 
@@ -597,6 +594,7 @@
 			connection.on('open', function () {
 				Logger.log('Connection with %s established.', this.peer);
 				self.host.addPeer(this);
+				$('#game-start').prop('disabled', false)
 			});
 
 			connection.on('data', function (data) {
@@ -606,6 +604,10 @@
 			connection.on('close', function () {
 				Logger.log('%s disconnected.', this.peer);
 				self.host.disconnectPeer(this.peer);
+				if (!Object.keys(self.host.peers).length) 
+				{
+					$('#game-start').prop('disabled', true)
+				}
 			});
 
 			connection.on('error', function (err) {

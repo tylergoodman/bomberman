@@ -174,6 +174,18 @@ GameState.prototype = {
 					  	},
 	init: function(myId, peersID) 
 						{
+							// Reset all variables every init
+							this.player = null
+							this.peers = null
+							this.layerManager = null
+							this.playerManager = null
+							this.explosionManager = null
+							this.perkManager = null
+							this.preferences = null
+							// Array to keep track of players
+							this.Players = []
+
+							
 					  		this.playerID = myId;
 					  		this.peers = peersID;
 					  	},
