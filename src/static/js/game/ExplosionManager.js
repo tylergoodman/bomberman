@@ -122,7 +122,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	{
 		var col = bomb.getCol()
 		var row = bomb.getRow()
-
 		// Remove walls
 	    for(var i = -1*bombRadius; i <= bombRadius; i++)
 		{
@@ -156,11 +155,15 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 
 			if(playerLocOne instanceof Player)
 			{
+				console.log(playerLocOne)
+				console.log(i)
 				PlayerDiedEvent(playerLocOne.getName())
 			}
 
 			if(playerLocTwo instanceof Player)
 			{
+				console.log(playerLocTwo)
+								console.log(i)
 				PlayerDiedEvent(playerLocTwo.getName())
 			}
 		}
@@ -335,17 +338,21 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 ******************************************************************************/
 	function PlayerDiedEvent (playerId)
 	{
-		// send player died event
-		Bomberman.Network.send({
-			evt: 'playerDied',
-			data: {playerId : playerId},
-		});
+		if(Bomberman.Network.host.open)
+		{ 
+			// send player died event
+			Bomberman.Network.send({
+				evt: 'playerDied',
+				data: {playerId : playerId},
+			});
+		}
 	}
 
 	// Removes a dead player
 	this.PlayerDied = function (playerId)
 	{
-		World.time.events.add(Phaser.Timer.SECOND * 1, 
+		// only host can kill someone
+		World.time.events.add(Phaser.Timer.SECOND * 0.5, 
 			function() {
 				for(var i = 0; i < preferences.Players.length; i++)
 				{
