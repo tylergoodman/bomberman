@@ -50,7 +50,8 @@ function Preferences(world, players)
 	this.ExplosionHeightRatio = this.ImageSizeHeight / this.ExplosionHeight
 
 	// Calculate move value
-	this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
+	this.MoveValueX = this.WindowWidth / (this.BoardColSize * 15)
+	this.MoveValueY = (this.WindowHeight / (this.BoardRowSize * 9)) * (9/15)
 
 	// public function to update all scale values
 	this.updateScaleValues = function()

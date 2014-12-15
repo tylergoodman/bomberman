@@ -27,7 +27,7 @@ function PerkManager(preferences, layerManager, perkAudio)
 			WallLayer.Remove(wall)
 			if( Math.floor((Math.random() * 100) + 1) <= 15)
 			{
-				if(!(PerkLayer.getObjectAt(col, rol) instanceof Perk))
+				if(!(PerkLayer.getObjectAt(col, row) instanceof Perk))
 				{
 					var type = this.RandomPerkType()
 					Bomberman.Network.send({

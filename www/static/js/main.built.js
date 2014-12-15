@@ -401,6 +401,11 @@
 					game.state.start('GameOver', true, false, winnerIndex);
 				this.sendToAll(data);
 			break;
+			// Sync all players
+			case 'SyncPlayers':
+				game.state.states.Game.playerManager.SyncPlayers(data.data.SyncData);
+				this.sendToAll(data);
+			break;
 
 		}
 	}
@@ -488,6 +493,10 @@
 				game.state.start('GameOver', true, false, winnerIndex);
 				if(data == null)
 					console.log("Error ending the game - invalid player count");
+			break;
+			// Sync all players
+			case 'SyncPlayers':
+				game.state.states.Game.playerManager.SyncPlayers(data.data.SyncData);
 			break;
 		}
 	}
@@ -613,6 +622,10 @@
 			connection.on('error', function (err) {
 				Logger.warn('Connection to %s errored!', this.peer);
 				self.host.disconnectPeer(this.peer);
+				if (!Object.keys(self.host.peers).length) 
+				{
+					$('#game-start').prop('disabled', true)
+				}
 			});
 
 		}

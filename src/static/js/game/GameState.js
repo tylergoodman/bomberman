@@ -91,6 +91,14 @@ GameState.prototype = {
 							this.preferences.World.time.events.loop(Phaser.Timer.SECOND * .5, 
 								this.playerManager.UpdateAnimations, 
 							this)
+
+							// host will sync everyone up
+							if(Bomberman.Network.host.open)
+							{ 
+								this.preferences.World.time.events.loop(Phaser.Timer.SECOND*0.25, 
+									this.playerManager.BeginSync, 
+								this)	
+							}
 				   		},
   update:  function() 	{
   						if(this.playerManager.PlayerExists(this.playerID))
@@ -185,7 +193,7 @@ GameState.prototype = {
 							// Array to keep track of players
 							this.Players = []
 
-							
+
 					  		this.playerID = myId;
 					  		this.peers = peersID;
 					  	},

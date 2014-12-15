@@ -32,6 +32,57 @@ function PlayerManager(preferences, layerManager, explosionManager)
 		}
 	}
 
+
+	// This will send peers the location of all players
+	// This method sends ratios so that other window sizes can move sync accordingly
+	this.BeginSync = function()
+	{
+		var data = []
+
+		for(var i = 0; i < preferences.Players.length; i++)
+		{
+			data.add( {
+						ID: preferences.Players[i].getName(),
+						X: 	(preferences.Players[i].getPosX() % preferences.ImageSizeWidth) / preferences.ImageSizeWidth,
+						XFactor: Math.floor(preferences.Players[i].getPosX() / preferences.ImageSizeWidth),
+						Y: 	(preferences.Players[i].getPosY() % preferences.ImageSizeHeight) / preferences.ImageSizeHeight,
+					  	YFactor: Math.floor(preferences.Players[i].getPosY() / preferences.ImageSizeHeight)
+					  }
+					)
+		}
+
+		// tell all clients to update
+		Bomberman.Network.send({
+			evt: 'SyncPlayers',
+			data: {SyncData: data},
+		});
+
+
+	}
+
+
+	// This will update all players
+	this.SyncPlayers = function(data)
+	{
+		for(var j = 0; j < data.length; j++)
+		{
+			for(var i = 0; i < preferences.Players.length; i++)
+			{
+				if(preferences.Players[i].getName() === data[j].ID)
+				{
+					// calculate new x and y position
+					var newPosX = 
+						data[j].XFactor * preferences.ImageSizeWidth + data[j].X * preferences.ImageSizeWidth
+					var newPosY = 
+						data[j].YFactor * preferences.ImageSizeHeight + data[j].Y * preferences.ImageSizeHeight
+					preferences.Players[i].setPosX(newPosX, false)
+					preferences.Players[i].setPosY(newPosY, false)
+					preferences.Players[i].update()
+				}
+			}
+		}
+	}
+
 	// returns the index that the player referenced by id is currently at
 	this.getIndexFromId = function(id)
 	{
@@ -72,7 +123,15 @@ function PlayerManager(preferences, layerManager, explosionManager)
 		{
 			// Get data from preference
 			var player = preferences.Players[this.getIndexFromId(id)]
-			var moveValue = preferences.MoveValue
+			var moveValue = 0;
+			if(direction == 0 || direction == 1)
+			{
+				moveValue = preferences.MoveValueY
+			}
+			else
+			{
+				moveValue = preferences.MoveValueX
+			}
 			
 			if(player instanceof Player)
 			{	

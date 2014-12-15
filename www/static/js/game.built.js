@@ -1254,6 +1254,57 @@ function PlayerManager(preferences, layerManager, explosionManager)
 		}
 	}
 
+
+	// This will send peers the location of all players
+	// This method sends ratios so that other window sizes can move sync accordingly
+	this.BeginSync = function()
+	{
+		var data = []
+
+		for(var i = 0; i < preferences.Players.length; i++)
+		{
+			data.add( {
+						ID: preferences.Players[i].getName(),
+						X: 	(preferences.Players[i].getPosX() % preferences.ImageSizeWidth) / preferences.ImageSizeWidth,
+						XFactor: Math.floor(preferences.Players[i].getPosX() / preferences.ImageSizeWidth),
+						Y: 	(preferences.Players[i].getPosY() % preferences.ImageSizeHeight) / preferences.ImageSizeHeight,
+					  	YFactor: Math.floor(preferences.Players[i].getPosY() / preferences.ImageSizeHeight)
+					  }
+					)
+		}
+
+		// tell all clients to update
+		Bomberman.Network.send({
+			evt: 'SyncPlayers',
+			data: {SyncData: data},
+		});
+
+
+	}
+
+
+	// This will update all players
+	this.SyncPlayers = function(data)
+	{
+		for(var j = 0; j < data.length; j++)
+		{
+			for(var i = 0; i < preferences.Players.length; i++)
+			{
+				if(preferences.Players[i].getName() === data[j].ID)
+				{
+					// calculate new x and y position
+					var newPosX = 
+						data[j].XFactor * preferences.ImageSizeWidth + data[j].X * preferences.ImageSizeWidth
+					var newPosY = 
+						data[j].YFactor * preferences.ImageSizeHeight + data[j].Y * preferences.ImageSizeHeight
+					preferences.Players[i].setPosX(newPosX, false)
+					preferences.Players[i].setPosY(newPosY, false)
+					preferences.Players[i].update()
+				}
+			}
+		}
+	}
+
 	// returns the index that the player referenced by id is currently at
 	this.getIndexFromId = function(id)
 	{
@@ -1294,7 +1345,15 @@ function PlayerManager(preferences, layerManager, explosionManager)
 		{
 			// Get data from preference
 			var player = preferences.Players[this.getIndexFromId(id)]
-			var moveValue = preferences.MoveValue
+			var moveValue = 0;
+			if(direction == 0 || direction == 1)
+			{
+				moveValue = preferences.MoveValueY
+			}
+			else
+			{
+				moveValue = preferences.MoveValueX
+			}
 			
 			if(player instanceof Player)
 			{	
@@ -1486,7 +1545,8 @@ function Preferences(world, players)
 	this.ExplosionHeightRatio = this.ImageSizeHeight / this.ExplosionHeight
 
 	// Calculate move value
-	this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
+	this.MoveValueX = this.WindowWidth / (this.BoardColSize * 15)
+	this.MoveValueY = (this.WindowHeight / (this.BoardRowSize * 9)) * (9/15)
 
 	// public function to update all scale values
 	this.updateScaleValues = function()
@@ -1576,7 +1636,7 @@ function PerkManager(preferences, layerManager, perkAudio)
 			WallLayer.Remove(wall)
 			if( Math.floor((Math.random() * 100) + 1) <= 15)
 			{
-				if(!(PerkLayer.getObjectAt(col, rol) instanceof Perk))
+				if(!(PerkLayer.getObjectAt(col, row) instanceof Perk))
 				{
 					var type = this.RandomPerkType()
 					Bomberman.Network.send({
@@ -1978,6 +2038,14 @@ GameState.prototype = {
 							this.preferences.World.time.events.loop(Phaser.Timer.SECOND * .5, 
 								this.playerManager.UpdateAnimations, 
 							this)
+
+							// host will sync everyone up
+							if(Bomberman.Network.host.open)
+							{ 
+								this.preferences.World.time.events.loop(Phaser.Timer.SECOND*0.25, 
+									this.playerManager.BeginSync, 
+								this)	
+							}
 				   		},
   update:  function() 	{
   						if(this.playerManager.PlayerExists(this.playerID))
@@ -2072,7 +2140,7 @@ GameState.prototype = {
 							// Array to keep track of players
 							this.Players = []
 
-							
+
 					  		this.playerID = myId;
 					  		this.peers = peersID;
 					  	},
