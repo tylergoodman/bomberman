@@ -842,9 +842,6 @@ function ExplosionManager(preferences, layerManager, perkManager, explosionAudio
 	var ExplosionLayer = layerManager.ReturnLayer("Explosion")
 	var ExplosionAudio = explosionAudio
 
-	// Perk Manager to manage perks
-	var perkManager = perkManager
-
 	// Process Bomb dropped 
 	this.DropBomb = function (playerIndex, type)
 	{
@@ -1518,6 +1515,18 @@ function Preferences(world, players)
 		this.MoveValue = this.WindowWidth / (this.BoardColSize * 15)
 	}
 
+	// returns the index that the player referenced by id is currently at
+	this.getIndexFromId = function(id)
+	{
+		var Players = this.Players;
+		 // Associate Id to player - indexof didnt work
+  		for(var i = 0; i < Players.length; i++)
+  		{
+  			if(Players[i].getName() === id)
+  				return i;
+  		}
+	}
+
 }
 function PerkManager(preferences, layerManager, perkAudio)
 {
@@ -1547,16 +1556,28 @@ function PerkManager(preferences, layerManager, perkAudio)
 			var col = wall.getCol(), row = wall.getRow()
 			WallLayer.Remove(wall)
 			if( Math.floor((Math.random() * 100) + 1) <= 15)
-				PerkLayer.Add(this.RandomPerk(col, row))
+			{
+				var type = this.RandomPerk()
+				Bomberman.Network.send({
+					evt: 'perkDropped',
+					data: {Col: col, Row: row, Type : type},
+				});
+			}
 			return true
 		}	
 	}
 
-	// Returns a random perk
-	this.RandomPerk = function(col, row)
+	// Adds a perk to the perk layer
+	this.AddPerk = function (col, row, type)
 	{
-		var randomType = PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
-		return new Perk(preferences, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight, randomType)
+		var perk = new Perk(preferences, col, row, col*preferences.ImageSizeWidth, row*preferences.ImageSizeHeight, type)
+		PerkLayer.Add(perk)
+	}
+
+	// Returns a random perk type
+	this.RandomPerk = function()
+	{
+		return PerkTypes[Math.floor((Math.random() * PerkTypes.length))]
 	}
 
 	// Check if a player is on a perk
@@ -1570,29 +1591,36 @@ function PerkManager(preferences, layerManager, perkAudio)
 				if(PerkLayer.getObjectAt(col, row) instanceof Perk)
 				{
 					// Apply perk if user is on a perk
-					this.ApplyPerk(preferences.Players[i], PerkLayer.getObjectAt(col, row))
-
-					// Play Music
-					PerkAudio.play();
-
-					//Add stop PerkAudio event
-					World.time.events.add(Phaser.Timer.SECOND * .5, 
-					function(perkAudio) {
-							// stop audio
-							perkAudio.stop();
-						}, 
-					this, PerkAudio);
+					var playerId = preferences.Players[i].getName()
+					Bomberman.Network.send({
+						evt: 'applyPerk',
+						data: {PlayerID: playerId, Col: col, Row: row},
+					});
 				}
 			}
 		}
 	}
 
 	// Apply Perks to Players that are on top of it
-	this.ApplyPerk = function(player, perk)
+	this.ApplyPerk = function(playerId, col, row)
 	{
+		// get player and perk
+		var player = preferences.Players[preferences.getIndexFromId(playerId)];
+		var perk = PerkLayer.getObjectAt(col, row);
+
+		// Play Music
+		PerkAudio.play();
+
+		//Add stop PerkAudio event
+		World.time.events.add(Phaser.Timer.SECOND * .5, 
+		function(perkAudio) {
+				// stop audio
+				perkAudio.stop();
+			}, 
+		this, PerkAudio);
 
 		// remove perk
-		PerkLayer.Remove(perk)
+		PerkLayer.Remove(perk);
 
 		// Apply perk to player
 		switch(perk.getType())
@@ -1947,8 +1975,11 @@ GameState.prototype = {
 							}
 
 							// update perks
-							this.perkManager.Update()
-
+							//host only
+							if(Bomberman.Network.host.open)
+							{ 
+								this.perkManager.Update()
+							}
 							// Check to see if game is over
 							this.playerManager.gameOverCheck()
 						}

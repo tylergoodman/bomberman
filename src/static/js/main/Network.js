@@ -90,6 +90,15 @@
 				game.state.states.Game.explosionManager.DropBomb(playerIndex, data.data.Type);
 				this.sendToAll(data);
 			break;
+			// Perk dropped
+			case 'perkDropped':
+				game.state.states.Game.perkManager.AddPerk(data.data.Col, data.data.Row, data.data.Type);
+				this.sendToAll(data);
+			break;
+			case 'applyPerk':
+				game.state.states.Game.perkManager.ApplyPerk(data.data.PlayerID, data.data.Col, data.data.Row)
+				this.sendToAll(data);
+			break;
 			// player died
 			case 'playerDied':
 				game.state.states.Game.explosionManager.PlayerDied(data.data.playerId);
@@ -178,6 +187,13 @@
 			case 'bombDropped':
 				var playerIndex = game.state.states.Game.playerManager.getIndexFromId(data.data.PlayerID)
 				game.state.states.Game.explosionManager.DropBomb(playerIndex, data.data.Type);
+			break;
+			// Perk dropped
+			case 'perkDropped':
+				game.state.states.Game.perkManager.AddPerk(data.data.Col, data.data.Row, data.data.Type);
+			break;
+			case 'applyPerk':
+				game.state.states.Game.perkManager.ApplyPerk(data.data.PlayerID, data.data.Col, data.data.Row)
 			break;
 			// player died
 			case 'playerDied':

@@ -165,8 +165,11 @@ GameState.prototype = {
 							}
 
 							// update perks
-							this.perkManager.Update()
-
+							//host only
+							if(Bomberman.Network.host.open)
+							{ 
+								this.perkManager.Update()
+							}
 							// Check to see if game is over
 							this.playerManager.gameOverCheck()
 						}
